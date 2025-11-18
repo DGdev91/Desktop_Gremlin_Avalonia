@@ -1,0 +1,11 @@
+﻿<Application x:Class="Desktop_Gremlin.App"
+             xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Desktop_Gremlin">
+    <Application.Styles>
+        <SimpleTheme />
+    </Application.Styles>
+    <Application.Resources>
+         
+    </Application.Resources>
+</Application>

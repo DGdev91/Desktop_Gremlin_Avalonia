@@ -1,15 +1,16 @@
 ﻿using System;
 using System.IO;
-using System.Windows;
-using System.Windows.Media.Imaging;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media.Imaging;
 
 namespace Desktop_Gremlin
 {
     public static class SpriteManager
     {
-        public static BitmapImage Get(string animationName, string actionType)
+        public static Bitmap Get(string animationName, string actionType)
         {
-            BitmapImage sheet = null;
+            Bitmap sheet = null;
             animationName = animationName.ToLower();
 
             string fileName = GetFileName(animationName);
@@ -89,7 +90,7 @@ namespace Desktop_Gremlin
                     return null;
             }
         }    
-        private static BitmapImage LoadSprite(string filefolder, string fileName, string action, string rootFolder = "Gremlins" )
+        private static Bitmap LoadSprite(string filefolder, string fileName, string action, string rootFolder = "Gremlins" )
         {
             string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
                 "SpriteSheet", rootFolder, filefolder,action, fileName);
@@ -97,22 +98,17 @@ namespace Desktop_Gremlin
                 return null;
             try
             {
-                var image = new BitmapImage();
-                image.BeginInit();
-                image.UriSource = new Uri(path);
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.EndInit();
-                image.Freeze();
-                return image;
+                using var stream = File.OpenRead(path);
+                return new Bitmap(stream);
             }
             catch
             {
                 return null;
             }
         }
-        public static int PlayAnimation(string sheetName,string actionType , int currentFrame, int frameCount, System.Windows.Controls.Image targetImage, bool PlayOnce = false)
+        public static int PlayAnimation(string sheetName,string actionType , int currentFrame, int frameCount, Image targetImage, bool PlayOnce = false)
         {
-            BitmapImage sheet = SpriteManager.Get(sheetName,actionType);
+            Bitmap sheet = SpriteManager.Get(sheetName,actionType);
 
             if (sheet == null)
             {
@@ -121,12 +117,14 @@ namespace Desktop_Gremlin
             int x = (currentFrame % Settings.SpriteColumn) * Settings.FrameWidth;
             int y = (currentFrame / Settings.SpriteColumn) * Settings.FrameHeight;
 
-            if (x + Settings.FrameWidth > sheet.PixelWidth || y + Settings.FrameHeight > sheet.PixelHeight)
+            if (x + Settings.FrameWidth > sheet.PixelSize.Width || y + Settings.FrameHeight > sheet.PixelSize.Height)
             {
                 return currentFrame;
             }
 
-            targetImage.Source = new CroppedBitmap(sheet, new Int32Rect(x, y, Settings.FrameWidth, Settings.FrameHeight));
+            CroppedBitmap oldImage = targetImage.Source as CroppedBitmap;
+            if (oldImage != null) oldImage.Dispose();
+            targetImage.Source = new CroppedBitmap(sheet, new PixelRect(x, y, Settings.FrameWidth, Settings.FrameHeight));
             try
             {
                 return (currentFrame + 1) % frameCount;

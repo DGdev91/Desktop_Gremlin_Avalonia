@@ -1,4 +1,5 @@
-﻿public static class Settings
+﻿/*
+public static class Settings
 {
     public static int SpriteColumn { get; set; } = 0;
     public static int FrameRate { get; set; } = 0;
@@ -31,4 +32,4 @@ public static class MouseSettings
     public static double MouseY { get; set; }
     public static double Speed { get; set; } = 10.0;
 }
-
+*/

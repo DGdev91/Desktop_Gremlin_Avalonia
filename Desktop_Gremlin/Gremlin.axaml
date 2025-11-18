@@ -1,0 +1,77 @@
+﻿<Window x:Class="Desktop_Gremlin.Gremlin"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Desktop_Gremlin"
+        mc:Ignorable="d"
+        Title="Desktop Gremlin" Height="600" Width="600"
+        CanResize="False"
+        TransparencyLevelHint="Transparent"
+        SystemDecorations="None"
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="True">
+    <Grid  PointerPressed="SpriteImage_RightClick" PointerMoved="Grid_PointerMoved">
+        <Image Name="SpriteImage"
+           Width="300" Height="300"
+           HorizontalAlignment="Left"
+           VerticalAlignment="Top"
+           Margin="150,150,0,0" 
+           PointerPressed="Canvas_MouseLeftButtonDown" 
+           PointerEntered="SpriteImage_MouseEnter"
+           PointerExited="SpriteImage_MouseLeave">
+        </Image>
+
+        <Border x:Name="LeftHotspot"
+            Background="red"
+            HorizontalAlignment="Left"
+            Width="40"
+            PointerPressed="LeftHotspot_Click" Margin="195,145,0,0" Height="165" VerticalAlignment="Top"/>
+        <Border x:Name="LeftDownHotspot"
+             Background="yellow"
+             HorizontalAlignment="Left"
+             Width="41"
+             PointerPressed="LeftDownHotspot_Click" Margin="194,310,0,0" Height="105" VerticalAlignment="Top"/>
+        <Border x:Name="RightHotspot"
+            Background="blue"
+            HorizontalAlignment="Left"
+            Width="39"
+            PointerPressed="RightHotspot_Click" Margin="370,145,0,0" Height="170" VerticalAlignment="Top"/>
+        <Border x:Name="RightDownHotspot"
+            Background="Orange"
+            HorizontalAlignment="Left"
+            Width="39"
+            PointerPressed="RightDownHotspot_Click" Margin="370,315,0,0" Height="100" VerticalAlignment="Top"/>
+        <Border x:Name="TopHotspot"
+            Background="Purple"
+            HorizontalAlignment="Left"
+            Width="76"
+            PointerPressed="TopHotspot_Click" Margin="264,145,0,0" Height="55" VerticalAlignment="Top"/>
+        <Border x:Name="ScrollingBorder" Background="White"
+            CornerRadius="10"        
+            BorderBrush="LightGreen"
+            BorderThickness="1.5"
+            Width="0" Height="40"
+            Padding="5"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Margin="130,0,0,35">
+            <Canvas ClipToBounds="True">
+                <TextBlock x:Name="ScrollingText"
+                       Text=""
+                       Foreground="RosyBrown"
+                       FontWeight="Bold"
+                       FontSize="16"
+                       FontFamily="Agency FB"
+                       Canvas.Left="0"
+                       Canvas.Top="5"/>
+            </Canvas>
+        </Border>
+
+
+    </Grid>
+</Window>
+
+
+

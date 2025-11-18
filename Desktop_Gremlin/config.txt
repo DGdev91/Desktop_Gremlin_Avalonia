@@ -1,4 +1,4 @@
-﻿START_CHAR = Koyuki
+﻿START_CHAR = Mambo
 
 //Visual Settings
 SPRITE_FRAMERATE = 60

@@ -1,10 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Media;
 using System.IO;
+using LibVLCSharp.Shared;
+
 public static class MediaManager
 {
+    private static LibVLC _libVLC;
+    private static MediaPlayer _mediaPlayer;
     private static Dictionary<string, DateTime> LastPlayed = new Dictionary<string, DateTime>();
+
+    static MediaManager()
+    {
+        Core.Initialize();
+        _libVLC = new LibVLC();
+        _mediaPlayer = new MediaPlayer(_libVLC);
+    }
+    
     public static void PlaySound(string fileName, double delaySeconds = 0)
     {
         string path = System.IO.Path.Combine(
@@ -22,11 +33,9 @@ public static class MediaManager
                     return;
             }
         }
-        using (SoundPlayer sp = new SoundPlayer(path))
-        {
-            sp.Play();
-            LastPlayed[fileName] = DateTime.Now;
-        }
+        Media media = new Media(_libVLC, new Uri(path));
+        _mediaPlayer.Media = media;
+        _mediaPlayer.Play();
+        LastPlayed[fileName] = DateTime.Now;
     }
 }
-

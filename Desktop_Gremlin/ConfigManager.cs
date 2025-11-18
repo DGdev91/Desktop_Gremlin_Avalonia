@@ -1,13 +1,11 @@
-﻿using Desktop_Gremlin;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media;
+using Avalonia.Media.Immutable;
+using Desktop_Gremlin;
 using System;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Forms;
-using System.Windows.Media;
-using System.Windows.Threading;
 
 public static class ConfigManager
 {
@@ -378,7 +376,7 @@ public static class ConfigManager
         Border RightHotspot = window.RightHotspot;
         Border RightDownHotspot = window.RightDownHotspot;
         Border TopHotspot = window.TopHotspot;
-        System.Windows.Controls.Image SpriteImage = window.SpriteImage;
+        Image SpriteImage = window.SpriteImage;
 
         if (useColors)
         {
@@ -390,7 +388,7 @@ public static class ConfigManager
         }
         else
         {
-            var noColor = (SolidColorBrush)(new BrushConverter().ConvertFrom("#01000000"));
+            var noColor = (ImmutableSolidColorBrush)(new BrushConverter().ConvertFrom("#01000000"));
             LeftHotspot.Background = noColor;
             LeftDownHotspot.Background = noColor;
             RightHotspot.Background = noColor;
@@ -405,7 +403,7 @@ public static class ConfigManager
             window.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#01000000"));
         }
 
-
+/*
         double baseLeftW = LeftHotspot.Width, baseLeftH = LeftHotspot.Height;
         double baseLeftDownW = LeftDownHotspot.Width, baseLeftDownH = LeftDownHotspot.Height;
         double baseRightW = RightHotspot.Width, baseRightH = RightHotspot.Height;
@@ -449,6 +447,7 @@ public static class ConfigManager
         ScaleHotspot(RightHotspot, rightOffsetX, rightOffsetY, scaleX, scaleY, centerX, centerY, baseRightW, baseRightH);
         ScaleHotspot(RightDownHotspot, rightDownOffsetX, rightDownOffsetY, scaleX, scaleY, centerX, centerY, baseRightDownW, baseRightDownH);
         ScaleHotspot(TopHotspot, topOffsetX, topOffsetY, scaleX, scaleY, centerX, centerY, baseTopW, baseTopH);
+        */
     }
 
     private static void ScaleHotspot(Border hotspot, double offsetX, double offsetY, double scaleX,
@@ -462,7 +461,7 @@ public static class ConfigManager
     public class AppConfig
     {
         private readonly Window _window;
-        private NotifyIcon _trayIcon;
+        private TrayIcon _trayIcon;
         public AppConfig(Window window)
         {
             _window = window;
@@ -470,25 +469,40 @@ public static class ConfigManager
         }   
         public void SetupTrayIcon()
         {
-            _trayIcon = new NotifyIcon();
+            _trayIcon = new TrayIcon();
 
             if (File.Exists("SpriteSheet/System/ico.ico"))
             {
-                _trayIcon.Icon = new Icon("SpriteSheet/System/ico.ico");
+                _trayIcon.Icon = new WindowIcon("SpriteSheet/System/ico.ico");
+            }
+            else if (File.Exists("ico.ico"))
+            {
+                _trayIcon.Icon = new WindowIcon("ico.ico");
             }
             else
             {
-                _trayIcon.Icon = SystemIcons.Application;
+                Gremlin.ErrorClose("Cannot find the ico.ico in the application folder or SpriteSheet/System folder", "Missing ico.ico", false);
             }
 
-            _trayIcon.Visible = true;
-            _trayIcon.Text = "Gremlin";
+            _trayIcon.IsVisible = true;
+            _trayIcon.ToolTipText = "Gremlin";
 
-            var menu = new ContextMenuStrip();
-            menu.Items.Add("Stylish Close", null, (s, e) => CloseApp());
-            menu.Items.Add("Force Close", null, (s, e) => ForceClose());
-            menu.Items.Add("Restart", null, (s, e) => RestartApp());
-            _trayIcon.ContextMenuStrip = menu;
+            NativeMenu menu = new NativeMenu();
+
+            NativeMenuItem closeItem = new NativeMenuItem("Stylish Close");
+            closeItem.Click += (_, __) => CloseApp();
+
+            NativeMenuItem forceCloseItem = new NativeMenuItem("Force Close");
+            forceCloseItem.Click += (_, __) => ForceClose();
+
+            NativeMenuItem reappearItem = new NativeMenuItem("Reappear");
+            reappearItem.Click += (_, __) => RestartApp();
+
+            menu.Items.Add(closeItem);
+            menu.Items.Add(forceCloseItem);
+            menu.Items.Add(reappearItem);
+
+            _trayIcon.Menu = menu;
         }
 
         private void CloseApp()
@@ -497,14 +511,14 @@ public static class ConfigManager
         }
         private void ForceClose()
         {
-            System.Windows.Application.Current.Shutdown();
+            Environment.Exit(1);
         }
         private void RestartApp()
         {
             AnimationStates.PlayOutro();
             string exePath = Process.GetCurrentProcess().MainModule.FileName;
             Process.Start(exePath);
-            System.Windows.Application.Current.Shutdown();
+            Environment.Exit(1);
         }
     }
 
