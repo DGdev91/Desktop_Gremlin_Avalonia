@@ -1,80 +1,33 @@
 
-# Desktop Gremlin 
+# Desktop Gremlin - Avalonia Port
 <img width="925" height="436" alt="image" src="https://github.com/user-attachments/assets/7f3f1631-b2d2-4b8e-adc4-b287dd81d784" />
 <br>
 
-[![Ko-fi](https://img.shields.io/badge/support_me_on_ko--fi-F16061?style=for-the-badge&logo=kofi&logoColor=f5f5f5)](https://ko-fi.com/kritzkingvoid)
-[![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@kritzkingvoid)
+[![Ko-fi](https://img.shields.io/badge/support_me_on_ko--fi-F16061?style=for-the-badge&logo=kofi&logoColor=f5f5f5)](https://ko-fi.com/dgdev91)
 
+Forked from [KurtValesco's Desktop Gremlin](https://github.com/KurtVelasco/Desktop_Gremlin), this version uses Avalonia instead WPF and LibVLC for audio, so it can run also on Linux and Mac
 
-# Updates
-```ruby
-//2.7 Oguri Cap
-//Added more Configurable Options in config.txt
-//Added a new Item Target Function
+A fun little .Net application that displays an animated interactive character on your desktop.
 
-//2.6 Koyuki and GoldShip
-//Added 2 new options in config.txt ALLOW_COLOR_HOTSPOT and SHOW_TASKBAR
-//Can now resize the gremlin using SPRITE_SCALE 
-//Fixed a bug regarding the PCM Wav files crashing
-```
-```c#
-FORCE_FAKE_TRANSPARENT = true //If for some reason it's translucent or opaque. This is a hack will prevent input around the sprite
-```
-```c#
-ALLOW_COLOR_HOTSPOT = true //Makes the Hotspot visible in case you resize the image and want to know where the hotspots are
-```
-<img width="527" height="385" alt="image" src="https://github.com/user-attachments/assets/45434679-7b5b-49c1-9055-a753252e2e86" />
+# Characters
+This project has initially been forked from Desktop Gremlin 2.8 and contains the sprites and sounds for MatikaneTannhäuser (Mambo) from UmaMusume, more characters can be found on [the original projects's page](https://github.com/KurtVelasco/Desktop_Gremlin).
+You should be able to use sprites and sounds from a different character, as long as they follow the same format (old characters will likely not work)
 
-```c#
-SHOW_TASKBAR = true //Show the Icon in the Task bar
-```
 # Linux
-| Ver| Download Link |
-|-----------|---------------|
-| Linux Version | [Download](https://github.com/iluvgirlswithglasses/linux-desktop-gremlin) Thank you [@iluvgirlwithglasses](https://github.com/iluvgirlswithglasses), written in Python|
+This project uses LibVLC to handle sounds. While on Windows and Mac it's already included, on Linux you need to have libVLC-dev installed on your system, if not already installed.
 
-# Links
-
-**Note:** If your browser falsely detects a file, please try using a different browser.
-
----
-| Character | Version | Download Link |
-|-----------|---------|---------------|
-| Haru | v2.0 Outdated | Outdated |
-| Agnes Tachyon | v2.4 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.4/Tachyon_v2.4.zip) |
-| Matikanetannhauser | v2.7.2 Updated | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.7.2/Mambo_v2.8.zip) |
-| Rice Shower | v2.2 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/2.2/Tracen_v2.1_Rice.zip) |
-| GoldShip | v2.5 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.5/GoldShip_v2.5.zip) |
-| Oguri | v2.7 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.7/Oguri_v2.7.zip) |
-
----
-
-## Blue Archive
-
-| Character | Download Link |
-|-----------|---------------|
-| Koyuki | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.6/Koyuki_v2.6.zip) |
-
-
-## 🛠️ Troubleshooting
-
-| Problem | Possible Solution |
-|---------|-----------------|
-| Browser falsely detects download | Try using a different browser or temporarily disable strict security settings. |
-| Gremlin not following my mouse | Try lowering the FOLLOW_RADIUS in config.txt |
-| Gremlin not animatiing while dragging | Performance options in windows. Check "Animate controls and elements inside windows" |
-| Transparency not working | Settings → Personalization → Colors → Transparency Effects → On **OR** Settings → Accessibility → Contrast Themes → None |
-| Gremlin Sprites are off-settings | Redownload the config file text |
-
-## 🛠️ Q & A
-
-| Q | A |
-|---------|-----------------|
-| Is this Umamusume only? | No. I also do Blue Archive and prob Arknights in the future. |
-| Best Girl? | Manhattan Cafe and Calstone Light O |
-| Can you do X characters? | I just add stuff I personally like|
-| Do I take Commissions? | Whats a Commissions? |
+Ubuntu
+```
+sudo apt install libvlc-dev
+```
+Arch
+```
+sudo pacman -S libvlc
+```
+Fedora
+```
+dnf install vlc-libs
+```
 
 
 
