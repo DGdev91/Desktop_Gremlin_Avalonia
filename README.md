@@ -81,6 +81,7 @@ SHOW_TASKBAR = true //Show the Icon in the Task bar
 | Is this Umamusume only? | No. I also do Blue Archive and prob Arknights in the future. |
 | Best Girl? | Manhattan Cafe and Calstone Light O |
 | Can you do X characters? | I just add stuff I personally like|
+| Where do get the Umamusume sheets? | Umaviewer |
 | Do I take Commissions? | Whats a Commissions? |
 
 
