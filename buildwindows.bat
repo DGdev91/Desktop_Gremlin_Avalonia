@@ -1,4 +1,7 @@
 dotnet publish Desktop_Gremlin/Desktop_Gremlin.csproj -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true -o Desktop_Gremlin/bin/Published/Windows
-robocopy Desktop_Gremlin\SpriteSheet Desktop_Gremlin\bin\Published\Windows\ /E
-copy Desktop_Gremlin\ico.ico Desktop_Gremlin\bin\Published\Windows\ /Y
-copy Desktop_Gremlin\config.txt Desktop_Gremlin\bin\Published\Windows\ /Y
+
+rem Use this to release the Linux version on a Windows machine
+rem dotnet publish Desktop_Gremlin/Desktop_Gremlin.csproj -c Release -r linux-x64 --self-contained true /p:PublishSingleFile=true -o Desktop_Gremlin/bin/Published/Linux
+
+rem Use this to release the Windows version on a Windows machine
+rem dotnet publish Desktop_Gremlin/Desktop_Gremlin.csproj -c Release -r osx-x64 --self-contained true /p:PublishSingleFile=true -o Desktop_Gremlin/bin/Published/Mac
