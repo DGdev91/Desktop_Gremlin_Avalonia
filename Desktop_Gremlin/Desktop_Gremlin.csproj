@@ -216,6 +216,9 @@
     <Content Include="SpriteSheet\Gremlins\Doto\config.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="SpriteSheet\Gremlins\Doto\icon.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="SpriteSheet\Gremlins\Doto\Emotes\emote1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

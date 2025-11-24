@@ -470,7 +470,11 @@ public static class ConfigManager
         {
             _trayIcon = new NotifyIcon();
 
-            if (File.Exists("SpriteSheet/System/ico.ico"))
+            if (File.Exists(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet/Gremlins/" + Settings.StartingChar + "/ico.ico")))
+            {
+                _trayIcon.Icon = new Icon(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet/Gremlins/" + Settings.StartingChar + "/ico.ico"));
+            }
+            else if (File.Exists("SpriteSheet/System/ico.ico"))
             {
                 _trayIcon.Icon = new Icon("SpriteSheet/System/ico.ico");
             }
