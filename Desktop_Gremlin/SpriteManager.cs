@@ -8,11 +8,39 @@ namespace Desktop_Gremlin
 {
     public static class SpriteManager
     {
+        public static int PlayAnimation(string sheetName,string actionType , int currentFrame, int frameCount, Image targetImage, bool PlayOnce = false)
+        {
+            Bitmap sheet = SpriteManager.Get(sheetName,actionType);
+
+            if (sheet == null)
+            {
+                return currentFrame;
+            }
+            int x = (currentFrame % Settings.SpriteColumn) * Settings.FrameWidth;
+            int y = (currentFrame / Settings.SpriteColumn) * Settings.FrameHeight;
+
+            if (x + Settings.FrameWidth > sheet.PixelSize.Width || y + Settings.FrameHeight > sheet.PixelSize.Height)
+            {
+                return currentFrame;
+            }
+
+            CroppedBitmap oldImage = targetImage.Source as CroppedBitmap;
+            if (oldImage != null) oldImage.Dispose();
+            targetImage.Source = new CroppedBitmap(sheet, new PixelRect(x, y, Settings.FrameWidth, Settings.FrameHeight));
+            try
+            {
+                return (currentFrame + 1) % frameCount;
+            }
+            catch
+            {
+                Gremlin.ErrorClose("Error Animation: " + sheetName + " action: " + actionType + " has invalid frame count", "Animation Error", true);
+            }
+            return 0;
+
+        }
         public static Bitmap Get(string animationName, string actionType)
         {
             Bitmap sheet = null;
-            animationName = animationName.ToLower();
-
             string fileName = GetFileName(animationName);
             if (fileName == null)
             {
@@ -84,13 +112,17 @@ namespace Desktop_Gremlin
                     return "emote3.png";
                 case "emote4":
                     return "emote4.png";
+                case "sleeping":
+                    return "sleep.png";
                 case "jumpscare":
                     return "jumpScare.png";
+                case "poof":
+                    return "poof.png";
                 default:
                     return null;
             }
         }    
-        private static Bitmap LoadSprite(string filefolder, string fileName, string action, string rootFolder = "Gremlins" )
+        private static Bitmap LoadSprite(string filefolder, string fileName, string action, string rootFolder = "Gremlins")
         {
             string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory,
                 "SpriteSheet", rootFolder, filefolder,action, fileName);
@@ -105,36 +137,6 @@ namespace Desktop_Gremlin
             {
                 return null;
             }
-        }
-        public static int PlayAnimation(string sheetName,string actionType , int currentFrame, int frameCount, Image targetImage, bool PlayOnce = false)
-        {
-            Bitmap sheet = SpriteManager.Get(sheetName,actionType);
-
-            if (sheet == null)
-            {
-                return currentFrame;
-            }
-            int x = (currentFrame % Settings.SpriteColumn) * Settings.FrameWidth;
-            int y = (currentFrame / Settings.SpriteColumn) * Settings.FrameHeight;
-
-            if (x + Settings.FrameWidth > sheet.PixelSize.Width || y + Settings.FrameHeight > sheet.PixelSize.Height)
-            {
-                return currentFrame;
-            }
-
-            CroppedBitmap oldImage = targetImage.Source as CroppedBitmap;
-            if (oldImage != null) oldImage.Dispose();
-            targetImage.Source = new CroppedBitmap(sheet, new PixelRect(x, y, Settings.FrameWidth, Settings.FrameHeight));
-            try
-            {
-                return (currentFrame + 1) % frameCount;
-            }
-            catch
-            {
-                Gremlin.ErrorClose("Error Animation: " + sheetName + " action: " + actionType + " has invalid frame count/ or It's 0", "Animation Error", true);
-            }
-            return 0;
-
         }
     }
 }
