@@ -30,7 +30,7 @@ public static class MediaManager
         }
         Media media = new Media(_libVLC, new Uri(path));
         player.Media = media;
-        player.Volume = (int)Math.Round(Settings.VolumeLevel);   
+        player.Volume = (int)(Settings.VolumeLevel * 100);   
         player.Play();
         LastPlayed[fileName] = DateTime.Now;
     }

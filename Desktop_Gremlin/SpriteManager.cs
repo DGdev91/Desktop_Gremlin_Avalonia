@@ -10,7 +10,7 @@ namespace Desktop_Gremlin
     {
         public static int PlayAnimation(string sheetName,string actionType , int currentFrame, int frameCount, Image targetImage, bool PlayOnce = false)
         {
-            BitmapImage sheet = SpriteManager.Get(sheetName,actionType);
+            Bitmap sheet = SpriteManager.Get(sheetName,actionType);
 
             if (sheet == null)
             {
@@ -33,7 +33,7 @@ namespace Desktop_Gremlin
             }
             catch
             {
-                Gremlin.ErrorClose("Error Animation: " + sheetName + " action: " + actionType + " has invalid frame count/ or It's 0", "Animation Error", true);
+                Gremlin.ErrorClose("Error Animation: " + sheetName + " action: " + actionType + " has invalid frame count", "Animation Error", true);
             }
             return 0;
 
@@ -41,8 +41,6 @@ namespace Desktop_Gremlin
         public static Bitmap Get(string animationName, string actionType)
         {
             Bitmap sheet = null;
-            animationName = animationName.ToLower();
-
             string fileName = GetFileName(animationName);
             if (fileName == null)
             {

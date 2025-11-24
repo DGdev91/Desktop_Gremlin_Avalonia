@@ -5,6 +5,7 @@ using Avalonia.Media.Immutable;
 using Desktop_Gremlin;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 
 public static class ConfigManager
@@ -48,7 +49,7 @@ public static class ConfigManager
                     }
                 case "SPRITE_FRAMERATE":
                     {
-                        if (int.TryParse(value, out int intValue))
+                        if (int.TryParse(value, CultureInfo.InvariantCulture, out int intValue))
                         {
                             Settings.FrameRate = intValue;
                         }
@@ -56,7 +57,7 @@ public static class ConfigManager
                     }
                 case "FOLLOW_RADIUS":
                     {
-                        if (double.TryParse(value, out double intValue))
+                        if (double.TryParse(value, CultureInfo.InvariantCulture, out double intValue))
                         {
                             Settings.FollowRadius = intValue;
                         }
@@ -64,7 +65,7 @@ public static class ConfigManager
                     }
                 case "MAX_INTERVAL":
                     {
-                        if (int.TryParse(value, out int intValue))
+                        if (int.TryParse(value, CultureInfo.InvariantCulture, out int intValue))
                         {
                             Settings.RandomMaxInterval = intValue;
                         }
@@ -72,7 +73,7 @@ public static class ConfigManager
                     break;
                 case "MIN_INTERVAL":
                     {
-                        if (int.TryParse(value, out int intValue))
+                        if (int.TryParse(value, CultureInfo.InvariantCulture, out int intValue))
                         {
                             Settings.RandomMinInterval = intValue;
                         }
@@ -80,7 +81,7 @@ public static class ConfigManager
                     break;
                 case "RANDOM_MOVE_DISTANCE":
                     {
-                        if (int.TryParse(value, out int intValue))
+                        if (int.TryParse(value, CultureInfo.InvariantCulture, out int intValue))
                         {
                             Settings.MoveDistance = intValue;
                         }
@@ -104,7 +105,7 @@ public static class ConfigManager
                     break;
                 case "SLEEP_TIME":
                     {
-                        if (int.TryParse(value, out int Value))
+                        if (int.TryParse(value, CultureInfo.InvariantCulture, out int Value))
                         {
                             Settings.SleepTime = Value;
                         }
@@ -120,7 +121,7 @@ public static class ConfigManager
                     break;
                 case "AMMO":
                     {
-                        if (int.TryParse(value, out int Value))
+                        if (int.TryParse(value, CultureInfo.InvariantCulture, out int Value))
                         {
                             Settings.Ammo = Value;
                         }
@@ -145,7 +146,7 @@ public static class ConfigManager
                     break;
                 case "SPRITE_SCALE":
                     {
-                        if (double.TryParse(value, out double Value))
+                        if (double.TryParse(value, CultureInfo.InvariantCulture, out double Value))
                         {
                             Settings.SpriteSize = Value;
                         }
@@ -169,7 +170,7 @@ public static class ConfigManager
                     break;
                 case "MAX_ACCELERATION":
                     {
-                        if (int.TryParse(value, out int Value))
+                        if (int.TryParse(value, CultureInfo.InvariantCulture, out int Value))
                         {
                             Settings.MaxItemAcceleration = Value;
                         }
@@ -177,7 +178,7 @@ public static class ConfigManager
                     break;
                 case "FOLLOW_ACCELERATION":
                     {
-                        if (double.TryParse(value, out double Value))
+                        if (double.TryParse(value, CultureInfo.InvariantCulture, out double Value))
                         {
                             Settings.ItemAcceleration = Value;
                         }
@@ -185,7 +186,7 @@ public static class ConfigManager
                     break;
                 case "CURRENT_ACCELERATION":
                     {
-                        if (double.TryParse(value, out double Value))
+                        if (double.TryParse(value, CultureInfo.InvariantCulture, out double Value))
                         {
                             Settings.ItemAcceleration = Value;
                         }
@@ -193,7 +194,7 @@ public static class ConfigManager
                     break;
                 case "MAX_EATING_SIZE":
                     {
-                        if (int.TryParse(value, out int Value))
+                        if (int.TryParse(value, CultureInfo.InvariantCulture, out int Value))
                         {
                             Settings.FoodItemGetSize = Value;
                         }
@@ -201,7 +202,7 @@ public static class ConfigManager
                     break;
                 case "ITEM_WIDTH":
                     {
-                        if (int.TryParse(value, out int Value))
+                        if (int.TryParse(value, CultureInfo.InvariantCulture, out int Value))
                         {
                             Settings.ItemWidth = Value;
                         }
@@ -209,7 +210,7 @@ public static class ConfigManager
                     break;
                 case "ITEM_HEIGHT":
                     {
-                        if (int.TryParse(value, out int Value))
+                        if (int.TryParse(value, CultureInfo.InvariantCulture, out int Value))
                         {
                             Settings.ItemHeight = Value;
                         }
@@ -217,7 +218,7 @@ public static class ConfigManager
                     break;
                 case "COMPANIONS_SCALE":
                     {
-                        if (double.TryParse(value, out double Value))
+                        if (double.TryParse(value, CultureInfo.InvariantCulture, out double Value))
                         {
                             Settings.CompanionScale = Value;
                         }
@@ -249,7 +250,7 @@ public static class ConfigManager
                     break;
                 case "VOLUME_LEVEL":
                     {
-                        if (double.TryParse(value, out double Value))
+                        if (double.TryParse(value, CultureInfo.InvariantCulture, out double Value))
                         {
                             Settings.VolumeLevel = Value;
                         }
@@ -290,7 +291,7 @@ public static class ConfigManager
             string key = parts[0].Trim();
             string value = parts[1].Trim();
 
-            if (!int.TryParse(value, out int intValue))
+            if (!int.TryParse(value, CultureInfo.InvariantCulture, out int intValue))
             {
                 continue;
             }
@@ -396,6 +397,7 @@ public static class ConfigManager
         {
             window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
+
         double baseLeftW = LeftHotspot.Width, baseLeftH = LeftHotspot.Height;
         double baseLeftDownW = LeftDownHotspot.Width, baseLeftDownH = LeftDownHotspot.Height;
         double baseRightW = RightHotspot.Width, baseRightH = RightHotspot.Height;
@@ -444,7 +446,6 @@ public static class ConfigManager
         ScaleHotspot(RightHotspot, rightOffsetX, rightOffsetY, scaleX, scaleY, centerX, centerY, baseRightW, baseRightH);
         ScaleHotspot(RightDownHotspot, rightDownOffsetX, rightDownOffsetY, scaleX, scaleY, centerX, centerY, baseRightDownW, baseRightDownH);
         ScaleHotspot(TopHotspot, topOffsetX, topOffsetY, scaleX, scaleY, centerX, centerY, baseTopW, baseTopH);
-        */
     }
 
     private static void ScaleHotspot(Border hotspot, double offsetX, double offsetY, double scaleX,
@@ -470,7 +471,11 @@ public static class ConfigManager
         {
             _trayIcon = new TrayIcon();
 
-            if (File.Exists("SpriteSheet/System/ico.ico"))
+            if (File.Exists(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet/Gremlins/" + Settings.StartingChar + "/ico.ico")))
+            {
+                _trayIcon.Icon = new WindowIcon(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet/Gremlins/" + Settings.StartingChar + "/ico.ico"));
+            }
+            else if (File.Exists("SpriteSheet/System/ico.ico"))
             {
                 _trayIcon.Icon = new WindowIcon("SpriteSheet/System/ico.ico");
             }

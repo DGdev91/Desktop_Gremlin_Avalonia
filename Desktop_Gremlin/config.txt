@@ -29,7 +29,7 @@ FORCE_CENTER= true
 ENABLE_MANUAL_RESIZE = true
 
 //WAV VOLUMNE LEVEL 0.0 to 1.0
-VOLUME_LEVEL = 0.1
+VOLUME_LEVEL = 0.5
 
 //If for some reason the Mainwindow is opaque
 //Side effect: You might not be able to click through around the sprite

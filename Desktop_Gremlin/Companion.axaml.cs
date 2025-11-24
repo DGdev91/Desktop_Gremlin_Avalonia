@@ -14,8 +14,6 @@ namespace Mambo
     /// </summary>
     public partial class Companion : Window
     {
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
-        private static extern bool GetCursorPos(out POINT lpPoint);
         public Window MainGremlin { get; set; }
         public struct POINT
         {

@@ -22,12 +22,18 @@ namespace Mambo
             {
                 return currentFrame;
             }
+            CroppedBitmap oldImage = targetImage.Source as CroppedBitmap;
+            if (oldImage != null) oldImage.Dispose();
             targetImage.Source = new CroppedBitmap(sheet, new PixelRect(x, y, Settings.FrameWidth, Settings.FrameHeight));
-            if (frameCount <= 0)
+            try
             {
-                Gremlin.ErrorClose($"Error Animation: {sheetName} action: {actionType} has invalid frame count", "Animation Error", true);
+                return (currentFrame + 1) % frameCount;
             }
-            return (currentFrame + 1) % frameCount;
+            catch
+            {
+                Gremlin.ErrorClose("Error Animation: " + sheetName + " action: " + actionType + " has invalid frame count", "Animation Error", true);
+            }
+            return 0;
         }
         public static int PlayEffect(string sheetName, string actionType, int currentFrame, int frameCount, Image targetImage, bool PlayOnce = false)
         {
@@ -42,12 +48,18 @@ namespace Mambo
             {
                 return currentFrame;
             }
+            CroppedBitmap oldImage = targetImage.Source as CroppedBitmap;
+            if (oldImage != null) oldImage.Dispose();
             targetImage.Source = new CroppedBitmap(sheet, new PixelRect(x, y, Settings.FrameWidth, Settings.FrameHeight));
-            if (frameCount <= 0)
+            try
             {
-                Gremlin.ErrorClose($"Error Animation: {sheetName} action: {actionType} has invalid frame count", "Animation Error", true);
+                return (currentFrame + 1) % frameCount;
             }
-            return (currentFrame + 1) % frameCount;
+            catch
+            {
+                Gremlin.ErrorClose("Error Animation: " + sheetName + " action: " + actionType + " has invalid frame count", "Animation Error", true);
+            }
+            return 0;
         }
         public static Bitmap Get(string animationName, string actionType)
         {
