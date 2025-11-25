@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Immutable;
 using Desktop_Gremlin;
+using Mambo;
 using System;
 using System.Diagnostics;
 using System.Globalization;
@@ -347,16 +348,23 @@ public static class ConfigManager
             return;
         }
 
-        bool useColors = Settings.AllowColoredHotSpot;
-        bool showTaskBar = Settings.ShowTaskBar;
-        double scale = Settings.SpriteSize;
-
-        ApplySettings(window, Settings.AllowColoredHotSpot, Settings.ShowTaskBar,Settings.SpriteSize,Settings.FakeTransparent,
-            Settings.ManualReize,Settings.ForceCenter,Settings.EnableMinSize
-            );
+        ApplySettings(window, Settings.AllowColoredHotSpot, Settings.SpriteSize);
+        ApplySettingsCommon(window, Settings.ShowTaskBar, Settings.FakeTransparent,
+            Settings.ManualReize, Settings.ForceCenter, Settings.EnableMinSize);
     }
-    private static void ApplySettings(Gremlin window, bool useColors, bool showTaskBar, double scale, 
-        bool useFakeTransparent, bool useManualReize, bool forCenter, bool enableMinResize)
+
+    public static void ApplyXamlSettings(Companion window)
+    {
+        if (window == null)
+        {
+            return;
+        }
+
+        ApplySettingsCommon(window, Settings.ShowTaskBar, Settings.FakeTransparent,
+            Settings.ManualReize, Settings.ForceCenter, Settings.EnableMinSize);
+    }
+
+    private static void ApplySettings(Gremlin window, bool useColors, double scale)
     {
         Border LeftHotspot = window.LeftHotspot;
         Border LeftDownHotspot = window.LeftDownHotspot;
@@ -383,21 +391,6 @@ public static class ConfigManager
             TopHotspot.Background = noColor;
         }
 
-        window.ShowInTaskbar = showTaskBar;
-
-        if (useFakeTransparent)
-        {
-            window.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#01000000"));
-        }
-        if (useManualReize)
-        {
-            window.SizeToContent = SizeToContent.Manual;    
-        }
-        if(forCenter)
-        {
-            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-        }
-
         double baseLeftW = LeftHotspot.Width, baseLeftH = LeftHotspot.Height;
         double baseLeftDownW = LeftDownHotspot.Width, baseLeftDownH = LeftDownHotspot.Height;
         double baseRightW = RightHotspot.Width, baseRightH = RightHotspot.Height;
@@ -414,12 +407,8 @@ public static class ConfigManager
 
         SpriteImage.Width = newWidth;
         SpriteImage.Height = newHeight;
-        if(enableMinResize)
-        {
-            window.MinWidth = window.Width;
-            window.MinHeight = window.Height;
-        }
-       double leftHotspotOffsetX = LeftHotspot.Margin.Left - SpriteImage.Margin.Left;
+       
+        double leftHotspotOffsetX = LeftHotspot.Margin.Left - SpriteImage.Margin.Left;
         double leftHotspotOffsetY = LeftHotspot.Margin.Top - SpriteImage.Margin.Top;
 
         double leftDownOffsetX = LeftDownHotspot.Margin.Left - SpriteImage.Margin.Left;
@@ -446,6 +435,30 @@ public static class ConfigManager
         ScaleHotspot(RightHotspot, rightOffsetX, rightOffsetY, scaleX, scaleY, centerX, centerY, baseRightW, baseRightH);
         ScaleHotspot(RightDownHotspot, rightDownOffsetX, rightDownOffsetY, scaleX, scaleY, centerX, centerY, baseRightDownW, baseRightDownH);
         ScaleHotspot(TopHotspot, topOffsetX, topOffsetY, scaleX, scaleY, centerX, centerY, baseTopW, baseTopH);
+    }
+
+    private static void ApplySettingsCommon(Window window, bool showTaskBar, bool useFakeTransparent,
+        bool useManualReize, bool forCenter, bool enableMinResize)
+    {
+        window.ShowInTaskbar = showTaskBar;
+
+        if (useFakeTransparent)
+        {
+            window.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#01000000"));
+        }
+        if (useManualReize)
+        {
+            window.SizeToContent = SizeToContent.Manual;    
+        }
+        if(forCenter)
+        {
+            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        }
+        if(enableMinResize)
+        {
+            window.MinWidth = window.Width;
+            window.MinHeight = window.Height;
+        }
     }
 
     private static void ScaleHotspot(Border hotspot, double offsetX, double offsetY, double scaleX,

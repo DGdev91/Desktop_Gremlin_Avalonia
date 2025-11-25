@@ -31,6 +31,7 @@ namespace Mambo
         public Companion()
         {
             InitializeComponent();
+            ConfigManager.ApplyXamlSettings(this);
             SpriteImage.Source = new CroppedBitmap();
             FrameCounts = ConfigManager.LoadConfigChar(Settings.CompanionChar);
             GremlinState.LockState();
@@ -42,25 +43,6 @@ namespace Mambo
             IntroEffect.Width = IntroEffect.Width * Settings.CompanionScale;
             IntroEffect.Height = IntroEffect.Height * Settings.CompanionScale;
             MediaManager.PlaySound("intro.wav", Settings.CompanionChar);
-
-            if (Settings.FakeTransparent)
-            {
-                this.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#01000000"));
-            }
-            if (Settings.ManualReize)
-            {
-                this.SizeToContent = SizeToContent.Manual;
-            }
-            if (Settings.ForceCenter)
-            {
-                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            }
-            if (Settings.EnableMinSize)
-            {
-                this.MinWidth = this.Width;
-                this.MinHeight = this
-                    .Height;
-            }
         }
         private int PlayAnimationIfActive(string stateName, string folder, int currentFrame, int frameCount, bool resetOnEnd)
         {
