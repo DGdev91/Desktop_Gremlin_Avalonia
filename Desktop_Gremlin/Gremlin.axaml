@@ -11,13 +11,16 @@
         SystemDecorations="None"
         Background="Transparent"
         Topmost="True"
-        ShowInTaskbar="True">
-    <Grid  PointerPressed="SpriteImage_RightClick" PointerMoved="Grid_PointerMoved">
+        ShowInTaskbar="True"
+        SizeChanged="OnSizeChanged"
+        PointerMoved="OnPointerMoved">
+    <Grid PointerPressed="SpriteImage_RightClick">
         <Image Name="SpriteImage"
            Width="300" Height="300"
-           HorizontalAlignment="Left"
-           VerticalAlignment="Top"        
-           PointerPressed="Canvas_MouseLeftButtonDown" 
+           HorizontalAlignment="Center"
+           VerticalAlignment="Center"        
+           PointerPressed="Canvas_MouseLeftButtonDown"
+           PointerReleased="Canvas_MouseLeftButtonUp"
            PointerEntered="SpriteImage_MouseEnter"
            PointerExited="SpriteImage_MouseLeave">
         </Image>

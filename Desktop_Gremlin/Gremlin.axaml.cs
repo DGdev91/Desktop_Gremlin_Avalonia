@@ -16,7 +16,8 @@ namespace Desktop_Gremlin
         //In the future I'm planning to seperate major code snippets into diffrent class files//
         //Instead of barfing evrything in 1 file//
         //Thanks and have a Mamboful day//
-        private Point _pointerPosition;
+        private Size? _followCursor_oldWindowSize;
+        private Point? _pointerPosition;
         private DateTime _nextRandomActionTime = DateTime.Now.AddSeconds(1);
 
         private Random _rng = new Random();
@@ -49,7 +50,6 @@ namespace Desktop_Gremlin
             FrameCounts = ConfigManager.LoadConfigChar(Settings.StartingChar);
             GremlinState.LockState();
             _config = new AppConfig(this, GremlinState);
-
             MediaManager.PlaySound("intro.wav",Settings.StartingChar);
         }
         public void InitializeTimers()
@@ -174,25 +174,25 @@ namespace Desktop_Gremlin
                 CurrentFrames.Click = PlayAnimationIfActive("Click", "Actions", CurrentFrames.Click, FrameCounts.Click, true);  
                 if (MouseSettings.FollowCursor && GremlinState.GetState("Walking"))
                 {
-                    var cursorScreen = new Point(_pointerPosition.X, _pointerPosition.Y);
-
-                    double halfW = SpriteImage.Bounds.Width > 0 ? SpriteImage.Bounds.Width / 2.0 : Settings.FrameWidth / 2.0;
-                    double halfH = SpriteImage.Bounds.Height > 0 ? SpriteImage.Bounds.Height / 2.0 : Settings.FrameHeight / 2.0;
-                    //var spriteCenterScreen = SpriteImage.PointToScreen(new Point(halfW, halfH));
-                    var spriteCenterScreen = new Point(this.Position.X + halfW, this.Position.Y + halfH);
-
-                    /*
-                    var source = PresentationSource.FromVisual(this);
-                    System.Windows.Media.Matrix transformFromDevice = System.Windows.Media.Matrix.Identity;
-
-                    if (source?.CompositionTarget != null)
+                    //In some scenarios (ex. Linux Wayland) it's not possible to get global cursor position, so i'm enlarging the main window when the follow mouse feature is active
+                    if (_followCursor_oldWindowSize is null)
                     {
-                        transformFromDevice = source.CompositionTarget.TransformFromDevice;
+                        _followCursor_oldWindowSize = this.ClientSize;
+                        PixelRect combined = Screens.All[0].Bounds;
+                        for (int i = 1; i < Screens.All.Count; i++)
+                            combined = combined.Union(Screens.All[i].Bounds);
+
+                        Width = combined.Width * 2;
+                        Height = combined.Height * 2;
                     }
 
-                    var spriteCenterWpf = transformFromDevice.Transform(spriteCenterScreen);
-                    var cursorWpf = transformFromDevice.Transform(cursorScreen);
-                    */
+                    var cursorScreen = this.PointToScreen(_pointerPosition.Value);
+
+                    var spriteBounds = SpriteImage.Bounds;
+                    var spriteCenterScreen = new Point(
+                        this.Position.X + spriteBounds.X + spriteBounds.Width / 2.0,
+                        this.Position.Y + spriteBounds.Y + spriteBounds.Height / 2.0
+                    );
 
                     double dx = cursorScreen.X - spriteCenterScreen.X;
                     double dy = cursorScreen.Y - spriteCenterScreen.Y;
@@ -251,6 +251,13 @@ namespace Desktop_Gremlin
                     }
 
                 }
+                else if (_followCursor_oldWindowSize is not null)
+                {
+                    this.Width = _followCursor_oldWindowSize.Value.Width;
+                    this.Height = _followCursor_oldWindowSize.Value.Height;
+                    _followCursor_oldWindowSize = null;
+                }
+
                 bool isIdleNow = GremlinState.IsCompletelyIdle();
                 if (Settings.AllowRandomness)
                 {
@@ -388,6 +395,12 @@ namespace Desktop_Gremlin
                 GremlinState.SetState("Grab");
                 MediaManager.PlaySound("grab.wav", Settings.StartingChar);
                 BeginMoveDrag(e);
+            }
+        }
+        protected void Canvas_MouseLeftButtonUp(object sender, PointerReleasedEventArgs e)
+        {
+            if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed && GremlinState.GetState("Grab"))
+            {
                 GremlinState.SetState("Idle");
                 MouseSettings.FollowCursor = !MouseSettings.FollowCursor;
                 if (MouseSettings.FollowCursor)
@@ -479,10 +492,26 @@ namespace Desktop_Gremlin
             }
         }
 
-        private void Grid_PointerMoved(object sender, PointerEventArgs e)
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            //Automatically center to pointer position when resizing windows, useful for mouse follow feature
+            if (_pointerPosition.HasValue)
+            {
+                var cursorScreen = this.PointToScreen(_pointerPosition.Value);
+
+                var newPos = new PixelPoint(
+                    (int)Math.Round(cursorScreen.X - this.Bounds.Width / 2.0),
+                    (int)Math.Round(cursorScreen.Y - this.Bounds.Height / 2.0)
+                );
+
+                Position = newPos;
+            }
+        }
+
+        private void OnPointerMoved(object sender, PointerEventArgs e)
         {
             _pointerPosition = e.GetPosition(this);
-        }     
+        }
     }
 }
 
