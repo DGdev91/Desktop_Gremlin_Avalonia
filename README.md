@@ -9,12 +9,21 @@
 ```rust
 //Important Note: IF YOUR MACHINE-LOCALE IS NOT IN ENGLISH, THEN THE CONFIG FILE MIGHT BREAK, AND CAUSE THE SPRITE TO BE BIG
 Will be fix in the future
+
+
+```
+```ruby
+//2.9.1 For Exusia- Exusiai? Exu (Will bring the changes to the umas in the future)
+//Added a more configuration options
+//Added to catch different cultures affecting the config files hopefully*
+//Added Keyboard control *no keybinds yet
 ```
 ```ruby
 //2.7 Oguri Cap
 //Added more Configurable Options in config.txt
 //Added a new Item Target Function
-
+```
+```ruby
 //2.6 Koyuki and GoldShip
 //Added 2 new options in config.txt ALLOW_COLOR_HOTSPOT and SHOW_TASKBAR
 //Can now resize the gremlin using SPRITE_SCALE 
