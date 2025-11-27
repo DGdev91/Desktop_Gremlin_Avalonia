@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{AB45768A-DDAF-4E83-AE0D-62B62D6C3029}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Doto</RootNamespace>
-    <AssemblyName>Doto</AssemblyName>
+    <RootNamespace>Exusiai</RootNamespace>
+    <AssemblyName>Exusiai</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -73,9 +73,10 @@
       <DependentUpon>Companion.xaml</DependentUpon>
     </Compile>
     <Compile Include="ConfigManager.cs" />
-    <Compile Include="FullScreen.xaml.cs">
+    <Compile Include="Containers\FullScreen.xaml.cs">
       <DependentUpon>FullScreen.xaml</DependentUpon>
     </Compile>
+    <Compile Include="KeyboardController.cs" />
     <Compile Include="MediaManager.cs" />
     <Compile Include="SpriteManager.cs" />
     <Compile Include="Gremlin.xaml.cs">
@@ -87,14 +88,17 @@
     </Compile>
     <Compile Include="SpriteManagerComp.cs" />
     <Compile Include="SpriteVariables.cs" />
-    <Compile Include="Target.xaml.cs">
+    <Compile Include="Summon.xaml.cs">
+      <DependentUpon>Summon.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Containers\Target.xaml.cs">
       <DependentUpon>Target.xaml</DependentUpon>
     </Compile>
     <Page Include="Companion.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="FullScreen.xaml">
+    <Page Include="Containers\FullScreen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -102,7 +106,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Target.xaml">
+    <Page Include="Summon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Containers\Target.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -136,178 +144,104 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="obj\" />
+    <Folder Include="SpriteSheet\Gremlins\Exu2\Run\" />
+    <Folder Include="SpriteSheet\Gremlins\Exu2\Walk\" />
+    <Folder Include="SpriteSheet\Gremlins\Exu\Emotes\" />
+    <Folder Include="SpriteSheet\Misc\" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="KeyboardConfig.txt" />
     <Content Include="readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sounds\Doto\emote1.wav">
+    <Content Include="Sounds\Exu2\intro.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sounds\Doto\outro.wav">
+    <Content Include="Sounds\Exu2\mambo.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sounds\Doto\emote2.wav">
+    <Content Include="Sounds\Exu2\emote3.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sounds\Doto\emote3.wav">
+    <Content Include="Sounds\Lemon\intro.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sounds\Doto\emote4.wav">
+    <Content Include="Sounds\Exu\grab.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sounds\Doto\grab.wav">
+    <Content Include="SpriteSheet\Gremlins\Exu2\Actions\grab.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sounds\Doto\hover.wav">
+    <Content Include="SpriteSheet\Gremlins\Exu\Walk\walkRight.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sounds\Doto\intro.wav">
+    <Content Include="SpriteSheet\Gremlins\Exu\Actions\intro.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sounds\Doto\mambo.wav">
+    <Content Include="SpriteSheet\Gremlins\Exu\Actions\outro.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sounds\Doto\run.wav">
+    <Content Include="SpriteSheet\Gremlins\Lemon\Actions\intro.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sounds\Doto\sleep.wav">
+    <Content Include="SpriteSheet\Gremlins\Lemon\config.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sounds\Doto\wake.wav">
+    <Content Include="SpriteSheet\Gremlins\Exu\Actions\hover.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sounds\Opera\intro.wav">
+    <Content Include="Sounds\Exu2\emote1.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Sounds\Opera\grab.wav">
+    <Content Include="Sounds\Exu2\outro.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Actions\click.png">
+    <Content Include="Sounds\Exu\hover.wav" />
+    <Content Include="Sounds\Exu\mambo.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Actions\grab.png">
+    <Content Include="Sounds\Exu\intro.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Actions\hover.png">
+    <Content Include="SpriteSheet\Gremlins\Exu2\Actions\click.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Actions\idle.png">
+    <Content Include="SpriteSheet\Gremlins\Exu2\Actions\idle.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Actions\intro.png">
+    <Content Include="SpriteSheet\Gremlins\Exu2\config.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Actions\outro.png">
+    <Content Include="SpriteSheet\Gremlins\Exu2\Emotes\emote3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Actions\pat.png">
+    <Content Include="SpriteSheet\Gremlins\Exu2\Actions\intro.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Actions\runIdle.png">
+    <Content Include="SpriteSheet\Gremlins\Exu2\Actions\outro.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Actions\sleep.png">
+    <Content Include="SpriteSheet\Gremlins\Exu\Actions\idle.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Actions\tpose.png">
+    <Content Include="SpriteSheet\Gremlins\Exu\Run\runRight.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\config.txt">
+    <Content Include="SpriteSheet\Gremlins\Exu\Actions\click.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Emotes\emote1.png">
+    <Content Include="SpriteSheet\Gremlins\Exu\Actions\grab.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Emotes\emote2.png">
+    <Content Include="SpriteSheet\Gremlins\Exu\Actions\sleep.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Emotes\emote3.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Emotes\emote4.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Run\downLeft.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Run\downRight.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Run\runDown.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Run\runLeft.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Run\runRight.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Run\runUp.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Run\upLeft.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Run\upRight.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Walk\walkDown.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Walk\walkLeft.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Walk\walkRight.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Doto\Walk\walkUp.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Opera\Actions\grab.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Opera\Actions\idle.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Opera\Actions\intro.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Opera\config.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Opera\Effects\poof.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Opera\Run\downLeft.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Opera\Run\downRight.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Opera\Run\runDown.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Opera\Run\runLeft.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Opera\Run\runRight.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Opera\Run\runUp.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Opera\Run\upLeft.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SpriteSheet\Gremlins\Opera\Run\upRight.png">
+    <Content Include="SpriteSheet\Gremlins\Exu\config.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SpriteSheet\System\ico.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Resource Include="SpriteSheet\Misc\food1.png" />
-    <Resource Include="SpriteSheet\Misc\food2.png" />
     <Resource Include="Class1.txt" />
     <Content Include="config.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

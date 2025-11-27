@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Doto.Properties {
+namespace Exusiai.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
