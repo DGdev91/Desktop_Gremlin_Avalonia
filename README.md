@@ -67,6 +67,11 @@ SHOW_TASKBAR = true //Show the Icon in the Task bar
 |-----------|---------------|
 | Koyuki | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.6/Koyuki_v2.6.zip) |
 
+## Arknights
+| Character | Download Link |
+|-----------|---------------|
+| Exusiai | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.9.9/Exusiai_v2.9.zip) |
+
 
 ## 🛠️ Troubleshooting
 
