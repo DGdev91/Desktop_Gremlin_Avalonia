@@ -6,10 +6,6 @@
 [![Ko-fi](https://img.shields.io/badge/support_me_on_ko--fi-F16061?style=for-the-badge&logo=kofi&logoColor=f5f5f5)](https://ko-fi.com/kritzkingvoid)
 [![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@kritzkingvoid)
 
-```rust
-//Important Note: IF YOUR MACHINE-LOCALE IS NOT IN ENGLISH, THEN THE CONFIG FILE MIGHT BREAK, AND CAUSE THE SPRITE TO BE BIG
-Will be fix in the future
-
 
 ```
 ```ruby
@@ -49,17 +45,9 @@ SHOW_TASKBAR = true //Show the Icon in the Task bar
 
 **Note:** If your browser falsely detects a file, please try using a different browser.
 
----
-| Character | Version | Download Link |
-|-----------|---------|---------------|
-| Doto | v2.9 |[Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.9/MeishoDoto_v2.9.zip) |
-| Agnes Tachyon | v2.4 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.4/Tachyon_v2.4.zip) |
-| Matikanetannhauser | v2.7.2 Updated | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.7.2/Mambo_v2.8.zip) |
-| Rice Shower | v2.2 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/2.2/Tracen_v2.1_Rice.zip) |
-| GoldShip | v2.5 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.5/GoldShip_v2.5.zip) |
-| Oguri | v2.7 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.7/Oguri_v2.7.zip) |
+**//Important Note: IF YOUR MACHINE-LOCALE IS NOT IN ENGLISH, THEN THE CONFIG FILE MIGHT BREAK, AND CAUSE THE SPRITE TO BE BIG
+Will be fix in the future**
 
----
 
 ## Blue Archive
 
