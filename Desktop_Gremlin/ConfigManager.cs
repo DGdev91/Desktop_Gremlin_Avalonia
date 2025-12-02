@@ -2,6 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Immutable;
+using Avalonia.Platform;
 using Desktop_Gremlin;
 using Mambo;
 using System;
@@ -11,6 +12,8 @@ using System.IO;
 
 public static class ConfigManager
 {
+    //TODO: Refactor this entire config manager to be more modular and easier to maintain.
+    //No more giant switch statements.  
     public static void LoadMasterConfig()
     {
         string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.txt");
@@ -38,6 +41,14 @@ public static class ConfigManager
 
             switch (key.ToUpper())
             {
+                case "LANGUAGE_DIFF":
+                    {
+                        if (bool.TryParse(value, out bool Value))
+                        {
+                            Settings.LanguageDiff = Value;
+                        }
+                    }
+                    break;
                 case "START_CHAR":
                     {
                         Settings.StartingChar = value;
@@ -93,14 +104,6 @@ public static class ConfigManager
                         if (bool.TryParse(value, out bool Value))
                         {
                             Settings.AllowRandomness = Value;
-                        }
-                    }
-                    break;
-                case "ALLOW_GRAVITY":
-                    {
-                        if (bool.TryParse(value, out bool Value))
-                        {
-                            Settings.AllowGravity = Value;
                         }
                     }
                     break;
@@ -181,7 +184,7 @@ public static class ConfigManager
                     {
                         if (double.TryParse(value, CultureInfo.InvariantCulture, out double Value))
                         {
-                            Settings.ItemAcceleration = Value;
+                            Settings.CurrentItemAcceleration = Value;
                         }
                     }
                     break;
@@ -257,11 +260,62 @@ public static class ConfigManager
                         }
                     }
                     break;
+                case "DISABLE_HOTSPOTS":
+                    {
+                        if (bool.TryParse(value, out bool Value))
+                        {
+                            Settings.DisableHotspots = Value;
+                        }
+                    }
+                    break;
+                case "START_BOTTOM":
+                    {
+                        if (bool.TryParse(value, out bool Value))
+                        {
+                            Settings.ForceBottomSpawn = Value;
+                        }
+                    }
+                    break;
+                case "ENABLE_GRAVITY":
+                    {
+                        if (bool.TryParse(value, out bool Value))
+                        {
+                            Settings.EnableGravity = Value;
+                        }
+                    }
+                    break;
+                case "GRAVITY_STRENGTH":
+                    {
+                        if (TryParseDoubleInvariant(value, out double Value))
+                        {
+                            Settings.SvGravity = Value;
+                        }
+                    }
+                    break;
+                case "SPRITE_SPEED":
+                    {
+                        if (TryParseDoubleInvariant(value, out double Value))
+                        {
+                            MouseSettings.Speed = Value;
+                        }
+                    }
+                    break;
             }
 
         }
     }
-    
+    public static bool TryParseDoubleInvariant(string inputString, out double result)
+    {
+        if (Settings.LanguageDiff)
+        {
+            return double.TryParse(inputString, NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+        }
+        else
+        {
+            return double.TryParse(inputString, out result);
+        }
+    }
+
     public static FrameCounts LoadConfigChar(string character)
     {
         var result = new FrameCounts();
@@ -341,142 +395,124 @@ public static class ConfigManager
     }
 
 
-    public static void ApplyXamlSettings(Gremlin window)
+
+    public static void ApplyXamlSettings(Window window)
     {
-        if (window == null)
+        if (window == null) return;
+        Border LeftHotspot = window.FindControl<Border>("LeftHotspot");
+        Border LeftDownHotspot = window.FindControl<Border>("LeftDownHotspot");
+        Border RightHotspot = window.FindControl<Border>("RightHotspot");
+        Border RightDownHotspot = window.FindControl<Border>("RightDownHotspot");
+        Border TopHotspot = window.FindControl<Border>("TopHotspot");
+        Image SpriteImage = window.FindControl<Image>("SpriteImage");
+        if (LeftHotspot != null)
+        {
+            if (Settings.AllowColoredHotSpot && !Settings.DisableHotspots)
+            {
+                LeftHotspot.Background = new SolidColorBrush(Colors.Red);
+                LeftDownHotspot.Background = new SolidColorBrush(Colors.Yellow);
+                RightHotspot.Background = new SolidColorBrush(Colors.Blue);
+                RightDownHotspot.Background = new SolidColorBrush(Colors.Orange);
+                TopHotspot.Background = new SolidColorBrush(Colors.Purple);
+            }
+            else
+            {
+                var noColor = (ImmutableSolidColorBrush)new BrushConverter().ConvertFrom("#01000000");
+                LeftHotspot.Background = noColor;
+                LeftDownHotspot.Background = noColor;
+                RightHotspot.Background = noColor;
+                RightDownHotspot.Background = noColor;
+                TopHotspot.Background = noColor;
+            }
+
+            if (Settings.DisableHotspots)
+            {
+                LeftHotspot.IsEnabled = false;
+                LeftDownHotspot.IsEnabled = false;
+                RightDownHotspot.IsEnabled = false; 
+                RightHotspot.IsEnabled = false;
+                TopHotspot.IsEnabled = false;   
+            }
+        }
+        window.ShowInTaskbar = Settings.ShowTaskBar;
+        if (Settings.FakeTransparent)
+        {
+            window.Background = (SolidColorBrush)new BrushConverter().ConvertFrom("#01000000");
+        }
+            
+        if (Settings.ManualReize)
+        {
+            window.SizeToContent = SizeToContent.Manual;
+        }
+           
+        if (Settings.ForceCenter)
+        {
+            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        }           
+        if (SpriteImage == null)
         {
             return;
         }
-
-        ApplySettings(window, Settings.AllowColoredHotSpot, Settings.SpriteSize);
-        ApplySettingsCommon(window, Settings.ShowTaskBar, Settings.FakeTransparent,
-            Settings.ManualReize, Settings.ForceCenter, Settings.EnableMinSize);
-    }
-
-    public static void ApplyXamlSettings(Companion window)
-    {
-        if (window == null)
-        {
-            return;
-        }
-
-        ApplySettingsCommon(window, Settings.ShowTaskBar, Settings.FakeTransparent,
-            Settings.ManualReize, Settings.ForceCenter, Settings.EnableMinSize);
-    }
-
-    private static void ApplySettings(Gremlin window, bool useColors, double scale)
-    {
-        Border LeftHotspot = window.LeftHotspot;
-        Border LeftDownHotspot = window.LeftDownHotspot;
-        Border RightHotspot = window.RightHotspot;
-        Border RightDownHotspot = window.RightDownHotspot;
-        Border TopHotspot = window.TopHotspot;
-        Image SpriteImage = window.SpriteImage;
-
-        if (useColors)
-        {
-            LeftHotspot.Background = new SolidColorBrush(Colors.Red);
-            LeftDownHotspot.Background = new SolidColorBrush(Colors.Yellow);
-            RightHotspot.Background = new SolidColorBrush(Colors.Blue);
-            RightDownHotspot.Background = new SolidColorBrush(Colors.Orange);
-            TopHotspot.Background = new SolidColorBrush(Colors.Purple);
-        }
-        else
-        {
-            var noColor = (ImmutableSolidColorBrush)(new BrushConverter().ConvertFrom("#01000000"));
-            LeftHotspot.Background = noColor;
-            LeftDownHotspot.Background = noColor;
-            RightHotspot.Background = noColor;
-            RightDownHotspot.Background = noColor;
-            TopHotspot.Background = noColor;
-        }
-
-        double baseLeftW = LeftHotspot.Width, baseLeftH = LeftHotspot.Height;
-        double baseLeftDownW = LeftDownHotspot.Width, baseLeftDownH = LeftDownHotspot.Height;
-        double baseRightW = RightHotspot.Width, baseRightH = RightHotspot.Height;
-        double baseRightDownW = RightDownHotspot.Width, baseRightDownH = RightDownHotspot.Height;
-        double baseTopW = TopHotspot.Width, baseTopH = TopHotspot.Height;
-
+  
         double originalWidth = SpriteImage.Width;
         double originalHeight = SpriteImage.Height;
+        double newWidth = originalWidth * Settings.SpriteSize;
+        double newHeight = originalHeight * Settings.SpriteSize;
 
-        double newWidth = originalWidth * scale;
-        double newHeight = originalHeight * scale;
-        window.Width = window.Height * scale;
-        window.Height = window.Height * scale;  
+        window.Width *= Settings.SpriteSize;
+        window.Height *= Settings.SpriteSize;
 
         SpriteImage.Width = newWidth;
         SpriteImage.Height = newHeight;
-       
-        double leftHotspotOffsetX = LeftHotspot.Margin.Left - SpriteImage.Margin.Left;
-        double leftHotspotOffsetY = LeftHotspot.Margin.Top - SpriteImage.Margin.Top;
 
-        double leftDownOffsetX = LeftDownHotspot.Margin.Left - SpriteImage.Margin.Left;
-        double leftDownOffsetY = LeftDownHotspot.Margin.Top - SpriteImage.Margin.Top;
-
-        double rightOffsetX = RightHotspot.Margin.Left - SpriteImage.Margin.Left;
-        double rightOffsetY = RightHotspot.Margin.Top - SpriteImage.Margin.Top;
-
-        double rightDownOffsetX = RightDownHotspot.Margin.Left - SpriteImage.Margin.Left;
-        double rightDownOffsetY = RightDownHotspot.Margin.Top - SpriteImage.Margin.Top;
-
-        double topOffsetX = TopHotspot.Margin.Left - SpriteImage.Margin.Left;
-        double topOffsetY = TopHotspot.Margin.Top - SpriteImage.Margin.Top;
-
-        double centerX = (window.Width - newWidth) / 2;
-        double centerY = (window.Height - newHeight) / 2;
-
-        SpriteImage.Margin = new Thickness(centerX, centerY, 0, 0);
-
-        double scaleX = newWidth / originalWidth;
-        double scaleY = newHeight / originalHeight;
-        ScaleHotspot(LeftHotspot, leftHotspotOffsetX, leftHotspotOffsetY, scaleX, scaleY, centerX, centerY, baseLeftW, baseLeftH);
-        ScaleHotspot(LeftDownHotspot, leftDownOffsetX, leftDownOffsetY, scaleX, scaleY, centerX, centerY, baseLeftDownW, baseLeftDownH);
-        ScaleHotspot(RightHotspot, rightOffsetX, rightOffsetY, scaleX, scaleY, centerX, centerY, baseRightW, baseRightH);
-        ScaleHotspot(RightDownHotspot, rightDownOffsetX, rightDownOffsetY, scaleX, scaleY, centerX, centerY, baseRightDownW, baseRightDownH);
-        ScaleHotspot(TopHotspot, topOffsetX, topOffsetY, scaleX, scaleY, centerX, centerY, baseTopW, baseTopH);
-    }
-
-    private static void ApplySettingsCommon(Window window, bool showTaskBar, bool useFakeTransparent,
-        bool useManualReize, bool forCenter, bool enableMinResize)
-    {
-        window.ShowInTaskbar = showTaskBar;
-
-        if (useFakeTransparent)
-        {
-            window.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#01000000"));
-        }
-        if (useManualReize)
-        {
-            window.SizeToContent = SizeToContent.Manual;    
-        }
-        if(forCenter)
-        {
-            window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-        }
-        if(enableMinResize)
+        if (Settings.EnableMinSize)
         {
             window.MinWidth = window.Width;
             window.MinHeight = window.Height;
         }
+
+        // Center the sprite
+        double centerX = (window.Width - newWidth) / 2;
+        double centerY = (window.Height - newHeight) / 2;
+        SpriteImage.Margin = new Thickness(centerX, centerY, 0, 0);
+
+        // Scale hotspots if they exist
+        ScaleHotspotSafe(LeftHotspot, SpriteImage, centerX, centerY, newWidth / originalWidth, newHeight / originalHeight);
+        ScaleHotspotSafe(LeftDownHotspot, SpriteImage, centerX, centerY, newWidth / originalWidth, newHeight / originalHeight);
+        ScaleHotspotSafe(RightHotspot, SpriteImage, centerX, centerY, newWidth / originalWidth, newHeight / originalHeight);
+        ScaleHotspotSafe(RightDownHotspot, SpriteImage, centerX, centerY, newWidth / originalWidth, newHeight / originalHeight);
+        ScaleHotspotSafe(TopHotspot, SpriteImage, centerX, centerY, newWidth / originalWidth, newHeight / originalHeight);
+        if (Settings.ForceBottomSpawn)
+        {
+            Screen screen = window.Screens.ScreenFromVisual(window) ?? window.Screens.Primary;
+            window.Position = new PixelPoint(
+                (int)((screen.WorkingArea.Width - window.Width) / 2),
+                (int)(screen.WorkingArea.Height - window.Height)
+            );
+        }
     }
 
-    private static void ScaleHotspot(Border hotspot, double offsetX, double offsetY, double scaleX,
-    double scaleY, double centerX, double centerY, double baseWidth, double baseHeight)
+    private static void ScaleHotspotSafe(Border hotspot, Image sprite, double centerX, double centerY, double scaleX, double scaleY)
     {
-        hotspot.Width = baseWidth * scaleX;
-        hotspot.Height = baseHeight * scaleY;
+        if (hotspot == null || sprite == null) return;
+
+        double offsetX = hotspot.Margin.Left - sprite.Margin.Left;
+        double offsetY = hotspot.Margin.Top - sprite.Margin.Top;
+
+        hotspot.Width *= scaleX;
+        hotspot.Height *= scaleY;
         hotspot.Margin = new Thickness(centerX + offsetX * scaleX, centerY + offsetY * scaleY, 0, 0);
-        
     }
+
     public class AppConfig
     {
-        private readonly Window _window;
+        private Gremlin _gremlin; 
         private TrayIcon _trayIcon;
         public AnimationStates _states;    
-        public AppConfig(Window window, AnimationStates states)
+        public AppConfig(Gremlin gremlin, AnimationStates states)
         {
-            _window = window;
+
+            _gremlin = gremlin;
             _states = states;
             SetupTrayIcon();
         }   
@@ -512,12 +548,34 @@ public static class ConfigManager
             NativeMenuItem forceCloseItem = new NativeMenuItem("Force Close");
             forceCloseItem.Click += (_, __) => ForceClose();
 
-            NativeMenuItem reappearItem = new NativeMenuItem("Reappear");
-            reappearItem.Click += (_, __) => RestartApp();
+            NativeMenuItem restartItem = new NativeMenuItem("Restart");
+            restartItem.Click += (_, __) => RestartApp();
+
+            NativeMenuItemSeparator separator = new NativeMenuItemSeparator();
+
+            var disableHotspotsItem = new NativeMenuItem("Disable Hotspots");
+            disableHotspotsItem.ToggleType = NativeMenuItemToggleType.CheckBox;
+            disableHotspotsItem.Click += (s, e) =>
+            {
+                disableHotspotsItem.IsChecked = !disableHotspotsItem.IsChecked;
+                _gremlin.HotSpot();
+            };
+
+            var showHotspotsItem = new NativeMenuItem("Show Hotspots");
+            disableHotspotsItem.ToggleType = NativeMenuItemToggleType.CheckBox;
+            showHotspotsItem.Click += (s, e) =>
+            {
+                showHotspotsItem.IsChecked = !showHotspotsItem.IsChecked;
+                _gremlin.ShowHotSpot();
+            };
+
 
             menu.Items.Add(closeItem);
             menu.Items.Add(forceCloseItem);
-            menu.Items.Add(reappearItem);
+            menu.Items.Add(restartItem);
+            menu.Items.Add(separator);
+            menu.Items.Add(disableHotspotsItem);
+            menu.Items.Add(showHotspotsItem);
 
             _trayIcon.Menu = menu;
         }
@@ -537,6 +595,8 @@ public static class ConfigManager
             Process.Start(exePath);
             Environment.Exit(1);
         }
+
+      
     }
 
 }

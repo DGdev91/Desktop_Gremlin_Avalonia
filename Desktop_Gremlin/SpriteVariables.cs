@@ -31,7 +31,6 @@
     public int Emote3 { get; set; } = 0;
     public int Emote4 { get; set; } = 0;
     public int JumpScare { get; set; } = 0;
-
     public int Poof { get; set; } = 0;
 }
 
@@ -106,16 +105,22 @@ public static class Settings
     public static bool ManualReize { get; set; } = false;
     public static bool ForceCenter { get; set; } = false;
     public static bool EnableMinSize { get; set; } = false;
-    public static double VolumeLevel { get; set; } = 1.0;   
+    public static double VolumeLevel { get; set; } = 1.0;
+    public static bool ForceBottomSpawn { get; set; } = true;
+    public static bool DisableHotspots { get; set; } = true;
+    public static bool EnableGravity { get; set; } = false;
+    public static double SvGravity { get; set; } = 10.0;
+    public static bool LanguageDiff { get; set; } = true;  
+
 }
 public static class MouseSettings   
 {
     public static bool FollowCursor { get; set; } = false;
     public static System.Drawing.Point LastMousePosition { get; set; }
-    public static double FollowSpeed { get; set; } = 5.0;
+    public static double FollowSpeed { get; set; } = 2.0;
     public static double MouseX { get; set; }
     public static double MouseY { get; set; }
-    public static double Speed { get; set; } = 10.0;
+    public static double Speed { get; set; } = 3.0;
 }
 
 

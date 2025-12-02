@@ -4,7 +4,26 @@ Repo: https://github.com/KurtVelasco/Desktop_Gremlin
 Built using WPF C#
 Compatible with Windows 10/11  7* With some Aero Settings
 
-This is for the v2.9
+//@"KEYBOARD CONTROLS:
+
+                MOVEMENT (Disabled in Combat Mode):
+                    WASD / Arrow Keys - Move character
+                    E - Toggle cursor following
+                    R - Random movement
+                    ESC - Stop all movement
+
+                ACTIONS:
+                    SPACE - Click animation
+                    T - Toggle sleep/wake
+
+                COMBAT MODE:
+                    Q - Toggle combat mode
+                    1 - Left emote/summon (combat only)
+                    2 - Right emote/summon (combat only)
+
+                HELP:
+                    F1 - Show this help
+                    X - Close Program";///
 
 Basic Troubleshooting
 
