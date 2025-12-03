@@ -56,7 +56,7 @@ Will be fix in the future**
 | Rice Shower | v2.2 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/2.2/Tracen_v2.1_Rice.zip) |
 | GoldShip | v2.5 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.5/GoldShip_v2.5.zip) |
 | Oguri | v2.7 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.7/Oguri_v2.7.zip) |
-| Manhattan | v3.0 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.7/Oguri_v2.7.zip) |
+| Manhattan | v3.0 | [Download]() |
 ## Blue Archive
 
 | Character | Download Link |
