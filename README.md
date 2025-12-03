@@ -7,23 +7,21 @@
 [![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@kritzkingvoid)
 
 
+
+
+```Python
+//3.0 Manhattan Cafe
+//Starting now will move some of the Umas into this and hopefully compile them into 1
+//Added Keyboard Support (NO Keybinds yet)
+//Added an options for click-through support (experimental)
+//Added a caching option for spriteSheets
 ```
+
 ```ruby
 //2.9.1 For Exusia- Exusiai? Exu (Will bring the changes to the umas in the future)
 //Added a more configuration options
 //Added to catch different cultures affecting the config files hopefully*
 //Added Keyboard control *no keybinds yet
-```
-```ruby
-//2.7 Oguri Cap
-//Added more Configurable Options in config.txt
-//Added a new Item Target Function
-```
-```ruby
-//2.6 Koyuki and GoldShip
-//Added 2 new options in config.txt ALLOW_COLOR_HOTSPOT and SHOW_TASKBAR
-//Can now resize the gremlin using SPRITE_SCALE 
-//Fixed a bug regarding the PCM Wav files crashing
 ```
 ```c#
 FORCE_FAKE_TRANSPARENT = true //If for some reason it's translucent or opaque. This is a hack will prevent input around the sprite
@@ -48,7 +46,17 @@ SHOW_TASKBAR = true //Show the Icon in the Task bar
 **//Important Note: IF YOUR MACHINE-LOCALE IS NOT IN ENGLISH, THEN THE CONFIG FILE MIGHT BREAK, AND CAUSE THE SPRITE TO BE BIG
 Will be fix in the future**
 
+## Umamusume 
 
+| Character | Version | Download Link |
+|-----------|---------|---------------|
+| Doto | v2.9 |[Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.9/MeishoDoto_v2.9.zip) |
+| Agnes Tachyon | v2.4 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.4/Tachyon_v2.4.zip) |
+| Matikanetannhauser | v2.7.2 Updated | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.7.2/Mambo_v2.8.zip) |
+| Rice Shower | v2.2 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/2.2/Tracen_v2.1_Rice.zip) |
+| GoldShip | v2.5 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.5/GoldShip_v2.5.zip) |
+| Oguri | v2.7 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.7/Oguri_v2.7.zip) |
+| Manhattan | v3.0 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.7/Oguri_v2.7.zip) |
 ## Blue Archive
 
 | Character | Download Link |
