@@ -1,7 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Media.Immutable;
 using Avalonia.Threading;
 using System;
 
@@ -31,7 +33,7 @@ namespace Desktop_Gremlin
             InitializeComponent();
             ConfigManager.ApplyXamlSettings(this);
             SpriteImage.Source = new CroppedBitmap();
-            FrameCounts = ConfigManager.LoadConfigChar(Settings.CompanionChar);
+            FrameCounts.LoadConfigChar(Settings.CompanionChar);
             GremlinState.LockState();
             InitializeAnimations();
             this.Width = this.Width * Settings.CompanionScale;
@@ -41,6 +43,25 @@ namespace Desktop_Gremlin
             IntroEffect.Width = IntroEffect.Width * Settings.CompanionScale;
             IntroEffect.Height = IntroEffect.Height * Settings.CompanionScale;
             MediaManager.PlaySound("intro.wav", Settings.CompanionChar);
+
+            if (Settings.FakeTransparent)
+            {
+                this.Background = (ImmutableSolidColorBrush)(new BrushConverter().ConvertFrom("#01000000"));
+            }
+            if (Settings.ManualReize)
+            {
+                this.SizeToContent = SizeToContent.Manual;
+            }
+            if (Settings.ForceCenter)
+            {
+                this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            }
+            if (Settings.EnableMinSize)
+            {
+                this.MinWidth = this.Width;
+                this.MinHeight = this
+                    .Height;
+            }
         }
         public new void Close()
         {
@@ -120,7 +141,7 @@ namespace Desktop_Gremlin
             {
                 _isMoving = false;
                 _lastStillTime = DateTime.Now;
-                CurrentFrames.WalkIdle = SpriteManager.PlayAnimation("runIdle","Actions",CurrentFrames.WalkIdle,FrameCounts.RunIdle,SpriteImage,Settings.CompanionChar);
+                CurrentFrames.WalkIdle = SpriteManager.PlayAnimation("runIdle","Actions",CurrentFrames.WalkIdle,FrameCounts.WalkIdle,SpriteImage,Settings.CompanionChar);
                 return;
             }
             if (!_isMoving)

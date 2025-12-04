@@ -21,6 +21,7 @@ namespace Desktop_Gremlin
         private double _keyboardMoveSpeedX = 0;
         private double _keyboardMoveSpeedY = 0;
         private double KEY_MOVE_SPEED = MouseSettings.Speed;
+        private bool _keyboardControlEnabled = false;
 
         public bool IsKeyboardMoving => _isKeyboardMoving;
 
@@ -65,13 +66,16 @@ namespace Desktop_Gremlin
                 case Key.Space:
                     _gremlin.TriggerClickAnimation();
                     break;
-
+                case Key.C:
+                    _gremlin.ToggleGravity();
+                    break;
                 case Key.E:
                     _gremlin.ToggleCursorFollow();
                     break;
 
                 case Key.Q:
                     if (!string.IsNullOrEmpty(Settings.CombatModeChar)) _gremlin.ToggleCombatMode();
+                    else _gremlin.TriggerFood();
                     break;
                 case Key.D1:
                 case Key.NumPad1:
@@ -81,12 +85,20 @@ namespace Desktop_Gremlin
                 case Key.NumPad2:
                     _gremlin.TriggerRightEmote();
                     break;
-
+                case Key.D3:
+                case Key.NumPad3:
+                    _gremlin.TriggerLeftDownEmote();
+                    break;
+                case Key.D4:
+                case Key.NumPad4:
+                    _gremlin.TriggerRightDownEmote();
+                    break;
                 case Key.R:
-                    if (!_isKeyboardMoving)
+                    /*if (!_isKeyboardMoving)
                     {
                         _gremlin.TriggerRandomMove();
-                    }
+                    }*/
+                    _gremlin.HotSpot();
                     break;
                 case Key.T:
                     _gremlin.ToggleSleep();
@@ -99,6 +111,9 @@ namespace Desktop_Gremlin
                     break;
                 case Key.X:
                     _gremlin.ForceShutDown();
+                    break;
+                case Key.D0:
+                    //_gremlin.ToggleClickThrough();
                     break;
             }
         }
@@ -113,6 +128,10 @@ namespace Desktop_Gremlin
         }
         private void HandleMovementKeyDown(Key key)
         {
+            if (!_keyboardControlEnabled)
+            {
+                return;
+            }
             if (_gremlin.IsCombat)
             {
                 return;
@@ -174,6 +193,10 @@ namespace Desktop_Gremlin
         }
         private void HandleMovementKeyUp(Key key)
         {
+            if (!_keyboardControlEnabled)
+            {
+                return;
+            }
             switch (key)
             {
                 case Key.W:
@@ -212,11 +235,49 @@ namespace Desktop_Gremlin
             newTop = Math.Max(workingArea.Y, Math.Min(newTop, workingArea.Height - _gremlin.SpriteImage.Bounds.Height));
             _gremlin.Position = new PixelPoint((int)Math.Round(newLeft), (int)Math.Round(newTop));
 
-            if (Math.Abs(_keyboardMoveSpeedX) > Math.Abs(_keyboardMoveSpeedY))
+            double angle = Math.Atan2(_keyboardMoveSpeedY, _keyboardMoveSpeedX) * (180 / Math.PI);
+            if (angle < 0) angle += 360;
+           
+            if (angle >= 337.5 || angle < 22.5)
             {
-                _currentFrames.WalkRight = SpriteManager.PlayAnimation("walkRight", "Walk",
-                    _currentFrames.WalkRight, _frameCounts.WalkR, _gremlin.SpriteImage, Settings.StartingChar);
+                _currentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run",
+                    _currentFrames.Right, _frameCounts.Right, _gremlin.SpriteImage, _gremlin._SelectedCharacter);
             }
+            else if (angle >= 22.5 && angle < 67.5)
+            {
+                _currentFrames.DownRight = SpriteManager.PlayAnimation("downRight", "Run",
+                    _currentFrames.DownRight, _frameCounts.DownRight, _gremlin.SpriteImage, _gremlin._SelectedCharacter);
+            }
+            else if (angle >= 67.5 && angle < 112.5)
+            {
+                _currentFrames.Down = SpriteManager.PlayAnimation("runDown", "Run",
+                    _currentFrames.Down, _frameCounts.Down, _gremlin.SpriteImage, _gremlin._SelectedCharacter);
+            }
+            else if (angle >= 112.5 && angle < 157.5)
+            {
+                _currentFrames.DownLeft = SpriteManager.PlayAnimation("downLeft", "Run",
+                    _currentFrames.DownLeft, _frameCounts.DownLeft, _gremlin.SpriteImage, _gremlin._SelectedCharacter);
+            }
+            else if (angle >= 157.5 && angle < 202.5)
+            {
+                _currentFrames.Left = SpriteManager.PlayAnimation("runLeft", "Run",
+                    _currentFrames.Left, _frameCounts.Left, _gremlin.SpriteImage, _gremlin._SelectedCharacter);
+            }
+            else if (angle >= 202.5 && angle < 247.5)
+            {
+                _currentFrames.UpLeft = SpriteManager.PlayAnimation("upLeft", "Run",
+                    _currentFrames.UpLeft, _frameCounts.UpLeft, _gremlin.SpriteImage, _gremlin._SelectedCharacter);
+            }
+            else if (angle >= 247.5 && angle < 292.5)
+            {
+                _currentFrames.Up = SpriteManager.PlayAnimation("runUp", "Run",
+                    _currentFrames.Up, _frameCounts.Up, _gremlin.SpriteImage, _gremlin._SelectedCharacter);
+            }
+            else if (angle >= 292.5 && angle < 337.5)
+            {
+                _currentFrames.UpRight = SpriteManager.PlayAnimation("upRight", "Run",
+                    _currentFrames.UpRight, _frameCounts.UpRight, _gremlin.SpriteImage, _gremlin._SelectedCharacter);
+            } 
         }
         public void StopAllMovement()
         {
@@ -230,6 +291,25 @@ namespace Desktop_Gremlin
                 _gremlinState.SetState("Idle");
             }
         }
+        public void DisableKeyboardMovement()
+        {
+            _keyboardControlEnabled = false;
+
+            _keyboardMoveSpeedX = 0;
+            _keyboardMoveSpeedY = 0;
+            _isKeyboardMoving = false;
+            if (_keyboardMoveTimer.IsEnabled)
+            {
+                _keyboardMoveTimer.Stop();
+            }
+
+            _gremlinState.SetState("Idle");
+        }
+
+        public void EnableKeyboardMovement()
+        {
+            _keyboardControlEnabled = true;
+        }
         private void ShowKeyboardHelp()
         {
             //It looks ugly, might as well
@@ -239,21 +319,22 @@ namespace Desktop_Gremlin
                 MOVEMENT (Disabled in Combat Mode):
                     WASD / Arrow Keys - Move character
                     E - Toggle cursor following
-                    R - Random movement
+                    R - Toggle HotSpot
                     ESC - Stop all movement
 
                 ACTIONS:
                     SPACE - Click animation
                     T - Toggle sleep/wake
-
-                COMBAT MODE:
-                    Q - Toggle combat mode
-                    1 - Left emote/summon (combat only)
-                    2 - Right emote/summon (combat only)
-
+                    C - Toggle Gravity                  
+                    Q - Spawn Food
+                    1 - Emote 1 (combat only)
+                    2 - Emote 3 (combat only)
+                    3 - Emote 2 (combat only)
+                    4 - Emote 4 (combat only)
                 HELP:
                     F1 - Show this help
-                    X - Close Program";          
+                    X - Close Program
+                    0/Zero - Disable Hitbox //Non-Mouse Interactable";          
 
             //MessageBox.Show(helpText, "Desktop Gremlin - Keyboard Controls",
             //    MessageBoxButton.OK, MessageBoxImage.Information);

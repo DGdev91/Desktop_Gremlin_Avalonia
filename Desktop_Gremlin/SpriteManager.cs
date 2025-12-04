@@ -1,4 +1,6 @@
-﻿using System;
+using DesktopGremlin;
+using System;
+using System.Collections.Generic;
 using System.Collections.Generic;
 using System.IO;
 using Avalonia;
@@ -80,17 +82,13 @@ namespace Desktop_Gremlin
         }
         public static Bitmap Get(string animationName, string actionType, string character)
         {
-            if (_currentCharacter != Settings.StartingChar)
-            {
-                ClearCache();
-                _currentCharacter = Settings.StartingChar;
-            }
-            string cacheKey = animationName;
+            string cacheKey = $"{animationName}_{actionType}";
 
-            //if (_spriteCache.TryGetValue(cacheKey, out Bitmap cached))
-            //{
-            //    return cached;
-            //}
+            if (Settings.AllowCache && _spriteCache.TryGetValue(cacheKey, out Bitmap cached))
+            {
+                return cached;
+            }
+
             string fileName = GetFileName(animationName);
 
             if (fileName == null)
@@ -127,10 +125,6 @@ namespace Desktop_Gremlin
                 return null;
             }
         }
-        public static void ClearCache()
-        {
-            _spriteCache.Clear();
-        }
 
         public static int PlayEffect(string sheetName, string actionType, int currentFrame, int frameCount, Image targetImage, string character, bool PlayOnce = false)
         {
@@ -158,3 +152,4 @@ namespace Desktop_Gremlin
 
     }
 }
+

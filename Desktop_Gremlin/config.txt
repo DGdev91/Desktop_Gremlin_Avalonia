@@ -1,21 +1,22 @@
-START_CHAR = Mambo
+START_CHAR = Cafe
 
 //Visual Settings
 SPRITE_FRAMERATE = 60
-START_BUTTOM = true
+START_BUTTOM = false
 
 //Movement Settings
 FOLLOW_RADIUS = 100.0
 ENABLE_GRAVITY = false
-GRAVITY_STRENGTH = 10.0
-SPRITE_SPEED = 4.0	
+GRAVITY_STRENGTH = 20.0
+SPRITE_SPEED = 10.0	
 
 //Character Actions Settings
 SLEEP_TIME = 200
 ALLOW_RANDOM_ACTIONS  = true
-MAX_INTERVAL = 15
-MIN_INTERVAL = 10
+MAX_INTERVAL = 40
+MIN_INTERVAL = 30
 RANDOM_MOVE_DISTANCE = 120
+WALK_DISTANCE  = 200
 
 //Change Sprite Size 
 //Sprite Image Size 0.75/1.0/1.5/2.0 
@@ -26,6 +27,8 @@ ALLOW_COLOR_HOTSPOT = false
 SHOW_TASKBAR = true
 ALLOW_ERROR_MESSAGES = true
 DISABLE_HOTSPOTS = false
+ENABLE_KEYBOARD = true
+
 
 //If for some reason the sprite is Huge or something
 //I'm running out of Ideas
@@ -40,10 +43,13 @@ VOLUME_LEVEL = 0.5
 //Side effect: You might not be able to click through around the sprite
 FORCE_FAKE_TRANSPARENT = false
 
-//Food and Item Settings Oguri only*
-CURRENT_ACCELERATION = 1.0
+//This is for memory vs performance 
+ALLOW_CACHE = false
+
+//Food and Item Settings
+CURRENT_ACCELERATION = 0.3
 FOLLOW_ACCELERATION = 0.2
-MAX_ACCELERATION = 1000
+MAX_ACCELERATION = 200
 MAX_EATING_SIZE = 20
 ITEM_WIDTH = 80
 ITEM_HEIGHT = 80

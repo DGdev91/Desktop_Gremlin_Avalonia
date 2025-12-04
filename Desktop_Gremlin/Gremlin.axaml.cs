@@ -12,32 +12,32 @@ namespace Desktop_Gremlin
 {
     public partial class Gremlin : Window
     {
-        private string _SelectedCharacter;
+        public string _SelectedCharacter;
         private Size? _followCursor_oldWindowSize;
         private PixelPoint? _cursorScreen;
         private DateTime _nextRandomActionTime = DateTime.Now.AddSeconds(1);
 
         private Random _rng = new Random();
-        private bool _wasIdleLastFrame = false;
-        //private Target _currentFood;
         private AppConfig _config;
 
         private DispatcherTimer _masterTimer;
         private DispatcherTimer _idleTimer;
         private DispatcherTimer _activeRandomMoveTimer;
+        private DispatcherTimer _gravityTimer;
+        private DispatcherTimer _followTimer;
 
         private bool _isCombat = false;
         private bool _hotspotVisible = false;
-        private bool _hotspotDisable = false; 
+        private bool _hotspotDisable = false;
+        private bool _wasIdleLastFrame = false; 
         public bool IsCombat => _isCombat;
-
-        private DispatcherTimer _gravityTimer;
 
         private Companion _companionInstance;
         private Summon _SummonInstance;
         private AnimationStates GremlinState = new AnimationStates();
         private FrameCounts FrameCounts = new FrameCounts();
         private CurrentFrames CurrentFrames = new CurrentFrames();
+        private Target _currentFood;
 
         private KeyboardController _keyboardController;
 
@@ -52,7 +52,6 @@ namespace Desktop_Gremlin
             InitializeComponent();
             InitializeConfig();         
             MediaManager.PlaySound("intro.wav", _SelectedCharacter);
-            GremlinState.LockState();
         }
 
         public void InitializeConfig()
@@ -65,10 +64,14 @@ namespace Desktop_Gremlin
             _SelectedCharacter = Settings.StartingChar;
 
             SpriteImage.Source = new CroppedBitmap();
-            FrameCounts = ConfigManager.LoadConfigChar(_SelectedCharacter);
+            FrameCounts.LoadConfigChar(_SelectedCharacter);
 
+            if (Settings.AllowKeyboard)
+            {
+                _keyboardController = new KeyboardController(this, GremlinState, CurrentFrames, FrameCounts, _rng);
+            }
             _config = new AppConfig(this, GremlinState);
-            _keyboardController = new KeyboardController(this, GremlinState, CurrentFrames, FrameCounts, _rng);
+            GremlinState.LockState();
         }
 
         public void InitializeTimers()
@@ -77,12 +80,11 @@ namespace Desktop_Gremlin
             _idleTimer.Interval = TimeSpan.FromSeconds(Settings.SleepTime);
             _idleTimer.Tick += IdleTimer_Tick;
             _idleTimer.Start();
-
+            _gravityTimer = new DispatcherTimer();
+            _gravityTimer.Interval = TimeSpan.FromMilliseconds(30);
+            _gravityTimer.Tick += Gravity_Tick;
             if (Settings.EnableGravity)
             {
-                _gravityTimer = new DispatcherTimer();
-                _gravityTimer.Interval = TimeSpan.FromMilliseconds(30);
-                _gravityTimer.Tick += Gravity_Tick;
                 _gravityTimer.Start();
             }
         }
@@ -203,7 +205,7 @@ namespace Desktop_Gremlin
                 CurrentFrames.Sleep = PlayAnimationIfActive("Sleeping", "Actions", CurrentFrames.Sleep, FrameCounts.Sleep, false);
                 CurrentFrames.Pat = PlayAnimationIfActive("Pat", "Actions", CurrentFrames.Pat, FrameCounts.Pat, false);
 
-                
+                //Single Repeat Animations = true at the end//
                 CurrentFrames.Emote4 = PlayAnimationIfActive("Emote4", "Emotes", CurrentFrames.Emote4, FrameCounts.Emote4, true);
                 CurrentFrames.Emote2 = PlayAnimationIfActive("Emote2", "Emotes", CurrentFrames.Emote2, FrameCounts.Emote2, true);
                 CurrentFrames.Intro = PlayAnimationIfActive("Intro", "Actions", CurrentFrames.Intro, FrameCounts.Intro, true);
@@ -230,7 +232,13 @@ namespace Desktop_Gremlin
                     if (Settings.EnableGravity)
                     {
                         dy = 0;
+                        distance = Math.Abs(dx);
                     }
+                    else
+                    {
+                        distance = Math.Sqrt(dx * dx + dy * dy);
+                    }
+
                     if (distance > Settings.FollowRadius)
                     {
                         double step = Math.Min(MouseSettings.Speed, distance - Settings.FollowRadius);
@@ -238,6 +246,10 @@ namespace Desktop_Gremlin
                         double ny = dy / distance;
                         double moveX = nx * step;
                         double moveY = ny * step;
+                        if (Settings.EnableGravity)
+                        {
+                            dy = 0;
+                        }
 
                         Position = new PixelPoint((int)(Position.X + Math.Round(moveX)), (int)(Position.Y + Math.Round(moveY)));
                         double angle = Math.Atan2(moveY, moveX) * (180.0 / Math.PI);
@@ -251,15 +263,15 @@ namespace Desktop_Gremlin
                             }
                             CurrentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run", CurrentFrames.Right, FrameCounts.Right, SpriteImage, _SelectedCharacter);
                         }
-                        else if (angle >= 22.5 && angle < 67.5)
+                        else if (angle >= 22.5 && angle < 67.5 && Settings.EnableGravity == false)
                         {
                             CurrentFrames.DownRight = SpriteManager.PlayAnimation("downRight","Run",CurrentFrames.DownRight,FrameCounts.DownRight,SpriteImage, _SelectedCharacter);
                         }
-                        else if (angle >= 67.5 && angle < 112.5)
+                        else if (angle >= 67.5 && angle < 112.5 && Settings.EnableGravity == false)
                         {
                             CurrentFrames.Down = SpriteManager.PlayAnimation("runDown","Run",CurrentFrames.Down,FrameCounts.Down,SpriteImage, _SelectedCharacter);
                         }
-                        else if (angle >= 112.5 && angle < 157.5)
+                        else if (angle >= 112.5 && angle < 157.5 && Settings.EnableGravity == false)
                         {
                             CurrentFrames.DownLeft = SpriteManager.PlayAnimation("downLeft","Run",CurrentFrames.DownLeft,FrameCounts.DownLeft,SpriteImage, _SelectedCharacter);
                         }
@@ -275,22 +287,22 @@ namespace Desktop_Gremlin
                                 CurrentFrames.Left = SpriteManager.PlayAnimation("runLeft","Run",CurrentFrames.Left,FrameCounts.Left,SpriteImage, _SelectedCharacter);
                             }
                         }
-                        else if (angle >= 202.5 && angle < 247.5)
+                        else if (angle >= 202.5 && angle < 247.5 && Settings.EnableGravity == false)
                         {
                             CurrentFrames.UpLeft = SpriteManager.PlayAnimation("upLeft","Run",CurrentFrames.UpLeft,FrameCounts.UpLeft,SpriteImage, _SelectedCharacter);
                         }
-                        else if (angle >= 247.5 && angle < 292.5)
+                        else if (angle >= 247.5 && angle < 292.5 && Settings.EnableGravity == false)
                         {
                             CurrentFrames.Up = SpriteManager.PlayAnimation("runUp","Run",CurrentFrames.Up,FrameCounts.Up,SpriteImage, _SelectedCharacter);
                         }
-                        else if (angle >= 292.5 && angle < 337.5)
+                        else if (angle >= 292.5 && angle < 337.5 && Settings.EnableGravity == false)
                         {
                             CurrentFrames.UpRight = SpriteManager.PlayAnimation("upRight","Run",CurrentFrames.UpRight,FrameCounts.UpRight,SpriteImage, _SelectedCharacter);
                         }
                     }
                     else
                     {
-                        CurrentFrames.WalkIdle = SpriteManager.PlayAnimation("runIdle", "Actions", CurrentFrames.WalkIdle, FrameCounts.RunIdle, SpriteImage, _SelectedCharacter);
+                        CurrentFrames.WalkIdle = SpriteManager.PlayAnimation("runIdle", "Actions", CurrentFrames.WalkIdle, FrameCounts.WalkIdle, SpriteImage, _SelectedCharacter);
                     }
                 }
                 else if (_followCursor_oldWindowSize is not null)
@@ -376,13 +388,15 @@ namespace Desktop_Gremlin
             double targetLeft = Math.Max(workingArea.X, Math.Min(Position.X + moveX, workingArea.Right - SpriteImage.Bounds.Width));
             double targetTop = Math.Max(workingArea.Y, Math.Min(Position.Y + moveY, workingArea.Bottom - SpriteImage.Bounds.Height));
 
-            const double step = 120;
+            int step = Settings.WalkDistance;
             double dx = (targetLeft - this.Position.X) / step;
             double dy = (targetTop - this.Position.Y) / step;
 
             DispatcherTimer moveTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(30) };
             _activeRandomMoveTimer = moveTimer;
+
             int moveCount = 0;
+
             moveTimer.Tick += (s, e) =>
             {
                 Position = new PixelPoint((int)(Position.X + Math.Round(dx)), (int)(Position.Y + Math.Round(dy)));
@@ -396,18 +410,18 @@ namespace Desktop_Gremlin
                     if (dx > 0)
                     {
                         this.RenderTransform = new ScaleTransform(1.0, 1.0);
-                        CurrentFrames.WalkRight = SpriteManager.PlayAnimation("walkRight", "Walk", CurrentFrames.WalkRight, FrameCounts.WalkR, SpriteImage, _SelectedCharacter);
+                        CurrentFrames.WalkRight = SpriteManager.PlayAnimation("walkRight", "Walk", CurrentFrames.WalkRight, FrameCounts.WalkRight, SpriteImage, _SelectedCharacter);
                     }
                     else
                     {
                         if (Settings.MirrorXSprite)
                         {
                             this.RenderTransform = new ScaleTransform(-1.0, 1.0);
-                            CurrentFrames.WalkRight = SpriteManager.PlayAnimation("walkRight", "Walk", CurrentFrames.WalkRight, FrameCounts.WalkR, SpriteImage, _SelectedCharacter);
+                            CurrentFrames.WalkRight = SpriteManager.PlayAnimation("walkRight", "Walk", CurrentFrames.WalkRight, FrameCounts.WalkRight, SpriteImage, _SelectedCharacter);
                         }
                         else
                         {
-                            CurrentFrames.WalkLeft = SpriteManager.PlayAnimation("walkLeft","Walk", CurrentFrames.WalkLeft,FrameCounts.WalkL, SpriteImage, _SelectedCharacter);
+                            CurrentFrames.WalkLeft = SpriteManager.PlayAnimation("walkLeft", "Walk", CurrentFrames.WalkLeft, FrameCounts.WalkLeft, SpriteImage, _SelectedCharacter);
                         }
                     }
                 }
@@ -415,13 +429,14 @@ namespace Desktop_Gremlin
                 {
                     if (dy > 0)
                     {
-                        CurrentFrames.WalkDown = SpriteManager.PlayAnimation("walkDown","Walk", CurrentFrames.WalkDown,FrameCounts.WalkDown, SpriteImage, _SelectedCharacter);
+                        CurrentFrames.WalkDown = SpriteManager.PlayAnimation("walkDown", "Walk", CurrentFrames.WalkDown, FrameCounts.WalkDown, SpriteImage, _SelectedCharacter);
                     }
                     else
                     {
-                        CurrentFrames.WalkUp = SpriteManager.PlayAnimation("walkUp","Walk", CurrentFrames.WalkUp,FrameCounts.WalkUp,SpriteImage,_SelectedCharacter);
+                        CurrentFrames.WalkUp = SpriteManager.PlayAnimation("walkUp", "Walk", CurrentFrames.WalkUp, FrameCounts.WalkUp,SpriteImage, _SelectedCharacter);
                     }
                 }
+                
                 if (moveCount >= step || !GremlinState.GetState("Random"))
                 {
                     moveTimer.Stop();
@@ -431,9 +446,312 @@ namespace Desktop_Gremlin
             };
             moveTimer.Start();
         }
-        
-#region All the shit for keyboard
+        private void StartFollowingFood()
+        {
+            MediaManager.PlaySound("food.wav", Settings.StartingChar);
+            double _startingSpeed = Quirks.CurrentItemAcceleration;
+            _followTimer?.Stop();
+            _followTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(1000.0 / Settings.FrameRate) };
+            _followTimer.Tick += (s, e) =>
+            {
+                if (_currentFood == null || !_currentFood.IsVisible)
+                {
+                    _followTimer.Stop();
+                    GremlinState.UnlockState();
+                    GremlinState.SetState("Sleeping");
+                    GremlinState.LockState();
+                    return;
+                }
 
+                Point foodCenter = _currentFood.GetCenter();
+                double gremlinCenterX = this.Position.X + this.Bounds.Width / 2;
+                double gremlinCenterY = this.Position.Y + this.Bounds.Height / 2;
+                double dx = foodCenter.X - gremlinCenterX;
+                double dy = foodCenter.Y - gremlinCenterY;
+                double distance = Math.Sqrt(dx * dx + dy * dy);
+
+                if (distance - 25 < Settings.SpriteSize / 2 || !GremlinState.GetState("FollowItem"))
+                {
+                    MediaManager.PlaySound("eat.wav", Settings.StartingChar);
+                    _currentFood.Close();
+                    return;
+                }
+
+                _startingSpeed = Math.Min(_startingSpeed + Quirks.ItemAcceleration, Quirks.MaxItemAcceleration);
+                double step = Math.Min(_startingSpeed, distance);
+
+                Position = new PixelPoint((int)Math.Round(dx / distance * step), (int)Math.Round(dy / distance * step));
+
+                double angle = Math.Atan2(dy, dx) * (180 / Math.PI);
+                if (angle < 0) angle += 360;
+
+                if (angle >= 337.5 || angle < 22.5)
+                {
+                    CurrentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run", CurrentFrames.Right, FrameCounts.Right, SpriteImage, _SelectedCharacter);
+                }
+                else if (angle >= 22.5 && angle < 67.5)
+                {
+                    CurrentFrames.DownRight = SpriteManager.PlayAnimation("downRight", "Run", CurrentFrames.DownRight, FrameCounts.DownRight, SpriteImage, _SelectedCharacter);
+                }
+                else if (angle >= 67.5 && angle < 112.5)
+                {
+                    CurrentFrames.Down = SpriteManager.PlayAnimation("runDown", "Run", CurrentFrames.Down, FrameCounts.Down, SpriteImage, _SelectedCharacter);
+                }
+                else if (angle >= 112.5 && angle < 157.5)
+                {
+                    CurrentFrames.DownLeft = SpriteManager.PlayAnimation("downLeft", "Run", CurrentFrames.DownLeft, FrameCounts.DownLeft, SpriteImage, _SelectedCharacter);
+                }
+                else if (angle >= 157.5 && angle < 202.5)
+                {
+                    CurrentFrames.Left = SpriteManager.PlayAnimation("runLeft", "Run", CurrentFrames.Left, FrameCounts.Left, SpriteImage, _SelectedCharacter);
+                }
+                else if (angle >= 202.5 && angle < 247.5)
+                {
+                    CurrentFrames.UpLeft = SpriteManager.PlayAnimation("upLeft", "Run", CurrentFrames.UpLeft, FrameCounts.UpLeft, SpriteImage, _SelectedCharacter);
+                }
+                else if (angle >= 247.5 && angle < 292.5)
+                {
+                    CurrentFrames.Up = SpriteManager.PlayAnimation("runUp", "Run", CurrentFrames.Up, FrameCounts.Up, SpriteImage, _SelectedCharacter);
+                }
+                else if (angle >= 292.5 && angle < 337.5)
+                {
+                    CurrentFrames.UpRight = SpriteManager.PlayAnimation("upRight", "Run", CurrentFrames.UpRight, FrameCounts.UpRight, SpriteImage, _SelectedCharacter);
+                }
+
+                GremlinState.SetState("Walking");
+            };
+            _followTimer.Start();
+        }
+        private void SpriteImage_RightClick(object sender, PointerPressedEventArgs e)
+        {
+            if (e.GetCurrentPoint(this).Properties.IsRightButtonPressed)
+            {
+                TriggerClickAnimation();
+            }
+        }
+
+        private void SpriteImage_MouseEnter(object sender, PointerEventArgs e)
+        {
+            _keyboardController?.DisableKeyboardMovement();
+            GremlinState.SetState("Hover");
+            if (GremlinState.GetState("Hover"))
+            {
+                MediaManager.PlaySound("hover.wav",_SelectedCharacter, 5);
+            }
+            
+        }
+        private void SpriteImage_MouseLeave(object sender, PointerEventArgs e)
+        {
+            _keyboardController?.EnableKeyboardMovement();
+            GremlinState.SetState("Idle");
+            CurrentFrames.Hover = 0;            
+        }
+        private void Canvas_MouseLeftButtonDown(object sender, PointerPressedEventArgs e)
+        {
+            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            {
+                if (_followCursor_oldWindowSize is not null)
+                {
+                    ResetIdleTimer();
+                    GremlinState.UnlockState();
+                    GremlinState.SetState("Idle");
+                    FollowCursor_RestoreMainWindow();
+                }
+                else
+                {
+                    ResetIdleTimer();
+                    GremlinState.UnlockState();
+                    GremlinState.SetState("Grab");
+                    MediaManager.PlaySound("grab.wav", _SelectedCharacter);
+                    BeginMoveDrag(e);
+                }
+            }
+
+        }
+        protected void Canvas_MouseLeftButtonUp(object sender, PointerReleasedEventArgs e)
+        {
+            if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed && GremlinState.GetState("Grab"))
+            {
+                GremlinState.SetState("Idle");
+                MouseSettings.FollowCursor = !MouseSettings.FollowCursor;
+                if (MouseSettings.FollowCursor)
+                {
+                    GremlinState.SetState("Walking");
+                    GremlinState.LockState();
+                }
+                CurrentFrames.Grab = 0;
+                if (MouseSettings.FollowCursor)
+                {
+                    MediaManager.PlaySound("run.wav", _SelectedCharacter);
+                }
+            }
+        }
+        private void TopHotspot_Click(object sender, PointerPressedEventArgs e)
+        {
+            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            {
+                if (GremlinState.GetState("FollowItem"))
+                {
+                    return;
+                }
+
+                GremlinState.UnlockState();
+                GremlinState.SetState("FollowItem");
+                GremlinState.LockState();
+                double screenWidth = SystemParameters.WorkArea.Width;
+                double screenHeight = SystemParameters.WorkArea.Height;
+
+                Random rng = new Random();
+                double randomLeft = rng.NextDouble() * (screenWidth - Settings.FrameWidth) + SystemParameters.WorkArea.Left;
+                double randomTop = rng.NextDouble() * (screenHeight - Settings.FrameHeight) + SystemParameters.WorkArea.Top;
+                _currentFood = new Target
+                {
+                    Left = randomLeft,
+                    Top = randomTop
+                };
+                _currentFood.Show();
+                StartFollowingFood();
+
+                if (!string.IsNullOrEmpty(Settings.CombatModeChar)) ToggleCombatMode();
+
+                if (!string.IsNullOrEmpty(Settings.CompanionChar))
+                {
+                    if (_companionInstance != null && _companionInstance.IsVisible)
+                    {
+                        _companionInstance.Close();
+                        return;
+                    }
+                    _companionInstance = new Companion();
+                    _companionInstance.MainGremlin = this;
+                    _companionInstance.Closed += (s, args) => _companionInstance = null;
+                    _companionInstance.Show();   
+                }
+            }
+        }
+
+        public void ResetIdleTimer()
+        {
+            _idleTimer.Stop();
+            _idleTimer.Start();
+        }
+        private void IdleTimer_Tick(object sender, EventArgs e)
+        {
+            if (_isCombat)
+            {
+                ResetIdleTimer();
+                return;
+            }
+            if (GremlinState.GetState("Sleeping"))
+            {
+                return;
+            }
+            else
+            {
+                GremlinState.UnlockState();
+                MediaManager.PlaySound("sleep.wav", _SelectedCharacter);
+                GremlinState.SetState("Sleeping");
+                GremlinState.LockState();
+            }
+        }
+        public void EmoteHelper(string emote, string mp3)
+        {
+            ResetIdleTimer();
+            GremlinState.UnlockState();
+            GremlinState.SetState(emote);
+            MediaManager.PlaySound(mp3, _SelectedCharacter);
+            GremlinState.LockState();
+        }
+
+        private void LeftHotspot_Click(object sender, PointerPressedEventArgs e)
+        {
+            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            {
+                TriggerLeftEmote();
+            }
+        }
+        private void LeftDownHotspot_Click(object sender, PointerPressedEventArgs e)
+        {
+            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            {
+                TriggerLeftDownEmote();
+            }
+        }
+        private void RightHotspot_Click(object sender, PointerPressedEventArgs e)
+        {
+            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            {
+                TriggerRightEmote();
+            }
+        }
+        private void RightDownHotspot_Click(object sender, PointerPressedEventArgs e)
+        {
+            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            {
+                TriggerRightDownEmote();  
+            }
+        }
+
+        public void HotSpot()
+        {
+            _hotspotDisable = !_hotspotDisable;
+            LeftHotspot.IsEnabled = !LeftHotspot.IsEnabled;
+            LeftDownHotspot.IsEnabled = !LeftDownHotspot.IsEnabled;
+            RightHotspot.IsEnabled = !RightHotspot.IsEnabled;
+            RightDownHotspot.IsEnabled = !RightDownHotspot.IsEnabled;
+            TopHotspot.IsEnabled = !TopHotspot.IsEnabled;
+
+            if (_hotspotDisable)
+            {
+                LeftHotspot.Background = new SolidColorBrush(Colors.Transparent);
+                RightHotspot.Background = new SolidColorBrush(Colors.Transparent);
+                TopHotspot.Background = new SolidColorBrush(Colors.Transparent);
+                LeftDownHotspot.Background = new SolidColorBrush(Colors.Transparent);
+                RightDownHotspot.Background = new SolidColorBrush(Colors.Transparent);
+            }
+            else
+            {
+                var noColor = (ImmutableSolidColorBrush)new BrushConverter().ConvertFrom("#01000000");
+                LeftHotspot.Background = noColor;
+                RightHotspot.Background = noColor;
+                TopHotspot.Background = noColor;
+                LeftDownHotspot.Background = noColor;
+                RightDownHotspot.Background = noColor;    
+            }
+        }
+        public void ShowHotSpot()
+        {
+            _hotspotVisible = !_hotspotVisible;
+            if (_hotspotVisible)
+            {
+                LeftHotspot.Background = new SolidColorBrush(Colors.Red);
+                RightHotspot.Background = new SolidColorBrush(Colors.Blue);
+                TopHotspot.Background = new SolidColorBrush(Colors.Purple);
+                LeftDownHotspot.Background = new SolidColorBrush(Colors.Yellow);
+                RightDownHotspot.Background = new SolidColorBrush(Colors.Orange);
+            }
+            else
+            {
+                var noColor = (ImmutableSolidColorBrush)new BrushConverter().ConvertFrom("#01000000");
+                LeftHotspot.Background = noColor;
+                RightHotspot.Background = noColor;
+                TopHotspot.Background = noColor;
+                LeftDownHotspot.Background = noColor;
+                RightDownHotspot.Background = noColor;
+            }
+        }
+        public void ToggleGravity()
+        {
+            Settings.EnableGravity = !Settings.EnableGravity;
+            if (Settings.EnableGravity)
+            {
+                _gravityTimer.Start();
+            }
+            else
+            {
+                _gravityTimer.Stop();
+            }
+        }
+        #region All the shit for keyboard
         public void TriggerClickAnimation()
         {
             ResetIdleTimer();
@@ -452,11 +770,10 @@ namespace Desktop_Gremlin
             {
                 return;
             }
-            _keyboardController.StopAllMovement();
+            _keyboardController?.StopAllMovement();
             _activeRandomMoveTimer?.Stop();
 
             MouseSettings.FollowCursor = !MouseSettings.FollowCursor;
-
             if (MouseSettings.FollowCursor && !_isCombat)
             {
                 GremlinState.UnlockState();
@@ -469,6 +786,30 @@ namespace Desktop_Gremlin
                 GremlinState.UnlockState();
                 GremlinState.SetState("Idle");
             }
+        }
+
+        public void TriggerFood()
+        {
+            if (GremlinState.GetState("FollowItem"))
+            {
+                return;
+            }
+            GremlinState.UnlockState();
+            GremlinState.SetState("FollowItem");
+            GremlinState.LockState();
+            double screenWidth = SystemParameters.WorkArea.Width;
+            double screenHeight = SystemParameters.WorkArea.Height;
+
+            Random rng = new Random();
+            double randomLeft = rng.NextDouble() * (screenWidth - Settings.FrameWidth) + SystemParameters.WorkArea.Left;
+            double randomTop = rng.NextDouble() * (screenHeight - Settings.FrameHeight) + SystemParameters.WorkArea.Top;
+            _currentFood = new Target
+            {
+                Left = randomLeft,
+                Top = randomTop
+            };
+            _currentFood.Show();
+            StartFollowingFood();
         }
 
         public void ToggleCombatMode()
@@ -490,7 +831,7 @@ namespace Desktop_Gremlin
                 _SelectedCharacter = Settings.StartingChar;
             }
             MediaManager.PlaySound("intro.wav", _SelectedCharacter);
-            FrameCounts = ConfigManager.LoadConfigChar(_SelectedCharacter);
+            FrameCounts.LoadConfigChar(_SelectedCharacter);
             GremlinState.UnlockState();
             GremlinState.SetState("Intro");
             CurrentFrames.Idle = 0;
@@ -559,6 +900,18 @@ namespace Desktop_Gremlin
                 _SummonInstance.Show();
             }
         }
+        public void TriggerLeftDownEmote()
+        {
+            CurrentFrames.Emote2 = 0;
+            CurrentFrames.Idle = 0;
+            EmoteHelper("Emote2", "emote2.wav");
+        }
+        public void TriggerRightDownEmote()
+        {
+            CurrentFrames.Emote4 = 0;
+            CurrentFrames.Idle = 0;
+            EmoteHelper("Emote4", "emote4.wav");
+        }
 
         public void ToggleSleep()
         {
@@ -587,206 +940,9 @@ namespace Desktop_Gremlin
             RandomMove();
         }
 
-        public void ResetIdleTimer()
-        {
-            _idleTimer.Stop();
-            _idleTimer.Start();
-        }
 
         #endregion
    
-        private void SpriteImage_RightClick(object sender, PointerPressedEventArgs e)
-        {
-            if (e.GetCurrentPoint(this).Properties.IsRightButtonPressed)
-            {
-                TriggerClickAnimation();
-            }
-        }
-
-        private void SpriteImage_MouseEnter(object sender, PointerEventArgs e)
-        {
-            GremlinState.SetState("Hover");
-            if (GremlinState.GetState("Hover"))
-            {
-                MediaManager.PlaySound("hover.wav",_SelectedCharacter, 5);
-            }
-            
-        }
-        private void SpriteImage_MouseLeave(object sender, PointerEventArgs e)
-        {
-            GremlinState.SetState("Idle");
-            CurrentFrames.Hover = 0;            
-        }
-        private void Canvas_MouseLeftButtonDown(object sender, PointerPressedEventArgs e)
-        {
-            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
-            {
-                if (_followCursor_oldWindowSize is not null)
-                {
-                    ResetIdleTimer();
-                    GremlinState.UnlockState();
-                    GremlinState.SetState("Idle");
-                    FollowCursor_RestoreMainWindow();
-                }
-                else
-                {
-                    ResetIdleTimer();
-                    GremlinState.UnlockState();
-                    GremlinState.SetState("Grab");
-                    MediaManager.PlaySound("grab.wav", _SelectedCharacter);
-                    BeginMoveDrag(e);
-                }
-            }
-
-        }
-        protected void Canvas_MouseLeftButtonUp(object sender, PointerReleasedEventArgs e)
-        {
-            if (!e.GetCurrentPoint(this).Properties.IsLeftButtonPressed && GremlinState.GetState("Grab"))
-            {
-                GremlinState.SetState("Idle");
-                MouseSettings.FollowCursor = !MouseSettings.FollowCursor;
-                if (MouseSettings.FollowCursor)
-                {
-                    GremlinState.SetState("Walking");
-                    GremlinState.LockState();
-                }
-                CurrentFrames.Grab = 0;
-                if (MouseSettings.FollowCursor)
-                {
-                    MediaManager.PlaySound("run.wav", _SelectedCharacter);
-                }
-            }
-        }
-        private void TopHotspot_Click(object sender, PointerPressedEventArgs e)
-        {
-            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
-            {
-                if (!string.IsNullOrEmpty(Settings.CombatModeChar)) ToggleCombatMode();
-
-                if (!string.IsNullOrEmpty(Settings.CompanionChar))
-                {
-                    if (_companionInstance != null && _companionInstance.IsVisible)
-                    {
-                        _companionInstance.Close();
-                        return;
-                    }
-                    _companionInstance = new Companion();
-                    _companionInstance.MainGremlin = this;
-                    _companionInstance.Closed += (s, args) => _companionInstance = null;
-                    _companionInstance.Show();   
-                }
-            }
-        }
-
-        private void IdleTimer_Tick(object sender, EventArgs e)
-        {
-            if (_isCombat)
-            {
-                ResetIdleTimer();
-                return;
-            }
-            if (GremlinState.GetState("Sleeping"))
-            {
-                return;
-            }
-            else
-            {
-                GremlinState.UnlockState();
-                MediaManager.PlaySound("sleep.wav", _SelectedCharacter);
-                GremlinState.SetState("Sleeping");
-                GremlinState.LockState();
-            }
-        }
-
-        private void LeftHotspot_Click(object sender, PointerPressedEventArgs e)
-        {
-            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
-            {
-                TriggerLeftEmote();
-            }
-        }
-        private void LeftDownHotspot_Click(object sender, PointerPressedEventArgs e)
-        {
-            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
-            {
-                CurrentFrames.Emote2 = 0;
-                EmoteHelper("Emote2", "emote2.wav");   
-            }
-        }
-        private void RightHotspot_Click(object sender, PointerPressedEventArgs e)
-        {
-            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
-            {
-                TriggerRightEmote();
-            }
-        }
-        private void RightDownHotspot_Click(object sender, PointerPressedEventArgs e)
-        {
-            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
-            {
-                CurrentFrames.Emote4 = 0;
-                EmoteHelper("Emote4", "emote4.wav");   
-            }
-        }
-
-        public void EmoteHelper(string emote, string mp3)
-        {
-            ResetIdleTimer();
-            GremlinState.UnlockState();
-            GremlinState.SetState(emote);
-            MediaManager.PlaySound(mp3, _SelectedCharacter);
-            GremlinState.LockState();
-        }
-
-        public void HotSpot()
-        {
-            _hotspotDisable = !_hotspotDisable;
-            LeftHotspot.IsEnabled = !LeftHotspot.IsEnabled;
-            LeftDownHotspot.IsEnabled = !LeftDownHotspot.IsEnabled;
-            RightHotspot.IsEnabled = !RightHotspot.IsEnabled;
-            RightDownHotspot.IsEnabled = !RightDownHotspot.IsEnabled;
-            TopHotspot.IsEnabled = !TopHotspot.IsEnabled;
-
-            if (_hotspotDisable)
-            {
-                LeftHotspot.Background = new SolidColorBrush(Colors.Transparent);
-                LeftDownHotspot.Background = new SolidColorBrush(Colors.Transparent);
-                RightHotspot.Background = new SolidColorBrush(Colors.Transparent);
-                RightDownHotspot.Background = new SolidColorBrush(Colors.Transparent);
-                TopHotspot.Background = new SolidColorBrush(Colors.Transparent);
-            }
-            else
-            {
-                var noColor = (ImmutableSolidColorBrush)new BrushConverter().ConvertFrom("#01000000");
-                LeftHotspot.Background = noColor;
-                LeftDownHotspot.Background = noColor;
-                RightHotspot.Background = noColor;
-                RightDownHotspot.Background = noColor;
-                TopHotspot.Background = noColor;    
-            }
-        }
-        public void ShowHotSpot()
-        {
-            _hotspotVisible = !_hotspotVisible;
-
-            if (_hotspotVisible)
-            {
-                LeftHotspot.Background = new SolidColorBrush(Colors.Red);
-                LeftDownHotspot.Background = new SolidColorBrush(Colors.Yellow);
-                RightHotspot.Background = new SolidColorBrush(Colors.Blue);
-                RightDownHotspot.Background = new SolidColorBrush(Colors.Orange);
-                TopHotspot.Background = new SolidColorBrush(Colors.Purple);
-            }
-            else
-            {
-                var noColor = (ImmutableSolidColorBrush)new BrushConverter().ConvertFrom("#01000000");
-                LeftHotspot.Background = noColor;
-                LeftDownHotspot.Background = noColor;
-                RightHotspot.Background = noColor;
-                RightDownHotspot.Background = noColor;
-                TopHotspot.Background = noColor;
-            }
-        }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {

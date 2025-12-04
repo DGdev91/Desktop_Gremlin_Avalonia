@@ -4,6 +4,7 @@ using Avalonia.Media;
 using Avalonia.Media.Immutable;
 using Avalonia.Platform;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -23,6 +24,47 @@ namespace Desktop_Gremlin
                 return;
             }
 
+            var settingsMap = new Dictionary<string, Action<string>>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["START_CHAR"] = val => Settings.StartingChar = val,
+                ["COMPANION_CHAR"] = val => Settings.CompanionChar = val,
+                ["SUMMON_CHAR"] = val => Settings.SummonChar = val,
+                ["COMBAT_MODE_CHAR"] = val => Settings.CombatModeChar = val,
+                ["SPRITE_FRAMERATE"] = val => { if (int.TryParse(val, out int v)) Settings.FrameRate = v; },
+                ["FOLLOW_RADIUS"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) Settings.FollowRadius = v; },
+                ["MAX_INTERVAL"] = val => { if (int.TryParse(val, out int v)) Settings.RandomMaxInterval = v; },
+                ["MIN_INTERVAL"] = val => { if (int.TryParse(val, out int v)) Settings.RandomMinInterval = v; },
+                ["RANDOM_MOVE_DISTANCE"] = val => { if (int.TryParse(val, out int v)) Settings.MoveDistance = v; },
+                ["ALLOW_RANDOM_ACTIONS"] = val => { if (bool.TryParse(val, out bool v)) Settings.AllowRandomness = v; },
+                ["SLEEP_TIME"] = val => { if (int.TryParse(val, out int v)) Settings.SleepTime = v; },
+                ["ALLOW_FOOTSTEP_SOUNDS"] = val => { if (bool.TryParse(val, out bool v)) Settings.FootStepSounds = v; },
+                ["AMMO"] = val => { if (int.TryParse(val, out int v)) Settings.Ammo = v; },
+                ["ALLOW_COLOR_HOTSPOT"] = val => { if (bool.TryParse(val, out bool v)) Settings.AllowColoredHotSpot = v; },
+                ["SHOW_TASKBAR"] = val => { if (bool.TryParse(val, out bool v)) Settings.ShowTaskBar = v; },
+                ["SPRITE_SCALE"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) Settings.SpriteSize = v; },
+                ["FORCE_FAKE_TRANSPARENT"] = val => { if (bool.TryParse(val, out bool v)) Settings.FakeTransparent = v; },
+                ["ALLOW_ERROR_MESSAGES"] = val => { if (bool.TryParse(val, out bool v)) Settings.AllowErrorMessages = v; },
+                ["MAX_ACCELERATION"] = val => { if (int.TryParse(val, out int v)) Quirks.MaxItemAcceleration = v; },
+                ["FOLLOW_ACCELERATION"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) Quirks.CurrentItemAcceleration = v; },
+                ["CURRENT_ACCELERATION"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) Quirks.ItemAcceleration = v; },
+                ["MAX_EATING_SIZE"] = val => { if (int.TryParse(val, out int v)) Settings.FoodItemGetSize = v; },
+                ["ITEM_WIDTH"] = val => { if (int.TryParse(val, out int v)) Settings.ItemWidth = v; },
+                ["ITEM_HEIGHT"] = val => { if (int.TryParse(val, out int v)) Settings.ItemHeight = v; },
+                ["COMPANIONS_SCALE"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) Settings.CompanionScale = v; },
+                ["ENABLE_MIN_RESIZE"] = val => { if (bool.TryParse(val, out bool v)) Settings.EnableMinSize = v; },
+                ["FORCE_CENTER"] = val => { if (bool.TryParse(val, out bool v)) Settings.ForceCenter = v; },
+                ["ENABLE_MANUAL_RESIZE"] = val => { if (bool.TryParse(val, out bool v)) Settings.ManualReize = v; },
+                ["VOLUME_LEVEL"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) Settings.VolumeLevel = v; },
+                ["DISABLE_HOTSPOTS"] = val => { if (bool.TryParse(val, out bool v)) Settings.DisableHotspots = v; },
+                ["START_BOTTOM"] = val => { if (bool.TryParse(val, out bool v)) Settings.ForceBottomSpawn = v; },
+                ["ENABLE_GRAVITY"] = val => { if (bool.TryParse(val, out bool v)) Settings.EnableGravity = v; },
+                ["GRAVITY_STRENGTH"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) Settings.SvGravity = v; },
+                ["ALLOW_CACHE"] = val => { if (bool.TryParse(val, out bool v)) Settings.AllowCache = v; },
+                ["SPRITE_SPEED"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) MouseSettings.Speed = v; },
+                ["ENABLE_KEYBOARD"] = val => { if (bool.TryParse(val, out bool v)) Settings.AllowKeyboard = v; },
+                ["WALK_DISTANCE"] = val => { if (int.TryParse(val, out int v)) Settings.WalkDistance = v; },
+            };
+
             foreach (var line in File.ReadAllLines(path))
             {
                 if (string.IsNullOrWhiteSpace(line) || !line.Contains("="))
@@ -38,352 +80,13 @@ namespace Desktop_Gremlin
 
                 string key = parts[0].Trim();
                 string value = parts[1].Trim();
-
-                switch (key.ToUpper())
+                if (settingsMap.TryGetValue(key, out var setter))
                 {
-                    case "START_CHAR":
-                        {
-                            Settings.StartingChar = value;
-                            break;
-                        }
-                    case "COMPANION_CHAR":
-                        {
-                            Settings.CompanionChar = value;
-                            break;
-                        }
-                    case "SUMMON_CHAR":
-                        {
-                            Settings.SummonChar = value;
-                            break;
-                        }
-                    case "COMBAT_MODE_CHAR":
-                        {
-                            Settings.CombatModeChar = value;
-                            break;
-                        }
-                    case "SPRITE_FRAMERATE":
-                        {
-                            if (int.TryParse(value, CultureInfo.InvariantCulture, out int intValue))
-                            {
-                                Settings.FrameRate = intValue;
-                            }
-                            break;
-                        }
-                    case "FOLLOW_RADIUS":
-                        {
-                            if (double.TryParse(value, CultureInfo.InvariantCulture, out double intValue))
-                            {
-                                Settings.FollowRadius = intValue;
-                            }
-                            break;
-                        }
-                    case "MAX_INTERVAL":
-                        {
-                            if (int.TryParse(value, CultureInfo.InvariantCulture, out int intValue))
-                            {
-                                Settings.RandomMaxInterval = intValue;
-                            }
-                        }
-                        break;
-                    case "MIN_INTERVAL":
-                        {
-                            if (int.TryParse(value, CultureInfo.InvariantCulture, out int intValue))
-                            {
-                                Settings.RandomMinInterval = intValue;
-                            }
-                        }
-                        break;
-                    case "RANDOM_MOVE_DISTANCE":
-                        {
-                            if (int.TryParse(value, CultureInfo.InvariantCulture, out int intValue))
-                            {
-                                Settings.MoveDistance = intValue;
-                            }
-                        }
-                        break;
-                    case "ALLOW_RANDOM_ACTIONS":
-                        {
-                            if (bool.TryParse(value, out bool Value))
-                            {
-                                Settings.AllowRandomness = Value;
-                            }
-                        }
-                        break;
-                    case "SLEEP_TIME":
-                        {
-                            if (int.TryParse(value, CultureInfo.InvariantCulture, out int Value))
-                            {
-                                Settings.SleepTime = Value;
-                            }
-                        }
-                        break;
-                    case "ALLOW_FOOTSTEP_SOUNDS":
-                        {
-                            if (bool.TryParse(value, out bool Value))
-                            {
-                                Settings.FootStepSounds = Value;
-                            }
-                        }
-                        break;
-                    case "AMMO":
-                        {
-                            if (int.TryParse(value, CultureInfo.InvariantCulture, out int Value))
-                            {
-                                Settings.Ammo = Value;
-                            }
-                        }
-                        break;
-
-                    case "ALLOW_COLOR_HOTSPOT":
-                        {
-                            if (bool.TryParse(value, out bool Value))
-                            {
-                                Settings.AllowColoredHotSpot = Value;
-                            }
-                        }
-                        break;
-                    case "SHOW_TASKBAR":
-                        {
-                            if (bool.TryParse(value, out bool Value))
-                            {
-                                Settings.ShowTaskBar = Value;
-                            }
-                        }
-                        break;
-                    case "SPRITE_SCALE":
-                        {
-                            if (double.TryParse(value, CultureInfo.InvariantCulture, out double Value))
-                            {
-                                Settings.SpriteSize = Value;
-                            }
-                        }
-                        break;
-                    case "FORCE_FAKE_TRANSPARENT":
-                        {
-                            if (bool.TryParse(value, out bool Value))
-                            {
-                                Settings.FakeTransparent = Value;
-                            }
-                        }
-                        break;
-                    case "ALLOW_ERROR_MESSAGES":
-                        {
-                            if (bool.TryParse(value, out bool Value))
-                            {
-                                Settings.AllowErrorMessages = Value;
-                            }
-                        }
-                        break;
-                    case "MAX_ACCELERATION":
-                        {
-                            if (int.TryParse(value, CultureInfo.InvariantCulture, out int Value))
-                            {
-                                Settings.MaxItemAcceleration = Value;
-                            }
-                        }
-                        break;
-                    case "FOLLOW_ACCELERATION":
-                        {
-                            if (double.TryParse(value, CultureInfo.InvariantCulture, out double Value))
-                            {
-                                Settings.CurrentItemAcceleration = Value;
-                            }
-                        }
-                        break;
-                    case "CURRENT_ACCELERATION":
-                        {
-                            if (double.TryParse(value, CultureInfo.InvariantCulture, out double Value))
-                            {
-                                Settings.ItemAcceleration = Value;
-                            }
-                        }
-                        break;
-                    case "MAX_EATING_SIZE":
-                        {
-                            if (int.TryParse(value, CultureInfo.InvariantCulture, out int Value))
-                            {
-                                Settings.FoodItemGetSize = Value;
-                            }
-                        }
-                        break;
-                    case "ITEM_WIDTH":
-                        {
-                            if (int.TryParse(value, CultureInfo.InvariantCulture, out int Value))
-                            {
-                                Settings.ItemWidth = Value;
-                            }
-                        }
-                        break;
-                    case "ITEM_HEIGHT":
-                        {
-                            if (int.TryParse(value, CultureInfo.InvariantCulture, out int Value))
-                            {
-                                Settings.ItemHeight = Value;
-                            }
-                        }
-                        break;
-                    case "COMPANIONS_SCALE":
-                        {
-                            if (double.TryParse(value, CultureInfo.InvariantCulture, out double Value))
-                            {
-                                Settings.CompanionScale = Value;
-                            }
-                        }
-                        break;
-                    case "ENABLE_MIN_RESIZE":
-                        {
-                            if (bool.TryParse(value, out bool Value))
-                            {
-                                Settings.EnableMinSize = Value;
-                            }
-                        }
-                        break;
-                    case "FORCE_CENTER":
-                        {
-                            if (bool.TryParse(value, out bool Value))
-                            {
-                                Settings.ForceCenter = Value;
-                            }
-                        }
-                        break;
-                    case "ENABLE_MANUAL_RESIZE":
-                        {
-                            if (bool.TryParse(value, out bool Value))
-                            {
-                                Settings.ManualReize = Value;
-                            }
-                        }
-                        break;
-                    case "VOLUME_LEVEL":
-                        {
-                            if (double.TryParse(value, CultureInfo.InvariantCulture, out double Value))
-                            {
-                                Settings.VolumeLevel = Value;
-                            }
-                        }
-                        break;
-                    case "DISABLE_HOTSPOTS":
-                        {
-                            if (bool.TryParse(value, out bool Value))
-                            {
-                                Settings.DisableHotspots = Value;
-                            }
-                        }
-                        break;
-                    case "START_BOTTOM":
-                        {
-                            if (bool.TryParse(value, out bool Value))
-                            {
-                                Settings.ForceBottomSpawn = Value;
-                            }
-                        }
-                        break;
-                    case "ENABLE_GRAVITY":
-                        {
-                            if (bool.TryParse(value, out bool Value))
-                            {
-                                Settings.EnableGravity = Value;
-                            }
-                        }
-                        break;
-                    case "GRAVITY_STRENGTH":
-                        {
-                            if (double.TryParse(value, CultureInfo.InvariantCulture, out double Value))
-                            {
-                                Settings.SvGravity = Value;
-                            }
-                        }
-                        break;
-                    case "SPRITE_SPEED":
-                        {
-                            if (double.TryParse(value, CultureInfo.InvariantCulture, out double Value))
-                            {
-                                MouseSettings.Speed = Value;
-                            }
-                        }
-                        break;
-                }
-
-            }
-        }
-
-        public static FrameCounts LoadConfigChar(string character)
-        {
-            var result = new FrameCounts();
-            string path = System.IO.Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "SpriteSheet", "Gremlins", character, "config.txt");
-
-            if (!File.Exists(path))
-            {
-                Gremlin.ErrorClose("Cannot find the SpriteSheet config.txt", "Missing config.txt", true);
-                return result;
-            }
-
-            foreach (var line in File.ReadAllLines(path))
-            {
-                if (string.IsNullOrWhiteSpace(line) || !line.Contains("="))
-                {
-                    continue;
-                }
-                    
-
-                var parts = line.Split('=');
-                if (parts.Length != 2)
-                {
-                    continue;
-                }
-                
-                string key = parts[0].Trim();
-                string value = parts[1].Trim();
-
-                if (!int.TryParse(value, CultureInfo.InvariantCulture, out int intValue))
-                {
-                    continue;
-                }
-                    
-                switch (key.ToUpper())
-                {
-                    case "INTRO": result.Intro = intValue; break;
-                    case "IDLE": result.Idle = intValue; break;
-                    case "IDLE2": result.Idle2 = intValue; break;
-                    case "RUNUP": result.Up = intValue; break;
-                    case "RUNDOWN": result.Down = intValue; break;
-                    case "RUNLEFT": result.Left = intValue; break;
-                    case "RUNRIGHT": result.Right = intValue; break;
-                    case "UPLEFT": result.UpLeft = intValue; break;
-                    case "UPRIGHT": result.UpRight = intValue; break;
-                    case "DOWNLEFT": result.DownLeft = intValue; break;
-                    case "DOWNRIGHT": result.DownRight = intValue; break;
-                    case "OUTRO": result.Outro = intValue; break;
-                    case "GRAB": result.Grab = intValue; break;
-                    case "RUNIDLE": result.RunIdle = intValue; break;
-                    case "CLICK": result.Click = intValue; break;
-                    case "HOVER": result.Hover = intValue; break;
-                    case "SLEEP": result.Sleep = intValue; break;
-                    case "FIREL": result.LeftFire = intValue; break;
-                    case "FIRER": result.RightFire = intValue; break;
-                    case "RELOAD": result.Reload = intValue; break;
-                    case "PAT": result.Pat = intValue; break;
-                    case "WALKLEFT": result.WalkL = intValue; break;
-                    case "WALKRIGHT": result.WalkR = intValue; break;
-                    case "WALKUP": result.WalkUp = intValue; break;
-                    case "WALKDOWN": result.WalkDown = intValue; break;
-                    case "EMOTE1": result.Emote1 = intValue; break;
-                    case "EMOTE2": result.Emote2 = intValue; break;
-                    case "EMOTE3": result.Emote3 = intValue; break;
-                    case "EMOTE4": result.Emote4 = intValue; break;
-                    case "JUMPSCARE": result.JumpScare = intValue; break;
-                    case "POOF": result.Poof = intValue; break;
-                    case "WIDTH": Settings.FrameWidth = intValue; break;
-                    case "HEIGHT": Settings.FrameHeight = intValue; break;
-                    case "COLUMN": Settings.SpriteColumn = intValue; break;
-                    case "WIDTHJS": Settings.FrameWidthJs = intValue; break;
-                    case "HEIGHTJS": Settings.FrameHeightJs = intValue; break;
-                    case "MIRRORXSPRITE": Settings.MirrorXSprite = intValue == 1; break;
+                    setter(value);
                 }
             }
-            return result;
+            settingsMap.Clear();
+            settingsMap = null;
         }
 
 

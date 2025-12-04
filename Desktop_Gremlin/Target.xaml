@@ -13,6 +13,15 @@
         Topmost="True"
         ShowInTaskbar="True">
     <Grid>
-        <Image x:Name="SpriteFood" Source="SpriteSheet/food.png"  />
+        <Image x:Name="SpriteFood" Source="SpriteSheet/food.png"
+            Width="80" Height="80"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"/>
+
+        <Image Name="IntroEffect"
+            Width="80" Height="80"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            >
     </Grid>
 </Window>
