@@ -1,13 +1,11 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
-using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
-using Desktop_Gremlin;
 using System;
-using System.Collections.Generic;
-namespace Mambo
+
+namespace Desktop_Gremlin
 {
     /// <summary>
     /// Interaction logic for Companion.xaml
@@ -44,13 +42,19 @@ namespace Mambo
             IntroEffect.Height = IntroEffect.Height * Settings.CompanionScale;
             MediaManager.PlaySound("intro.wav", Settings.CompanionChar);
         }
+        public new void Close()
+        {
+            _masterTimer.Stop();
+            _effectTimer.Stop();
+            base.Close();
+        }
         private int PlayAnimationIfActive(string stateName, string folder, int currentFrame, int frameCount, bool resetOnEnd)
         {
             if (!GremlinState.GetState(stateName))
             {
                 return currentFrame;
             };
-            currentFrame = SpriteManagerComp.PlayAnimation(stateName, folder, currentFrame, frameCount, SpriteImage);
+            currentFrame = SpriteManager.PlayAnimation(stateName, folder, currentFrame, frameCount, SpriteImage, Settings.CompanionChar);
 
             if (resetOnEnd && currentFrame == 0)
             {
@@ -61,7 +65,7 @@ namespace Mambo
         }
         private int OverlayEffect(string stateName, string folder, int currentFrame, int frameCount, bool resetOnEnd)
         {
-            currentFrame = SpriteManagerComp.PlayEffect(stateName, folder, currentFrame, frameCount, IntroEffect);
+            currentFrame = SpriteManager.PlayEffect(stateName, folder, currentFrame, frameCount, IntroEffect, Settings.CompanionChar);
             if (resetOnEnd && currentFrame == 0)
             {
                 IntroEffect.Source = null;
@@ -116,7 +120,7 @@ namespace Mambo
             {
                 _isMoving = false;
                 _lastStillTime = DateTime.Now;
-                CurrentFrames.WalkIdle = SpriteManagerComp.PlayAnimation("runIdle","Actions",CurrentFrames.WalkIdle,FrameCounts.RunIdle,SpriteImage);
+                CurrentFrames.WalkIdle = SpriteManager.PlayAnimation("runIdle","Actions",CurrentFrames.WalkIdle,FrameCounts.RunIdle,SpriteImage,Settings.CompanionChar);
                 return;
             }
             if (!_isMoving)
@@ -147,35 +151,35 @@ namespace Mambo
 
             if (angle >= 337.5 || angle < 22.5)
             {
-                CurrentFrames.Right = SpriteManagerComp.PlayAnimation("runRight", "Run", CurrentFrames.Right, FrameCounts.Right, SpriteImage);
+                CurrentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run", CurrentFrames.Right, FrameCounts.Right, SpriteImage, Settings.CompanionChar);
             }            
             else if (angle >= 22.5 && angle < 67.5)
             {
-                CurrentFrames.DownRight = SpriteManagerComp.PlayAnimation("downRight", "Run", CurrentFrames.DownRight, FrameCounts.DownRight, SpriteImage);
+                CurrentFrames.DownRight = SpriteManager.PlayAnimation("downRight", "Run", CurrentFrames.DownRight, FrameCounts.DownRight, SpriteImage, Settings.CompanionChar);
             }              
             else if (angle >= 67.5 && angle < 112.5)
             {
-                CurrentFrames.Down = SpriteManagerComp.PlayAnimation("runDown", "Run", CurrentFrames.Down, FrameCounts.Down, SpriteImage);
+                CurrentFrames.Down = SpriteManager.PlayAnimation("runDown", "Run", CurrentFrames.Down, FrameCounts.Down, SpriteImage, Settings.CompanionChar);
             }                
             else if (angle >= 112.5 && angle < 157.5)
             {
-                CurrentFrames.DownLeft = SpriteManagerComp.PlayAnimation("downLeft", "Run", CurrentFrames.DownLeft, FrameCounts.DownLeft, SpriteImage);
+                CurrentFrames.DownLeft = SpriteManager.PlayAnimation("downLeft", "Run", CurrentFrames.DownLeft, FrameCounts.DownLeft, SpriteImage, Settings.CompanionChar);
             }                
             else if (angle >= 157.5 && angle < 202.5)
             {
-                CurrentFrames.Left = SpriteManagerComp.PlayAnimation("runLeft", "Run", CurrentFrames.Left, FrameCounts.Left, SpriteImage);
+                CurrentFrames.Left = SpriteManager.PlayAnimation("runLeft", "Run", CurrentFrames.Left, FrameCounts.Left, SpriteImage, Settings.CompanionChar);
             }    
             else if (angle >= 202.5 && angle < 247.5)
             {
-                CurrentFrames.UpLeft = SpriteManagerComp.PlayAnimation("upLeft", "Run", CurrentFrames.UpLeft, FrameCounts.UpLeft, SpriteImage);
+                CurrentFrames.UpLeft = SpriteManager.PlayAnimation("upLeft", "Run", CurrentFrames.UpLeft, FrameCounts.UpLeft, SpriteImage, Settings.CompanionChar);
             }
             else if (angle >= 247.5 && angle < 292.5)
             {
-                CurrentFrames.Up = SpriteManagerComp.PlayAnimation("runUp", "Run", CurrentFrames.Up, FrameCounts.Up, SpriteImage);
+                CurrentFrames.Up = SpriteManager.PlayAnimation("runUp", "Run", CurrentFrames.Up, FrameCounts.Up, SpriteImage, Settings.CompanionChar);
             }               
             else if (angle >= 292.5 && angle < 337.5)
             {
-                CurrentFrames.UpRight = SpriteManagerComp.PlayAnimation("upRight", "Run", CurrentFrames.UpRight, FrameCounts.UpRight, SpriteImage);
+                CurrentFrames.UpRight = SpriteManager.PlayAnimation("upRight", "Run", CurrentFrames.UpRight, FrameCounts.UpRight, SpriteImage, Settings.CompanionChar);
             }
                 
         }

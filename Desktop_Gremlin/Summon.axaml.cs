@@ -1,14 +1,15 @@
-﻿using Mambo;
-using System;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Threading;
+﻿using System;
+using System.Runtime.CompilerServices;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
+using Avalonia.Threading;
 
-namespace Doto
+namespace Desktop_Gremlin
 {
-
 
     public partial class Summon : Window
     {
@@ -28,17 +29,15 @@ namespace Doto
         private bool IsDragging = false;    
         public int WhichSide = -1;
 
-        public Summon(int whichSide)
+        public Summon(double whichSide)
         {
             InitializeComponent();
-            SpriteFlipTransform.ScaleX = whichSide;
+            this.RenderTransform = new ScaleTransform(whichSide, 1.0);
             SpriteImage.Source = new CroppedBitmap();
-            FrameCounts = ConfigManager.LoadConfigChar("Lemon");
+            FrameCounts = ConfigManager.LoadConfigChar(Settings.SummonChar);
             GremlinState.LockState();   
             ConfigManager.ApplyXamlSettings(this);  
-            SecondMediaManager.PlaySound("intro.wav", "Lemon");
-            SpriteFlipTransform.CenterX = (Settings.FrameWidth * Settings.SpriteSize) / 2;
-            SpriteFlipTransform.CenterY = (Settings.FrameHeight * Settings.SpriteSize) / 2;
+            MediaManager.PlaySound("intro.wav", Settings.SummonChar);
             if (Settings.EnableGravity)
             {
                 _gravityTimer = new DispatcherTimer();
@@ -48,22 +47,37 @@ namespace Doto
             }
             InitializeAnimations();
         }
+        public new void Close()
+        {
+            _masterTimer.Stop();
+            _gravityTimer.Stop();
+            base.Close();
+        }
         private void Gravity_Tick(object sender, EventArgs e)
         {
-            double bottomLimit = SystemParameters.WorkArea.Bottom - SpriteImage.ActualHeight;
-            if (IsDragging)
+            Screen screen = TopLevel.GetTopLevel(this)?.Screens?.ScreenFromVisual(this);
+            if (screen != null)
             {
-                return;
-            }
-            if (this.Top < bottomLimit)
-            {
-                this.Top += Settings.SvGravity;
+                double bottomLimit;
+                bottomLimit = screen?.WorkingArea.Bottom ?? 0;
+                bottomLimit -= SpriteImage.Bounds.Height;
+                if (IsDragging)
+                {
+                    return;
+                }
+                if (this.Position.Y < bottomLimit && this.Position.Y > 0)
+                {
+                    this.Position = new PixelPoint(
+                        this.Position.X,
+                        (int)(this.Position.Y + Math.Round(Settings.SvGravity))
+                    );
+                }
             }
         }
         private int PlayAnimationIfActive(string stateName, string folder, int currentFrame, int frameCount, bool resetOnEnd)
         {
 
-            currentFrame = SpriteManagerComp.PlayAnimation(stateName, folder, currentFrame, frameCount, SpriteImage);
+            currentFrame = SpriteManager.PlayAnimation(stateName, folder, currentFrame, frameCount, SpriteImage, Settings.SummonChar);
 
             if (resetOnEnd && currentFrame == 0)
             {
@@ -76,7 +90,7 @@ namespace Doto
         }
         private int OverlayEffect(string stateName, string folder, int currentFrame, int frameCount, bool resetOnEnd)
         {
-            currentFrame = SpriteManagerComp.PlayEffect(stateName, folder, currentFrame, frameCount, IntroEffect);
+            currentFrame = SpriteManager.PlayEffect(stateName, folder, currentFrame, frameCount, IntroEffect, Settings.SummonChar);
             if (resetOnEnd && currentFrame == 0)
             {
                 IntroEffect.Source = null;
@@ -100,11 +114,14 @@ namespace Doto
             //};
             //_effectTimer.Start();
         }
-        private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void Canvas_MouseLeftButtonDown(object sender, PointerPressedEventArgs e)
         {
-            IsDragging = true;
-            DragMove();
-            IsDragging = false;
+            if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
+            {
+                IsDragging = true;
+                BeginMoveDrag(e);
+                IsDragging = false;   
+            }
         }
     }
 }

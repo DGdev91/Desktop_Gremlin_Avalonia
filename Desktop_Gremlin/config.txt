@@ -1,4 +1,4 @@
-START_CHAR = Exu
+START_CHAR = Mambo
 
 //Visual Settings
 SPRITE_FRAMERATE = 60
@@ -6,7 +6,7 @@ START_BUTTOM = true
 
 //Movement Settings
 FOLLOW_RADIUS = 100.0
-ENABLE_GRAVITY = true
+ENABLE_GRAVITY = false
 GRAVITY_STRENGTH = 10.0
 SPRITE_SPEED = 4.0	
 
@@ -49,5 +49,11 @@ ITEM_WIDTH = 80
 ITEM_HEIGHT = 80
 
 //Companion Character Doto*
-COMPANION_CHAR = Opera
-COMPANIONS_SCALE = 0.50
+#COMPANION_CHAR = Opera
+#COMPANIONS_SCALE = 0.50
+
+//Summon Character *Exu
+#SUMMON_CHAR = Lemon
+
+//Combat Mode Character *Exu
+#COMBAT_MODE_CHAR = Exu2

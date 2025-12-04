@@ -1,18 +1,18 @@
-﻿<Window x:Class="Desktop_Gremlin.FullScreen"
+﻿<Window x:Class="Desktop_Gremlin.Target"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Desktop_Gremlin"
         mc:Ignorable="d"
-        Title="FullScreen" Height="450" Width="800"
+        Title="Target" Height="80" Width="80" 
+        CanResize="False"
+        TransparencyLevelHint="Transparent"
         SystemDecorations="None"
-        WindowState="Maximized"
-        Background="Transparent">
+        Background="Transparent"
+        Topmost="True"
+        ShowInTaskbar="True">
     <Grid>
-        <Image Name="SpriteImage"
-           Stretch="UniformToFill"
-           HorizontalAlignment="Stretch"
-           VerticalAlignment="Stretch" />
+        <Image x:Name="SpriteFood" Source="SpriteSheet/food.png"  />
     </Grid>
 </Window>

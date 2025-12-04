@@ -30,7 +30,7 @@ INTRO=27
 CLICK=45
 OUTRO=30
 PAT=0
-RUNIDLE= 60
+RUNIDLE=60
 SLEEP=90
 
 //SpriteSheet
@@ -38,3 +38,8 @@ WIDTH=300
 HEIGHT=300
 COLUMN=10
 
+//Enables Combat Mode (Made for Exu)
+ENABLECOMBATMODE = 1
+
+//Mirrors the "RunRight" sprite for running left (Made for Exu)
+MIRRORXSPRITE = 1

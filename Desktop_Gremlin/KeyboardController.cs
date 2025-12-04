@@ -1,8 +1,10 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Threading;
-using static ConfigManager;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Media;
+using Avalonia.Platform;
+using Avalonia.Threading;
 
 namespace Desktop_Gremlin
 {
@@ -69,7 +71,7 @@ namespace Desktop_Gremlin
                     break;
 
                 case Key.Q:
-                    _gremlin.ToggleCombatMode();
+                    if (!string.IsNullOrEmpty(Settings.CombatModeChar)) _gremlin.ToggleCombatMode();
                     break;
                 case Key.D1:
                 case Key.NumPad1:
@@ -144,12 +146,20 @@ namespace Desktop_Gremlin
                 case Key.A:
                 case Key.Left:
                     _keyboardMoveSpeedX = -KEY_MOVE_SPEED;
-                    _gremlin.SpriteFlipTransform.ScaleX = -1;
+                    if (Settings.MirrorXSprite)
+                    {
+                        ScaleTransform spriteFlip = _gremlin.RenderTransform as ScaleTransform;
+                        spriteFlip.ScaleX = -1;
+                    }
                     break;
                 case Key.D:
                 case Key.Right:
                     _keyboardMoveSpeedX = KEY_MOVE_SPEED;
-                    _gremlin.SpriteFlipTransform.ScaleX = 1;
+                    if (Settings.MirrorXSprite)
+                    {
+                        ScaleTransform spriteFlip = _gremlin.RenderTransform as ScaleTransform;
+                        spriteFlip.ScaleX = 1;
+                    }
                     break;
             }
 
@@ -195,17 +205,17 @@ namespace Desktop_Gremlin
         }
         private void KeyboardMove_Tick(object sender, EventArgs e)
         {
-            double newLeft = _gremlin.Left + _keyboardMoveSpeedX;
-            double newTop = _gremlin.Top + _keyboardMoveSpeedY;
-            newLeft = Math.Max(SystemParameters.WorkArea.Left,Math.Min(newLeft, SystemParameters.WorkArea.Right - _gremlin.SpriteImage.ActualWidth));
-            newTop = Math.Max(SystemParameters.WorkArea.Top,Math.Min(newTop, SystemParameters.WorkArea.Bottom - _gremlin.SpriteImage.ActualHeight));
-            _gremlin.Left = newLeft;
-            _gremlin.Top = newTop;
+            double newLeft = _gremlin.Position.X + _keyboardMoveSpeedX;
+            double newTop = _gremlin.Position.Y + _keyboardMoveSpeedY;
+            PixelRect workingArea = _gremlin.GetCombinedScreens();
+            newLeft = Math.Max(workingArea.X, Math.Min(newLeft, workingArea.Width - _gremlin.SpriteImage.Bounds.Width));
+            newTop = Math.Max(workingArea.Y, Math.Min(newTop, workingArea.Height - _gremlin.SpriteImage.Bounds.Height));
+            _gremlin.Position = new PixelPoint((int)Math.Round(newLeft), (int)Math.Round(newTop));
 
             if (Math.Abs(_keyboardMoveSpeedX) > Math.Abs(_keyboardMoveSpeedY))
             {
                 _currentFrames.WalkRight = SpriteManager.PlayAnimation("walkRight", "Walk",
-                    _currentFrames.WalkRight, _frameCounts.WalkR, _gremlin.SpriteImage);
+                    _currentFrames.WalkRight, _frameCounts.WalkR, _gremlin.SpriteImage, Settings.StartingChar);
             }
         }
         public void StopAllMovement()
@@ -243,9 +253,11 @@ namespace Desktop_Gremlin
 
                 HELP:
                     F1 - Show this help
-                    X - Close Program";           
-            MessageBox.Show(helpText, "Desktop Gremlin - Keyboard Controls",
-                MessageBoxButton.OK, MessageBoxImage.Information);
+                    X - Close Program";          
+
+            //MessageBox.Show(helpText, "Desktop Gremlin - Keyboard Controls",
+            //    MessageBoxButton.OK, MessageBoxImage.Information);
+            Gremlin.ErrorClose(helpText, "Desktop Gremlin - Keyboard Controls", false, 400, 550);
         }
 
     }

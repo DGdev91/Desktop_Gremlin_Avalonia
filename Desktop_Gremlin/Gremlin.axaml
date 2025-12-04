@@ -17,17 +17,13 @@
     <Grid PointerPressed="SpriteImage_RightClick">
         <Image Name="SpriteImage"
            Width="300" Height="300"
+           RenderTransformOrigin="0.5,0.5"
            HorizontalAlignment="Center"
            VerticalAlignment="Center"        
            PointerPressed="Canvas_MouseLeftButtonDown"
            PointerReleased="Canvas_MouseLeftButtonUp"
            PointerEntered="SpriteImage_MouseEnter"
            PointerExited="SpriteImage_MouseLeave">
-            <Image.RenderTransform>
-                <ScaleTransform x:Name="SpriteFlipTransform"
-                ScaleX="1" ScaleY="1"
-                CenterX="150" CenterY="150"/>
-            </Image.RenderTransform>
         </Image>
         <Image Name="Effect"
            Width="300" Height="300"

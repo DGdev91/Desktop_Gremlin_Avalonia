@@ -3,9 +3,10 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Media.Immutable;
 using System;
 
-namespace Koyuki
+namespace Desktop_Gremlin
 {
     public partial class Target : Window
     {
@@ -20,7 +21,7 @@ namespace Koyuki
 
             if (Settings.FakeTransparent)
             {
-                this.Background = (SolidColorBrush)(new BrushConverter().ConvertFrom("#01000000"));
+                this.Background = (ImmutableSolidColorBrush)(new BrushConverter().ConvertFrom("#01000000"));
             }
 
         }

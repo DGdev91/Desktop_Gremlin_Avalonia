@@ -15,7 +15,7 @@ namespace Desktop_Gremlin
         //but I do have to set some limits depending on how many sprites will be used
 
         private static string _currentCharacter = null;
-        private static readonly Dictionary<string, BitmapImage> _spriteCache = new Dictionary<string, BitmapImage>();
+        private static readonly Dictionary<string, Bitmap> _spriteCache = new Dictionary<string, Bitmap>();
         private static readonly Dictionary<string, string> _fileNameMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
             ["idle"] = "idle.png",
@@ -52,9 +52,9 @@ namespace Desktop_Gremlin
             ["poof"] = "poof.png"
             
         };
-        public static int PlayAnimation(string sheetName,string actionType , int currentFrame,int frameCount, Image targetImage, bool PlayOnce = false)
+        public static int PlayAnimation(string sheetName,string actionType , int currentFrame,int frameCount, Image targetImage, string character, bool PlayOnce = false)
         {
-            Bitmap sheet = Get(sheetName,actionType);
+            Bitmap sheet = Get(sheetName, actionType, character);
 
             if (sheet == null)
             {
@@ -78,7 +78,7 @@ namespace Desktop_Gremlin
             targetImage.Source = new CroppedBitmap(sheet, new PixelRect(x, y, Settings.FrameWidth, Settings.FrameHeight));
             return (currentFrame + 1) % frameCount;
         }
-        public static Bitmap Get(string animationName, string actionType)
+        public static Bitmap Get(string animationName, string actionType, string character)
         {
             if (_currentCharacter != Settings.StartingChar)
             {
@@ -87,10 +87,10 @@ namespace Desktop_Gremlin
             }
             string cacheKey = animationName;
 
-            if (_spriteCache.TryGetValue(cacheKey, out Bitmap cached))
-            {
-                return cached;
-            }
+            //if (_spriteCache.TryGetValue(cacheKey, out Bitmap cached))
+            //{
+            //    return cached;
+            //}
             string fileName = GetFileName(animationName);
 
             if (fileName == null)
@@ -99,7 +99,7 @@ namespace Desktop_Gremlin
                 return null;
             }
 
-            BitmapImage sheet = LoadSprite(Settings.StartingChar, fileName, actionType);
+            Bitmap sheet = LoadSprite(Settings.StartingChar, fileName, actionType);
             if (sheet != null)
             {
                 _spriteCache[cacheKey] = sheet;
@@ -130,6 +130,30 @@ namespace Desktop_Gremlin
         public static void ClearCache()
         {
             _spriteCache.Clear();
+        }
+
+        public static int PlayEffect(string sheetName, string actionType, int currentFrame, int frameCount, Image targetImage, string character, bool PlayOnce = false)
+        {
+            Bitmap sheet = Get(sheetName, actionType, character);
+            if (sheet == null)
+            {
+                return currentFrame;
+            }
+            int x = (currentFrame % Settings.SpriteColumn) * Settings.FrameWidth;
+            int y = (currentFrame / Settings.SpriteColumn) * Settings.FrameHeight;
+
+            if (x + Settings.FrameWidth > sheet.PixelSize.Width || y + Settings.FrameHeight > sheet.PixelSize.Height)
+            {
+                return currentFrame;
+            }
+            CroppedBitmap oldImage = targetImage.Source as CroppedBitmap;
+            if (oldImage != null) oldImage.Dispose();
+            targetImage.Source = new CroppedBitmap(sheet, new PixelRect(x, y, Settings.FrameWidth, Settings.FrameHeight));
+            if (frameCount <= 0)
+            {
+                Gremlin.ErrorClose($"Error Animation: {sheetName} action: {actionType} has invalid frame count", "Animation Error", true);
+            }
+            return (currentFrame + 1) % frameCount;
         }
 
     }

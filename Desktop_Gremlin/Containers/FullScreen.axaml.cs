@@ -15,9 +15,9 @@ namespace Desktop_Gremlin
             InitializeAnimation();  
 
         }
-        private int PlayAnimation(string sheetName,string action, int currentFrame, int frameCount, Image targetImage, bool PlayOnce = false)
+        private int PlayAnimation(string sheetName,string action, int currentFrame, int frameCount, Image targetImage, string character, bool PlayOnce = false)
         {
-            Bitmap sheet = SpriteManager.Get(sheetName,action);
+            Bitmap sheet = SpriteManager.Get(sheetName,action, character);
 
             if (sheet == null)
             {

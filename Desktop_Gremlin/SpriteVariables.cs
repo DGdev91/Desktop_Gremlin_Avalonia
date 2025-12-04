@@ -75,6 +75,8 @@ public static class Settings
     public static int FrameRate { get; set; } = 0;
     public static string StartingChar { get; set; } = "";
     public static string CompanionChar { get; set; } = "";
+    public static string SummonChar { get; set; } = "";
+    public static string CombatModeChar { get; set; } = "";
     public static double FollowRadius { get; set; } = 0;
     public static int FrameWidth { get; set; } = 0;
     public static int FrameHeight { get; set; } = 0;
@@ -110,7 +112,7 @@ public static class Settings
     public static bool DisableHotspots { get; set; } = true;
     public static bool EnableGravity { get; set; } = false;
     public static double SvGravity { get; set; } = 10.0;
-    public static bool LanguageDiff { get; set; } = true;  
+    public static bool MirrorXSprite { get; set; } = false;
 
 }
 public static class MouseSettings   
