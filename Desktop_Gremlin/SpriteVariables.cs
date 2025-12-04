@@ -1,10 +1,9 @@
 ﻿using System.Data.SqlTypes;
+using System.Diagnostics.Eventing.Reader;
 
 public static class Settings
 {
-    // -------------------
-    // Integers
-    // -------------------
+
     public static int SpriteColumn { get; set; } = 0;
     public static int FrameRate { get; set; } = 0;
     public static int FrameWidth { get; set; } = 0;
@@ -22,9 +21,6 @@ public static class Settings
     public static int ItemHeight { get; set; } = 0;
     public static int WalkDistance { get; set; } = 0;   
 
-    // -------------------
-    // Doubles
-    // -------------------
     public static double FollowRadius { get; set; } = 0;
     public static double SpriteSize { get; set; } = 1.0;
 
@@ -32,15 +28,11 @@ public static class Settings
     public static double VolumeLevel { get; set; } = 1.0;
     public static double SvGravity { get; set; } = 10.0;
 
-    // -------------------
-    // Strings
-    // -------------------
+
     public static string StartingChar { get; set; } = "";
     public static string CompanionChar { get; set; } = "";
 
-    // -------------------
-    // Booleans
-    // -------------------
+
     public static bool AllowRandomness { get; set; } = false;
     public static bool AllowGravity { get; set; } = false;
     public static bool FootStepSounds { get; set; } = false;
@@ -57,6 +49,7 @@ public static class Settings
     public static bool LanguageDiff { get; set; } = true;
     public static bool AllowCache { get; set; } = false;
     public static bool AllowKeyboard { get; set; } = false;
+    public static bool UseWPF { get; set; } = false;    
 }
 public static class Quirks
 {

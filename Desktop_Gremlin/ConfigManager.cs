@@ -60,6 +60,7 @@ public static class ConfigManager
             ["SPRITE_SPEED"] = val => { if (TryParseDoubleInvariant(val, out double v)) MouseSettings.Speed = v; },
             ["ENABLE_KEYBOARD"] = val => { if (bool.TryParse(val, out bool v)) Settings.AllowKeyboard = v; },
             ["WALK_DISTANCE"] = val => { if (int.TryParse(val, out int v)) Settings.WalkDistance = v; },
+            ["USE_WPFPLAYER"] = val => { if (bool.TryParse(val, out bool v)) Settings.UseWPF = v; },
         };
         foreach (var line in File.ReadAllLines(path))
         {
