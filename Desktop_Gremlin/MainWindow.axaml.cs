@@ -7,10 +7,10 @@ using Avalonia.Media.Immutable;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using System;
-using static Desktop_Gremlin.ConfigManager;
-namespace Desktop_Gremlin
+using static DesktopGremlin.ConfigManager;
+namespace DesktopGremlin
 {
-    public partial class Gremlin : Window
+    public partial class MainWindow : Window
     {
         public string _SelectedCharacter;
         private Size? _followCursor_oldWindowSize;
@@ -47,7 +47,7 @@ namespace Desktop_Gremlin
             public int Y;
         }
 
-        public Gremlin()
+        public MainWindow()
         {
             InitializeComponent();
             InitializeConfig();         
@@ -463,9 +463,10 @@ namespace Desktop_Gremlin
                     return;
                 }
 
+                //PixelRect workingArea = GetCombinedScreens();
                 Point foodCenter = _currentFood.GetCenter();
-                double gremlinCenterX = this.Position.X + this.Bounds.Width / 2;
-                double gremlinCenterY = this.Position.Y + this.Bounds.Height / 2;
+                double gremlinCenterX = this.Position.X + this.Width / 2;
+                double gremlinCenterY = this.Position.Y + this.Height / 2;
                 double dx = foodCenter.X - gremlinCenterX;
                 double dy = foodCenter.Y - gremlinCenterY;
                 double distance = Math.Sqrt(dx * dx + dy * dy);
@@ -590,31 +591,9 @@ namespace Desktop_Gremlin
         {
             if (e.GetCurrentPoint(this).Properties.IsLeftButtonPressed)
             {
-                if (GremlinState.GetState("FollowItem"))
-                {
-                    return;
-                }
-
-                GremlinState.UnlockState();
-                GremlinState.SetState("FollowItem");
-                GremlinState.LockState();
-                double screenWidth = SystemParameters.WorkArea.Width;
-                double screenHeight = SystemParameters.WorkArea.Height;
-
-                Random rng = new Random();
-                double randomLeft = rng.NextDouble() * (screenWidth - Settings.FrameWidth) + SystemParameters.WorkArea.Left;
-                double randomTop = rng.NextDouble() * (screenHeight - Settings.FrameHeight) + SystemParameters.WorkArea.Top;
-                _currentFood = new Target
-                {
-                    Left = randomLeft,
-                    Top = randomTop
-                };
-                _currentFood.Show();
-                StartFollowingFood();
-
                 if (!string.IsNullOrEmpty(Settings.CombatModeChar)) ToggleCombatMode();
 
-                if (!string.IsNullOrEmpty(Settings.CompanionChar))
+                else if (!string.IsNullOrEmpty(Settings.CompanionChar))
                 {
                     if (_companionInstance != null && _companionInstance.IsVisible)
                     {
@@ -625,6 +604,29 @@ namespace Desktop_Gremlin
                     _companionInstance.MainGremlin = this;
                     _companionInstance.Closed += (s, args) => _companionInstance = null;
                     _companionInstance.Show();   
+                }
+
+                else if (GremlinState.GetState("FollowItem"))
+                {
+                    return;
+                }
+
+                else
+                {
+                    GremlinState.UnlockState();
+                    GremlinState.SetState("FollowItem");
+                    GremlinState.LockState();
+                    PixelRect workingArea = GetCombinedScreens();
+                    double screenWidth = workingArea.Width;
+                    double screenHeight = workingArea.Height;
+
+                    Random rng = new Random();
+                    double randomLeft = rng.NextDouble() * (screenWidth - Settings.FrameWidth) + workingArea.X;
+                    double randomTop = rng.NextDouble() * (screenHeight - Settings.FrameHeight) + workingArea.Y;
+                    _currentFood = new Target();
+                    _currentFood.Position = new PixelPoint((int)Math.Round(randomLeft), (int)Math.Round(randomTop));
+                    _currentFood.Show();
+                    StartFollowingFood();
                 }
             }
         }
@@ -797,17 +799,14 @@ namespace Desktop_Gremlin
             GremlinState.UnlockState();
             GremlinState.SetState("FollowItem");
             GremlinState.LockState();
-            double screenWidth = SystemParameters.WorkArea.Width;
-            double screenHeight = SystemParameters.WorkArea.Height;
+            PixelRect workingArea = GetCombinedScreens();
+            double screenWidth = workingArea.Width;
+            double screenHeight = workingArea.Height;
 
             Random rng = new Random();
-            double randomLeft = rng.NextDouble() * (screenWidth - Settings.FrameWidth) + SystemParameters.WorkArea.Left;
-            double randomTop = rng.NextDouble() * (screenHeight - Settings.FrameHeight) + SystemParameters.WorkArea.Top;
-            _currentFood = new Target
-            {
-                Left = randomLeft,
-                Top = randomTop
-            };
+            double randomLeft = rng.NextDouble() * (screenWidth - Settings.FrameWidth) + workingArea.X;
+            double randomTop = rng.NextDouble() * (screenHeight - Settings.FrameHeight) + workingArea.Y;
+            _currentFood.Position = new PixelPoint((int)Math.Round(randomLeft), (int)Math.Round(randomTop));
             _currentFood.Show();
             StartFollowingFood();
         }

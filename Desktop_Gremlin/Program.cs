@@ -1,7 +1,7 @@
 using Avalonia;
 using System;
 
-namespace Desktop_Gremlin
+namespace DesktopGremlin
 {
     internal static class Program
     {
@@ -13,7 +13,7 @@ namespace Desktop_Gremlin
         }
 
         public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<Desktop_Gremlin.App>()
+            => AppBuilder.Configure<DesktopGremlin.App>()
                 .UsePlatformDetect()
                 .WithInterFont()
                 .LogToTrace();

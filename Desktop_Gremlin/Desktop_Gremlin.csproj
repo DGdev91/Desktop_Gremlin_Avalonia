@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net9.0</TargetFramework>
-    <RootNamespace>Desktop_Gremlin</RootNamespace>
-    <AssemblyName>Desktop_Gremlin</AssemblyName>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>DesktopGremlin</RootNamespace>
+    <AssemblyName>DesktopGremlin</AssemblyName>
     <ApplicationIcon>SpriteSheet\System\ico.ico</ApplicationIcon>
     <AvaloniaCompileXaml>true</AvaloniaCompileXaml>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
@@ -21,9 +21,9 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <AssemblyTitle>Desktop_Gremlin</AssemblyTitle>
+    <AssemblyTitle>DesktopGremlin</AssemblyTitle>
     <Company></Company>
-    <Product>Desktop_Gremlin</Product>
+    <Product>DesktopGremlin</Product>
     <Description></Description>
     <Version>1.0.0</Version>
     <FileVersion>1.0.0.0</FileVersion>

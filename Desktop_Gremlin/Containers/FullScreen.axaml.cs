@@ -4,7 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 
-namespace Desktop_Gremlin
+namespace DesktopGremlin
 {
     public partial class FullScreen : Window
     {

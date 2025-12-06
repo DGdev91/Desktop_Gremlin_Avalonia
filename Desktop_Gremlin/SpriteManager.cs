@@ -7,7 +7,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media.Imaging;
 
-namespace Desktop_Gremlin
+namespace DesktopGremlin
 {
     public static class SpriteManager
     {
@@ -61,10 +61,14 @@ namespace Desktop_Gremlin
             if (sheet == null)
             {
                 return currentFrame;
-            }       
-            if (frameCount <= 0)
+            }
+            if (frameCount == 0)
             {
-                Gremlin.ErrorClose($"Error Animation: {sheetName} action: {actionType} has invalid frame count","Animation Error", true);
+                return currentFrame;
+            }      
+            if (frameCount < 0)
+            {
+                MainWindow.ErrorClose($"Error Animation: {sheetName} action: {actionType} has invalid frame count","Animation Error", true);
             }
 
             int x = (currentFrame % Settings.SpriteColumn) * Settings.FrameWidth;
@@ -93,11 +97,11 @@ namespace Desktop_Gremlin
 
             if (fileName == null)
             {
-                Gremlin.ErrorClose($"Error Animation: {animationName} is missing","Animation Missing", false);
+                MainWindow.ErrorClose($"Error Animation: {animationName} is missing","Animation Missing", false);
                 return null;
             }
 
-            Bitmap sheet = LoadSprite(Settings.StartingChar, fileName, actionType);
+            Bitmap sheet = LoadSprite(character, fileName, actionType);
             if (sheet != null)
             {
                 _spriteCache[cacheKey] = sheet;
@@ -145,7 +149,7 @@ namespace Desktop_Gremlin
             targetImage.Source = new CroppedBitmap(sheet, new PixelRect(x, y, Settings.FrameWidth, Settings.FrameHeight));
             if (frameCount <= 0)
             {
-                Gremlin.ErrorClose($"Error Animation: {sheetName} action: {actionType} has invalid frame count", "Animation Error", true);
+                MainWindow.ErrorClose($"Error Animation: {sheetName} action: {actionType} has invalid frame count", "Animation Error", true);
             }
             return (currentFrame + 1) % frameCount;
         }

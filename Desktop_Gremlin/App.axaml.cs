@@ -2,7 +2,7 @@
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
-namespace Desktop_Gremlin
+namespace DesktopGremlin
 {
     public partial class App : Application
     {
@@ -15,7 +15,7 @@ namespace Desktop_Gremlin
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new Gremlin();
+                desktop.MainWindow = new MainWindow();
             }
 
             base.OnFrameworkInitializationCompleted();

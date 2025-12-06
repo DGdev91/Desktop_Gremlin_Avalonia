@@ -8,7 +8,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 
-namespace Desktop_Gremlin
+namespace DesktopGremlin
 {
 
     public partial class Summon : Window
@@ -34,7 +34,7 @@ namespace Desktop_Gremlin
             InitializeComponent();
             this.RenderTransform = new ScaleTransform(whichSide, 1.0);
             SpriteImage.Source = new CroppedBitmap();
-            FrameCounts = ConfigManager.LoadConfigChar(Settings.SummonChar);
+            FrameCounts.LoadConfigChar(Settings.SummonChar);
             GremlinState.LockState();   
             ConfigManager.ApplyXamlSettings(this);  
             MediaManager.PlaySound("intro.wav", Settings.SummonChar);
@@ -49,8 +49,8 @@ namespace Desktop_Gremlin
         }
         public new void Close()
         {
-            _masterTimer.Stop();
-            _gravityTimer.Stop();
+            if (_masterTimer != null) _masterTimer.Stop();
+            if (_gravityTimer != null) _gravityTimer.Stop();
             base.Close();
         }
         private void Gravity_Tick(object sender, EventArgs e)

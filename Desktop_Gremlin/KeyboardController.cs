@@ -6,11 +6,11 @@ using Avalonia.Media;
 using Avalonia.Platform;
 using Avalonia.Threading;
 
-namespace Desktop_Gremlin
+namespace DesktopGremlin
 {
     public class KeyboardController
     {
-        private readonly Gremlin _gremlin;
+        private readonly MainWindow _gremlin;
         private readonly AnimationStates _gremlinState;
         private readonly CurrentFrames _currentFrames;
         private readonly FrameCounts _frameCounts;
@@ -25,7 +25,7 @@ namespace Desktop_Gremlin
 
         public bool IsKeyboardMoving => _isKeyboardMoving;
 
-        public KeyboardController(Gremlin gremlin,AnimationStates gremlinState,CurrentFrames currentFrames,FrameCounts frameCounts,Random rng)
+        public KeyboardController(MainWindow gremlin,AnimationStates gremlinState,CurrentFrames currentFrames,FrameCounts frameCounts,Random rng)
         {
             _gremlin = gremlin;
             _gremlinState = gremlinState;
@@ -338,7 +338,7 @@ namespace Desktop_Gremlin
 
             //MessageBox.Show(helpText, "Desktop Gremlin - Keyboard Controls",
             //    MessageBoxButton.OK, MessageBoxImage.Information);
-            Gremlin.ErrorClose(helpText, "Desktop Gremlin - Keyboard Controls", false, 400, 550);
+            MainWindow.ErrorClose(helpText, "Desktop Gremlin - Keyboard Controls", false, 400, 550);
         }
 
     }

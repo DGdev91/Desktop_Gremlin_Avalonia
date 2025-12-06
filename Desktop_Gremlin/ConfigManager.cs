@@ -9,7 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 
-namespace Desktop_Gremlin
+namespace DesktopGremlin
 {
     public static class ConfigManager
     {
@@ -20,7 +20,7 @@ namespace Desktop_Gremlin
             string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.txt");
             if (!File.Exists(path))
             {
-                Gremlin.ErrorClose("Cannot find the Main config.txt", "Missing config.txt", true);
+                MainWindow.ErrorClose("Cannot find the Main config.txt", "Missing config.txt", true);
                 return;
             }
 
@@ -201,10 +201,10 @@ namespace Desktop_Gremlin
 
         public class AppConfig
         {
-            private Gremlin _gremlin; 
+            private MainWindow _gremlin; 
             private TrayIcon _trayIcon;
             public AnimationStates _states;    
-            public AppConfig(Gremlin gremlin, AnimationStates states)
+            public AppConfig(MainWindow gremlin, AnimationStates states)
             {
 
                 _gremlin = gremlin;
@@ -229,7 +229,7 @@ namespace Desktop_Gremlin
                 }
                 else
                 {
-                    Gremlin.ErrorClose("Cannot find the ico.ico in the application folder or SpriteSheet/System folder", "Missing ico.ico", false);
+                    MainWindow.ErrorClose("Cannot find the ico.ico in the application folder or SpriteSheet/System folder", "Missing ico.ico", false);
                 }
 
                 _trayIcon.IsVisible = true;

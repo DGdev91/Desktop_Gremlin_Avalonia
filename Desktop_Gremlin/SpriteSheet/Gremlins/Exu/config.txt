@@ -38,9 +38,6 @@ WIDTH=300
 HEIGHT=300
 COLUMN=10
 
-//Enables Combat Mode (Made for Exu)
-ENABLECOMBATMODE = 1
-
 //Mirrors the "RunRight" sprite for running left (Made for Exu)
 MIRRORXSPRITE = 1
 

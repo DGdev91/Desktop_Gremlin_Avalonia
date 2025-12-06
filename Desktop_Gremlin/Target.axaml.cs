@@ -7,7 +7,7 @@ using Avalonia.Media.Immutable;
 using Avalonia.Threading;
 using System;
 
-namespace Desktop_Gremlin
+namespace DesktopGremlin
 {
     public partial class Target : Window
     {

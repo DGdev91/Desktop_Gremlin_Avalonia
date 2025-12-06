@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Desktop_Gremlin
+namespace DesktopGremlin
 {
     public class AnimationStates
     {

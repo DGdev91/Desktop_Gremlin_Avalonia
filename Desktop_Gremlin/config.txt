@@ -1,4 +1,4 @@
-START_CHAR = Cafe
+START_CHAR = Doto
 
 //Visual Settings
 SPRITE_FRAMERATE = 60
@@ -43,7 +43,7 @@ VOLUME_LEVEL = 0.5
 //Side effect: You might not be able to click through around the sprite
 FORCE_FAKE_TRANSPARENT = false
 
-//This is for memory vs performance 
+//This is for memory vs performance c
 ALLOW_CACHE = false
 
 //Food and Item Settings
@@ -55,8 +55,8 @@ ITEM_WIDTH = 80
 ITEM_HEIGHT = 80
 
 //Companion Character Doto*
-#COMPANION_CHAR = Opera
-#COMPANIONS_SCALE = 0.50
+COMPANION_CHAR = Opera
+COMPANIONS_SCALE = 0.50
 
 //Summon Character *Exu
 #SUMMON_CHAR = Lemon
