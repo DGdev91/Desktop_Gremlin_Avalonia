@@ -1,4 +1,4 @@
-namespace DesktopGremlin
+﻿namespace DesktopGremlin
 {
     public static class Settings
     {
@@ -50,6 +50,7 @@ namespace DesktopGremlin
         public static bool AllowCache { get; set; } = false;
         public static bool AllowKeyboard { get; set; } = false;
         public static int FoodItemGetSize { get; set; } = 0;
+        public static string FoodMode { get; set; } = "Cafe"; //Possible values: Cafe/Oguri
         public static bool MirrorXSprite { get; set; } = false;
     }
     public static class Quirks

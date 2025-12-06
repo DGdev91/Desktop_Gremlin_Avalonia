@@ -63,6 +63,7 @@ namespace DesktopGremlin
                 ["SPRITE_SPEED"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) MouseSettings.Speed = v; },
                 ["ENABLE_KEYBOARD"] = val => { if (bool.TryParse(val, out bool v)) Settings.AllowKeyboard = v; },
                 ["WALK_DISTANCE"] = val => { if (int.TryParse(val, out int v)) Settings.WalkDistance = v; },
+                ["FOOD_MODE"] = val => Settings.FoodMode = val,
             };
 
             foreach (var line in File.ReadAllLines(path))

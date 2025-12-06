@@ -1,4 +1,4 @@
-START_CHAR = Doto
+START_CHAR = Cafe
 
 //Visual Settings
 SPRITE_FRAMERATE = 60
@@ -47,16 +47,19 @@ FORCE_FAKE_TRANSPARENT = false
 ALLOW_CACHE = false
 
 //Food and Item Settings
-CURRENT_ACCELERATION = 0.3
+CURRENT_ACCELERATION = 10.3
 FOLLOW_ACCELERATION = 0.2
 MAX_ACCELERATION = 200
 MAX_EATING_SIZE = 20
 ITEM_WIDTH = 80
 ITEM_HEIGHT = 80
 
+//Food Mode - Possible values: Oguri (Carrots) / Cafe (Coffee)
+FOOD_MODE = Cafe
+
 //Companion Character Doto*
-COMPANION_CHAR = Opera
-COMPANIONS_SCALE = 0.50
+#COMPANION_CHAR = Opera
+#COMPANIONS_SCALE = 0.50
 
 //Summon Character *Exu
 #SUMMON_CHAR = Lemon

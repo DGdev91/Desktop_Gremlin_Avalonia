@@ -32,10 +32,13 @@ namespace DesktopGremlin
         }
         private void ImageInitialize()
         {
-            //Random rng = new Random();
-            //int index = rng.Next(1, 3);
-            //string fileName = $"food{index}.png";
-            string fileName = "food1.png";
+            string fileName = "coffee1.png"; //defaults to Cafe
+            if (!string.IsNullOrEmpty(Settings.FoodMode) && Settings.FoodMode.ToUpper().CompareTo("OGURI") == 0)
+            {
+                Random rng = new Random();
+                int index = rng.Next(1, 3);
+                fileName = $"food{index}.png";
+            }
             string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet", "Misc", fileName);
             SpriteFood.Source = new Bitmap(path);
         }
