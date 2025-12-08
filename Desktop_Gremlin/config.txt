@@ -44,7 +44,7 @@ VOLUME_LEVEL = 0.5
 FORCE_FAKE_TRANSPARENT = false
 
 //This is for memory vs performance c
-ALLOW_CACHE = false
+ALLOW_CACHE = true
 
 //Food and Item Settings
 CURRENT_ACCELERATION = 0.3

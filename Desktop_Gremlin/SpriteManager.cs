@@ -1,4 +1,4 @@
-using DesktopGremlin;
+﻿using DesktopGremlin;
 using System;
 using System.Collections.Generic;
 using System.Collections.Generic;
@@ -78,15 +78,17 @@ namespace DesktopGremlin
             {
                 return currentFrame;
             }
-
-            CroppedBitmap oldImage = targetImage.Source as CroppedBitmap;
-            if (oldImage != null) oldImage.Dispose();
+            if (!Settings.AllowCache)
+            {
+                CroppedBitmap oldImage = targetImage.Source as CroppedBitmap;
+                if (oldImage != null) oldImage.Dispose();
+            }
             targetImage.Source = new CroppedBitmap(sheet, new PixelRect(x, y, Settings.FrameWidth, Settings.FrameHeight));
             return (currentFrame + 1) % frameCount;
         }
         public static Bitmap Get(string animationName, string actionType, string character)
         {
-            string cacheKey = $"{animationName}_{actionType}";
+            string cacheKey = $"{animationName}_{actionType}_{character}";
 
             if (Settings.AllowCache && _spriteCache.TryGetValue(cacheKey, out Bitmap cached))
             {
@@ -144,8 +146,11 @@ namespace DesktopGremlin
             {
                 return currentFrame;
             }
-            CroppedBitmap oldImage = targetImage.Source as CroppedBitmap;
-            if (oldImage != null) oldImage.Dispose();
+            if (!Settings.AllowCache)
+            {
+                CroppedBitmap oldImage = targetImage.Source as CroppedBitmap;
+                if (oldImage != null) oldImage.Dispose();   
+            }
             targetImage.Source = new CroppedBitmap(sheet, new PixelRect(x, y, Settings.FrameWidth, Settings.FrameHeight));
             if (frameCount <= 0)
             {
