@@ -463,7 +463,6 @@ namespace DesktopGremlin
                     return;
                 }
 
-                //PixelRect workingArea = GetCombinedScreens();
                 Point foodCenter = _currentFood.GetCenter();
                 double gremlinCenterX = this.Position.X + this.Width / 2;
                 double gremlinCenterY = this.Position.Y + this.Height / 2;
@@ -481,7 +480,7 @@ namespace DesktopGremlin
                 _startingSpeed = Math.Min(_startingSpeed + Quirks.ItemAcceleration, Quirks.MaxItemAcceleration);
                 double step = Math.Min(_startingSpeed, distance);
 
-                Position = new PixelPoint((int)Math.Round(dx / distance * step), (int)Math.Round(dy / distance * step));
+                Position = new PixelPoint(Position.X +(int)Math.Round(dx / distance * step), Position.Y + (int)Math.Round(dy / distance * step));
 
                 double angle = Math.Atan2(dy, dx) * (180 / Math.PI);
                 if (angle < 0) angle += 360;
