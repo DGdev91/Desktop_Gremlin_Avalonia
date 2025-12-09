@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace DesktopGremlin
 {
@@ -204,34 +205,52 @@ namespace DesktopGremlin
         {
             private MainWindow _gremlin; 
             private TrayIcon _trayIcon;
+            public string _selectedCharacter;
             public AnimationStates _states;    
-            public AppConfig(MainWindow gremlin, AnimationStates states)
+            private List<string> _characterList;
+            public AppConfig(MainWindow gremlin, AnimationStates states, string selectedCharacter)
             {
 
                 _gremlin = gremlin;
                 _states = states;
+                _selectedCharacter = selectedCharacter;
+                _characterList = LoadCharacterList();
                 SetupTrayIcon();
-            }   
+            }
+
+            private List<string> LoadCharacterList()
+            {
+                List<string> characterDirs = new List<string>();
+
+                try
+                {
+                    string spriteSheetFolder = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet/Gremlins/");
+
+                    if (Directory.Exists(spriteSheetFolder))
+                    {
+                        string[] subDirs = Directory.GetDirectories(spriteSheetFolder);
+                        foreach (string subDir in subDirs)
+                        {
+                            characterDirs.Add(Path.GetFileName(subDir));
+                        }
+                    }
+                    else
+                    {
+                        MainWindow.ErrorClose("Cannot find the SpriteSheet/Gremlins directory", "Missing SpriteSheet/Gremlins directory", false);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MainWindow.ErrorClose($"Error while loading characters directories: {ex.Message}", "Error loading characters directories", false);
+                }
+
+                return characterDirs;
+            }
+
             public void SetupTrayIcon()
             {
                 _trayIcon = new TrayIcon();
-
-                if (File.Exists(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet/Gremlins/" + Settings.StartingChar + "/ico.ico")))
-                {
-                    _trayIcon.Icon = new WindowIcon(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet/Gremlins/" + Settings.StartingChar + "/ico.ico"));
-                }
-                else if (File.Exists("SpriteSheet/System/ico.ico"))
-                {
-                    _trayIcon.Icon = new WindowIcon("SpriteSheet/System/ico.ico");
-                }
-                else if (File.Exists("ico.ico"))
-                {
-                    _trayIcon.Icon = new WindowIcon("ico.ico");
-                }
-                else
-                {
-                    MainWindow.ErrorClose("Cannot find the ico.ico in the application folder or SpriteSheet/System folder", "Missing ico.ico", false);
-                }
+                SetIcon();
 
                 _trayIcon.IsVisible = true;
                 _trayIcon.ToolTipText = "Gremlin";
@@ -247,7 +266,32 @@ namespace DesktopGremlin
                 NativeMenuItem restartItem = new NativeMenuItem("Restart");
                 restartItem.Click += (_, __) => RestartApp();
 
-                NativeMenuItemSeparator separator = new NativeMenuItemSeparator();
+                NativeMenuItemSeparator separator1 = new NativeMenuItemSeparator();
+
+                NativeMenuItem selectCharacterItem = new NativeMenuItem("Select Character");
+                NativeMenu charactersMenu = new NativeMenu();
+                foreach (string character in _characterList)
+                {
+                    NativeMenuItem menuItem = new NativeMenuItem(character);
+                    menuItem.ToggleType = NativeMenuItemToggleType.Radio;
+                    if (character.CompareTo(_selectedCharacter) == 0) menuItem.IsChecked = true;
+                    else menuItem.IsChecked = false;
+
+                    menuItem.Click += (sender, args) =>
+                    {
+                        NativeMenuItem oldItem = charactersMenu.Items.OfType<NativeMenuItem>().FirstOrDefault(p => p.Header.CompareTo(_selectedCharacter) == 0);
+                        if (oldItem != null) oldItem.IsChecked = false;
+                        _gremlin.SetSelectedCharacter(character);
+                        _gremlin.PlayIntro();
+                        SetIcon();
+                        menuItem.IsChecked = true;
+                    };
+
+                    charactersMenu.Items.Add(menuItem);
+                }
+                selectCharacterItem.Menu = charactersMenu;
+
+                NativeMenuItemSeparator separator2 = new NativeMenuItemSeparator();
 
                 var disableHotspotsItem = new NativeMenuItem("Disable Hotspots");
                 disableHotspotsItem.ToggleType = NativeMenuItemToggleType.CheckBox;
@@ -269,17 +313,39 @@ namespace DesktopGremlin
                 menu.Items.Add(closeItem);
                 menu.Items.Add(forceCloseItem);
                 menu.Items.Add(restartItem);
-                menu.Items.Add(separator);
+                menu.Items.Add(separator1);
+                menu.Items.Add(selectCharacterItem);
+                menu.Items.Add(separator2);
                 menu.Items.Add(disableHotspotsItem);
                 menu.Items.Add(showHotspotsItem);
 
                 _trayIcon.Menu = menu;
             }
 
+            public void SetIcon()
+            {
+                if (File.Exists(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet/Gremlins/" + _selectedCharacter + "/ico.ico")))
+                {
+                    _trayIcon.Icon = new WindowIcon(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet/Gremlins/" + _selectedCharacter + "/ico.ico"));
+                }
+                else if (File.Exists("SpriteSheet/System/ico.ico"))
+                {
+                    _trayIcon.Icon = new WindowIcon("SpriteSheet/System/ico.ico");
+                }
+                else if (File.Exists("ico.ico"))
+                {
+                    _trayIcon.Icon = new WindowIcon("ico.ico");
+                }
+                else
+                {
+                    MainWindow.ErrorClose("Cannot find the ico.ico in the application folder or SpriteSheet/System folder", "Missing ico.ico", false);
+                }
+            }
+
             public void CloseApp()
             {
-            _states.PlayOutro();  
-                MediaManager.PlaySound("outro.wav", Settings.StartingChar); 
+                _states.PlayOutro();  
+                MediaManager.PlaySound("outro.wav", _selectedCharacter); 
             }
             private void ForceClose()
             {

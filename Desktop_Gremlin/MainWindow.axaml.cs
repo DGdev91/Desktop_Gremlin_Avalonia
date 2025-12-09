@@ -12,7 +12,6 @@ namespace DesktopGremlin
 {
     public partial class MainWindow : Window
     {
-        public string _SelectedCharacter;
         private Size? _followCursor_oldWindowSize;
         private PixelPoint? _cursorScreen;
         private DateTime _nextRandomActionTime = DateTime.Now.AddSeconds(1);
@@ -51,7 +50,18 @@ namespace DesktopGremlin
         {
             InitializeComponent();
             InitializeConfig();         
-            MediaManager.PlaySound("intro.wav", _SelectedCharacter);
+            MediaManager.PlaySound("intro.wav", GetSelectedCharacter());
+        }
+
+        public string GetSelectedCharacter()
+        {
+            return _config._selectedCharacter;
+        }
+
+        public void SetSelectedCharacter(string character)
+        {
+            _config._selectedCharacter = character;
+            FrameCounts.LoadConfigChar(character);
         }
 
         public void InitializeConfig()
@@ -61,16 +71,14 @@ namespace DesktopGremlin
             InitializeAnimations();
             InitializeTimers();
 
-            _SelectedCharacter = Settings.StartingChar;
-
             SpriteImage.Source = new CroppedBitmap();
-            FrameCounts.LoadConfigChar(_SelectedCharacter);
+            FrameCounts.LoadConfigChar(Settings.StartingChar);
 
             if (Settings.AllowKeyboard)
             {
                 _keyboardController = new KeyboardController(this, GremlinState, CurrentFrames, FrameCounts, _rng);
             }
-            _config = new AppConfig(this, GremlinState);
+            _config = new AppConfig(this, GremlinState, Settings.StartingChar);
             GremlinState.LockState();
         }
 
@@ -176,7 +184,7 @@ namespace DesktopGremlin
             {
                 return currentFrame;
             }
-            currentFrame = SpriteManager.PlayAnimation(stateName, folder, currentFrame, frameCount, SpriteImage, _SelectedCharacter);
+            currentFrame = SpriteManager.PlayAnimation(stateName, folder, currentFrame, frameCount, SpriteImage, GetSelectedCharacter());
 
             if (resetOnEnd && currentFrame == 0 && stateName == "Outro")
             {
@@ -261,48 +269,48 @@ namespace DesktopGremlin
                             {
                                 this.RenderTransform = new ScaleTransform(1.0, 1.0);
                             }
-                            CurrentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run", CurrentFrames.Right, FrameCounts.Right, SpriteImage, _SelectedCharacter);
+                            CurrentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run", CurrentFrames.Right, FrameCounts.Right, SpriteImage, GetSelectedCharacter());
                         }
                         else if (angle >= 22.5 && angle < 67.5 && Settings.EnableGravity == false)
                         {
-                            CurrentFrames.DownRight = SpriteManager.PlayAnimation("downRight","Run",CurrentFrames.DownRight,FrameCounts.DownRight,SpriteImage, _SelectedCharacter);
+                            CurrentFrames.DownRight = SpriteManager.PlayAnimation("downRight","Run",CurrentFrames.DownRight,FrameCounts.DownRight,SpriteImage, GetSelectedCharacter());
                         }
                         else if (angle >= 67.5 && angle < 112.5 && Settings.EnableGravity == false)
                         {
-                            CurrentFrames.Down = SpriteManager.PlayAnimation("runDown","Run",CurrentFrames.Down,FrameCounts.Down,SpriteImage, _SelectedCharacter);
+                            CurrentFrames.Down = SpriteManager.PlayAnimation("runDown","Run",CurrentFrames.Down,FrameCounts.Down,SpriteImage, GetSelectedCharacter());
                         }
                         else if (angle >= 112.5 && angle < 157.5 && Settings.EnableGravity == false)
                         {
-                            CurrentFrames.DownLeft = SpriteManager.PlayAnimation("downLeft","Run",CurrentFrames.DownLeft,FrameCounts.DownLeft,SpriteImage, _SelectedCharacter);
+                            CurrentFrames.DownLeft = SpriteManager.PlayAnimation("downLeft","Run",CurrentFrames.DownLeft,FrameCounts.DownLeft,SpriteImage, GetSelectedCharacter());
                         }
                         else if (angle >= 157.5 && angle < 202.5)
                         {
                             if (Settings.MirrorXSprite)
                             {
                                 this.RenderTransform = new ScaleTransform(-1.0, 1.0);
-                                CurrentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run", CurrentFrames.Right, FrameCounts.Right, SpriteImage, _SelectedCharacter);
+                                CurrentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run", CurrentFrames.Right, FrameCounts.Right, SpriteImage, GetSelectedCharacter());
                             }
                             else
                             {
-                                CurrentFrames.Left = SpriteManager.PlayAnimation("runLeft","Run",CurrentFrames.Left,FrameCounts.Left,SpriteImage, _SelectedCharacter);
+                                CurrentFrames.Left = SpriteManager.PlayAnimation("runLeft","Run",CurrentFrames.Left,FrameCounts.Left,SpriteImage, GetSelectedCharacter());
                             }
                         }
                         else if (angle >= 202.5 && angle < 247.5 && Settings.EnableGravity == false)
                         {
-                            CurrentFrames.UpLeft = SpriteManager.PlayAnimation("upLeft","Run",CurrentFrames.UpLeft,FrameCounts.UpLeft,SpriteImage, _SelectedCharacter);
+                            CurrentFrames.UpLeft = SpriteManager.PlayAnimation("upLeft","Run",CurrentFrames.UpLeft,FrameCounts.UpLeft,SpriteImage, GetSelectedCharacter());
                         }
                         else if (angle >= 247.5 && angle < 292.5 && Settings.EnableGravity == false)
                         {
-                            CurrentFrames.Up = SpriteManager.PlayAnimation("runUp","Run",CurrentFrames.Up,FrameCounts.Up,SpriteImage, _SelectedCharacter);
+                            CurrentFrames.Up = SpriteManager.PlayAnimation("runUp","Run",CurrentFrames.Up,FrameCounts.Up,SpriteImage, GetSelectedCharacter());
                         }
                         else if (angle >= 292.5 && angle < 337.5 && Settings.EnableGravity == false)
                         {
-                            CurrentFrames.UpRight = SpriteManager.PlayAnimation("upRight","Run",CurrentFrames.UpRight,FrameCounts.UpRight,SpriteImage, _SelectedCharacter);
+                            CurrentFrames.UpRight = SpriteManager.PlayAnimation("upRight","Run",CurrentFrames.UpRight,FrameCounts.UpRight,SpriteImage, GetSelectedCharacter());
                         }
                     }
                     else
                     {
-                        CurrentFrames.WalkIdle = SpriteManager.PlayAnimation("runIdle", "Actions", CurrentFrames.WalkIdle, FrameCounts.WalkIdle, SpriteImage, _SelectedCharacter);
+                        CurrentFrames.WalkIdle = SpriteManager.PlayAnimation("runIdle", "Actions", CurrentFrames.WalkIdle, FrameCounts.WalkIdle, SpriteImage, GetSelectedCharacter());
                     }
                 }
                 else if (_followCursor_oldWindowSize is not null)
@@ -329,7 +337,7 @@ namespace DesktopGremlin
                                 CurrentFrames.Click = 0;
                                 GremlinState.UnlockState();
                                 GremlinState.SetState("Click");
-                                MediaManager.PlaySound("mambo.wav", _SelectedCharacter);
+                                MediaManager.PlaySound("mambo.wav", GetSelectedCharacter());
                                 GremlinState.LockState();
                                 break;
                             case 1:
@@ -410,18 +418,18 @@ namespace DesktopGremlin
                     if (dx > 0)
                     {
                         this.RenderTransform = new ScaleTransform(1.0, 1.0);
-                        CurrentFrames.WalkRight = SpriteManager.PlayAnimation("walkRight", "Walk", CurrentFrames.WalkRight, FrameCounts.WalkRight, SpriteImage, _SelectedCharacter);
+                        CurrentFrames.WalkRight = SpriteManager.PlayAnimation("walkRight", "Walk", CurrentFrames.WalkRight, FrameCounts.WalkRight, SpriteImage, GetSelectedCharacter());
                     }
                     else
                     {
                         if (Settings.MirrorXSprite)
                         {
                             this.RenderTransform = new ScaleTransform(-1.0, 1.0);
-                            CurrentFrames.WalkRight = SpriteManager.PlayAnimation("walkRight", "Walk", CurrentFrames.WalkRight, FrameCounts.WalkRight, SpriteImage, _SelectedCharacter);
+                            CurrentFrames.WalkRight = SpriteManager.PlayAnimation("walkRight", "Walk", CurrentFrames.WalkRight, FrameCounts.WalkRight, SpriteImage, GetSelectedCharacter());
                         }
                         else
                         {
-                            CurrentFrames.WalkLeft = SpriteManager.PlayAnimation("walkLeft", "Walk", CurrentFrames.WalkLeft, FrameCounts.WalkLeft, SpriteImage, _SelectedCharacter);
+                            CurrentFrames.WalkLeft = SpriteManager.PlayAnimation("walkLeft", "Walk", CurrentFrames.WalkLeft, FrameCounts.WalkLeft, SpriteImage, GetSelectedCharacter());
                         }
                     }
                 }
@@ -429,11 +437,11 @@ namespace DesktopGremlin
                 {
                     if (dy > 0)
                     {
-                        CurrentFrames.WalkDown = SpriteManager.PlayAnimation("walkDown", "Walk", CurrentFrames.WalkDown, FrameCounts.WalkDown, SpriteImage, _SelectedCharacter);
+                        CurrentFrames.WalkDown = SpriteManager.PlayAnimation("walkDown", "Walk", CurrentFrames.WalkDown, FrameCounts.WalkDown, SpriteImage, GetSelectedCharacter());
                     }
                     else
                     {
-                        CurrentFrames.WalkUp = SpriteManager.PlayAnimation("walkUp", "Walk", CurrentFrames.WalkUp, FrameCounts.WalkUp,SpriteImage, _SelectedCharacter);
+                        CurrentFrames.WalkUp = SpriteManager.PlayAnimation("walkUp", "Walk", CurrentFrames.WalkUp, FrameCounts.WalkUp,SpriteImage, GetSelectedCharacter());
                     }
                 }
                 
@@ -487,35 +495,35 @@ namespace DesktopGremlin
 
                 if (angle >= 337.5 || angle < 22.5)
                 {
-                    CurrentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run", CurrentFrames.Right, FrameCounts.Right, SpriteImage, _SelectedCharacter);
+                    CurrentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run", CurrentFrames.Right, FrameCounts.Right, SpriteImage, GetSelectedCharacter());
                 }
                 else if (angle >= 22.5 && angle < 67.5)
                 {
-                    CurrentFrames.DownRight = SpriteManager.PlayAnimation("downRight", "Run", CurrentFrames.DownRight, FrameCounts.DownRight, SpriteImage, _SelectedCharacter);
+                    CurrentFrames.DownRight = SpriteManager.PlayAnimation("downRight", "Run", CurrentFrames.DownRight, FrameCounts.DownRight, SpriteImage, GetSelectedCharacter());
                 }
                 else if (angle >= 67.5 && angle < 112.5)
                 {
-                    CurrentFrames.Down = SpriteManager.PlayAnimation("runDown", "Run", CurrentFrames.Down, FrameCounts.Down, SpriteImage, _SelectedCharacter);
+                    CurrentFrames.Down = SpriteManager.PlayAnimation("runDown", "Run", CurrentFrames.Down, FrameCounts.Down, SpriteImage, GetSelectedCharacter());
                 }
                 else if (angle >= 112.5 && angle < 157.5)
                 {
-                    CurrentFrames.DownLeft = SpriteManager.PlayAnimation("downLeft", "Run", CurrentFrames.DownLeft, FrameCounts.DownLeft, SpriteImage, _SelectedCharacter);
+                    CurrentFrames.DownLeft = SpriteManager.PlayAnimation("downLeft", "Run", CurrentFrames.DownLeft, FrameCounts.DownLeft, SpriteImage, GetSelectedCharacter());
                 }
                 else if (angle >= 157.5 && angle < 202.5)
                 {
-                    CurrentFrames.Left = SpriteManager.PlayAnimation("runLeft", "Run", CurrentFrames.Left, FrameCounts.Left, SpriteImage, _SelectedCharacter);
+                    CurrentFrames.Left = SpriteManager.PlayAnimation("runLeft", "Run", CurrentFrames.Left, FrameCounts.Left, SpriteImage, GetSelectedCharacter());
                 }
                 else if (angle >= 202.5 && angle < 247.5)
                 {
-                    CurrentFrames.UpLeft = SpriteManager.PlayAnimation("upLeft", "Run", CurrentFrames.UpLeft, FrameCounts.UpLeft, SpriteImage, _SelectedCharacter);
+                    CurrentFrames.UpLeft = SpriteManager.PlayAnimation("upLeft", "Run", CurrentFrames.UpLeft, FrameCounts.UpLeft, SpriteImage, GetSelectedCharacter());
                 }
                 else if (angle >= 247.5 && angle < 292.5)
                 {
-                    CurrentFrames.Up = SpriteManager.PlayAnimation("runUp", "Run", CurrentFrames.Up, FrameCounts.Up, SpriteImage, _SelectedCharacter);
+                    CurrentFrames.Up = SpriteManager.PlayAnimation("runUp", "Run", CurrentFrames.Up, FrameCounts.Up, SpriteImage, GetSelectedCharacter());
                 }
                 else if (angle >= 292.5 && angle < 337.5)
                 {
-                    CurrentFrames.UpRight = SpriteManager.PlayAnimation("upRight", "Run", CurrentFrames.UpRight, FrameCounts.UpRight, SpriteImage, _SelectedCharacter);
+                    CurrentFrames.UpRight = SpriteManager.PlayAnimation("upRight", "Run", CurrentFrames.UpRight, FrameCounts.UpRight, SpriteImage, GetSelectedCharacter());
                 }
 
                 GremlinState.SetState("Walking");
@@ -536,7 +544,7 @@ namespace DesktopGremlin
             GremlinState.SetState("Hover");
             if (GremlinState.GetState("Hover"))
             {
-                MediaManager.PlaySound("hover.wav",_SelectedCharacter, 5);
+                MediaManager.PlaySound("hover.wav",GetSelectedCharacter(), 5);
             }
             
         }
@@ -562,7 +570,7 @@ namespace DesktopGremlin
                     ResetIdleTimer();
                     GremlinState.UnlockState();
                     GremlinState.SetState("Grab");
-                    MediaManager.PlaySound("grab.wav", _SelectedCharacter);
+                    MediaManager.PlaySound("grab.wav", GetSelectedCharacter());
                     BeginMoveDrag(e);
                 }
             }
@@ -582,7 +590,7 @@ namespace DesktopGremlin
                 CurrentFrames.Grab = 0;
                 if (MouseSettings.FollowCursor)
                 {
-                    MediaManager.PlaySound("run.wav", _SelectedCharacter);
+                    MediaManager.PlaySound("run.wav", GetSelectedCharacter());
                 }
             }
         }
@@ -592,7 +600,7 @@ namespace DesktopGremlin
             {
                 if (!string.IsNullOrEmpty(Settings.CombatModeChar)) ToggleCombatMode();
 
-                else if (!string.IsNullOrEmpty(Settings.CompanionChar))
+                if (!string.IsNullOrEmpty(Settings.CompanionChar))
                 {
                     if (_companionInstance != null && _companionInstance.IsVisible)
                     {
@@ -605,27 +613,9 @@ namespace DesktopGremlin
                     _companionInstance.Show();   
                 }
 
-                else if (GremlinState.GetState("FollowItem"))
+                if (!string.IsNullOrEmpty(Settings.FoodMode) && Settings.FoodMode.CompareTo("None") != 0)
                 {
-                    return;
-                }
-
-                else
-                {
-                    GremlinState.UnlockState();
-                    GremlinState.SetState("FollowItem");
-                    GremlinState.LockState();
-                    PixelRect workingArea = GetCombinedScreens();
-                    double screenWidth = workingArea.Width;
-                    double screenHeight = workingArea.Height;
-
-                    Random rng = new Random();
-                    double randomLeft = rng.NextDouble() * (screenWidth - Settings.FrameWidth) + workingArea.X;
-                    double randomTop = rng.NextDouble() * (screenHeight - Settings.FrameHeight) + workingArea.Y;
-                    _currentFood = new Target();
-                    _currentFood.Position = new PixelPoint((int)Math.Round(randomLeft), (int)Math.Round(randomTop));
-                    _currentFood.Show();
-                    StartFollowingFood();
+                    TriggerFood();
                 }
             }
         }
@@ -649,7 +639,7 @@ namespace DesktopGremlin
             else
             {
                 GremlinState.UnlockState();
-                MediaManager.PlaySound("sleep.wav", _SelectedCharacter);
+                MediaManager.PlaySound("sleep.wav", GetSelectedCharacter());
                 GremlinState.SetState("Sleeping");
                 GremlinState.LockState();
             }
@@ -659,7 +649,7 @@ namespace DesktopGremlin
             ResetIdleTimer();
             GremlinState.UnlockState();
             GremlinState.SetState(emote);
-            MediaManager.PlaySound(mp3, _SelectedCharacter);
+            MediaManager.PlaySound(mp3, GetSelectedCharacter());
             GremlinState.LockState();
         }
 
@@ -752,6 +742,17 @@ namespace DesktopGremlin
                 _gravityTimer.Stop();
             }
         }
+
+        public void PlayIntro()
+        {
+            MediaManager.PlaySound("intro.wav", GetSelectedCharacter());
+            FrameCounts.LoadConfigChar(GetSelectedCharacter());
+            GremlinState.UnlockState();
+            GremlinState.SetState("Intro");
+            CurrentFrames.Idle = 0;
+            CurrentFrames.Intro = 0;
+        }
+        
         #region All the shit for keyboard
         public void TriggerClickAnimation()
         {
@@ -760,7 +761,7 @@ namespace DesktopGremlin
             CurrentFrames.Idle = 0;
             GremlinState.UnlockState();
             GremlinState.SetState("Click");
-            MediaManager.PlaySound("mambo.wav", _SelectedCharacter);
+            MediaManager.PlaySound("mambo.wav", GetSelectedCharacter());
             GremlinState.LockState();
         }
 
@@ -780,7 +781,7 @@ namespace DesktopGremlin
                 GremlinState.UnlockState();
                 GremlinState.SetState("Walking");
                 GremlinState.LockState();
-                MediaManager.PlaySound("run.wav", _SelectedCharacter);
+                MediaManager.PlaySound("run.wav", GetSelectedCharacter());
             }
             else
             {
@@ -805,6 +806,7 @@ namespace DesktopGremlin
             Random rng = new Random();
             double randomLeft = rng.NextDouble() * (screenWidth - Settings.FrameWidth) + workingArea.X;
             double randomTop = rng.NextDouble() * (screenHeight - Settings.FrameHeight) + workingArea.Y;
+            _currentFood = new Target();
             _currentFood.Position = new PixelPoint((int)Math.Round(randomLeft), (int)Math.Round(randomTop));
             _currentFood.Show();
             StartFollowingFood();
@@ -820,20 +822,15 @@ namespace DesktopGremlin
             }
             _isCombat = !_isCombat;
 
-            if (_SelectedCharacter == Settings.StartingChar)
+            if (GetSelectedCharacter() == Settings.StartingChar)
             {
-                _SelectedCharacter = Settings.CombatModeChar;
+                _config._selectedCharacter = Settings.CombatModeChar;
             }
             else
             {
-                _SelectedCharacter = Settings.StartingChar;
+                _config._selectedCharacter = Settings.StartingChar;
             }
-            MediaManager.PlaySound("intro.wav", _SelectedCharacter);
-            FrameCounts.LoadConfigChar(_SelectedCharacter);
-            GremlinState.UnlockState();
-            GremlinState.SetState("Intro");
-            CurrentFrames.Idle = 0;
-            CurrentFrames.Intro = 0;
+            PlayIntro();
         }
 
         public void TriggerLeftEmote()
@@ -927,7 +924,7 @@ namespace DesktopGremlin
             else
             {
                 GremlinState.UnlockState();
-                MediaManager.PlaySound("sleep.wav", _SelectedCharacter);
+                MediaManager.PlaySound("sleep.wav", GetSelectedCharacter());
                 GremlinState.SetState("Sleeping");
                 GremlinState.LockState();
             }

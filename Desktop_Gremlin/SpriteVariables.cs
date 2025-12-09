@@ -50,7 +50,7 @@
         public static bool AllowCache { get; set; } = false;
         public static bool AllowKeyboard { get; set; } = false;
         public static int FoodItemGetSize { get; set; } = 0;
-        public static string FoodMode { get; set; } = "Cafe"; //Possible values: Cafe/Oguri
+        public static string FoodMode { get; set; } = "None"; //Possible values: None/Cafe/Oguri
         public static bool MirrorXSprite { get; set; } = false;
     }
     public static class Quirks

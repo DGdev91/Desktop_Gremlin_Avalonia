@@ -75,7 +75,7 @@ namespace DesktopGremlin
 
                 case Key.Q:
                     if (!string.IsNullOrEmpty(Settings.CombatModeChar)) _gremlin.ToggleCombatMode();
-                    else _gremlin.TriggerFood();
+                    else if (!string.IsNullOrEmpty(Settings.FoodMode) && Settings.FoodMode.CompareTo("None") != 0) _gremlin.TriggerFood();
                     break;
                 case Key.D1:
                 case Key.NumPad1:
@@ -241,42 +241,42 @@ namespace DesktopGremlin
             if (angle >= 337.5 || angle < 22.5)
             {
                 _currentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run",
-                    _currentFrames.Right, _frameCounts.Right, _gremlin.SpriteImage, _gremlin._SelectedCharacter);
+                    _currentFrames.Right, _frameCounts.Right, _gremlin.SpriteImage, _gremlin.GetSelectedCharacter());
             }
             else if (angle >= 22.5 && angle < 67.5)
             {
                 _currentFrames.DownRight = SpriteManager.PlayAnimation("downRight", "Run",
-                    _currentFrames.DownRight, _frameCounts.DownRight, _gremlin.SpriteImage, _gremlin._SelectedCharacter);
+                    _currentFrames.DownRight, _frameCounts.DownRight, _gremlin.SpriteImage, _gremlin.GetSelectedCharacter());
             }
             else if (angle >= 67.5 && angle < 112.5)
             {
                 _currentFrames.Down = SpriteManager.PlayAnimation("runDown", "Run",
-                    _currentFrames.Down, _frameCounts.Down, _gremlin.SpriteImage, _gremlin._SelectedCharacter);
+                    _currentFrames.Down, _frameCounts.Down, _gremlin.SpriteImage, _gremlin.GetSelectedCharacter());
             }
             else if (angle >= 112.5 && angle < 157.5)
             {
                 _currentFrames.DownLeft = SpriteManager.PlayAnimation("downLeft", "Run",
-                    _currentFrames.DownLeft, _frameCounts.DownLeft, _gremlin.SpriteImage, _gremlin._SelectedCharacter);
+                    _currentFrames.DownLeft, _frameCounts.DownLeft, _gremlin.SpriteImage, _gremlin.GetSelectedCharacter());
             }
             else if (angle >= 157.5 && angle < 202.5)
             {
                 _currentFrames.Left = SpriteManager.PlayAnimation("runLeft", "Run",
-                    _currentFrames.Left, _frameCounts.Left, _gremlin.SpriteImage, _gremlin._SelectedCharacter);
+                    _currentFrames.Left, _frameCounts.Left, _gremlin.SpriteImage, _gremlin.GetSelectedCharacter());
             }
             else if (angle >= 202.5 && angle < 247.5)
             {
                 _currentFrames.UpLeft = SpriteManager.PlayAnimation("upLeft", "Run",
-                    _currentFrames.UpLeft, _frameCounts.UpLeft, _gremlin.SpriteImage, _gremlin._SelectedCharacter);
+                    _currentFrames.UpLeft, _frameCounts.UpLeft, _gremlin.SpriteImage, _gremlin.GetSelectedCharacter());
             }
             else if (angle >= 247.5 && angle < 292.5)
             {
                 _currentFrames.Up = SpriteManager.PlayAnimation("runUp", "Run",
-                    _currentFrames.Up, _frameCounts.Up, _gremlin.SpriteImage, _gremlin._SelectedCharacter);
+                    _currentFrames.Up, _frameCounts.Up, _gremlin.SpriteImage, _gremlin.GetSelectedCharacter());
             }
             else if (angle >= 292.5 && angle < 337.5)
             {
                 _currentFrames.UpRight = SpriteManager.PlayAnimation("upRight", "Run",
-                    _currentFrames.UpRight, _frameCounts.UpRight, _gremlin.SpriteImage, _gremlin._SelectedCharacter);
+                    _currentFrames.UpRight, _frameCounts.UpRight, _gremlin.SpriteImage, _gremlin.GetSelectedCharacter());
             } 
         }
         public void StopAllMovement()
