@@ -6,10 +6,6 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 public static class SpriteManager
 {
-    //total conversion from the previous Spritemanager.
-    //I was debating to add caching or not, but I think its better to have it.  
-    //but I do have to set some limits depending on how many sprites will be used
-    private static string _currentCharacter = null;
     private static readonly Dictionary<string, BitmapImage> _spriteCache = new Dictionary<string, BitmapImage>();
     private static readonly Dictionary<string, string> _fileNameMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     {
@@ -45,24 +41,25 @@ public static class SpriteManager
         ["sleeping"] = "sleep.png",
         ["jumpscare"] = "jumpScare.png",
         ["poof"] = "poof.png"
-            
     };
-    public static int PlayAnimation(string sheetName, string actionType, int currentFrame,int frameCount, System.Windows.Controls.Image targetImage, bool PlayOnce = false)
+    public static int PlayAnimation(string sheetName, string actionType, int currentFrame, int frameCount, System.Windows.Controls.Image targetImage)
     {
-        BitmapImage sheet = Get(sheetName, actionType);
+        BitmapImage sheet = GetSpriteSheet(sheetName, actionType);
         if (sheet == null)
         {
-            return currentFrame;
-        }       
+            return -1;
+        }
+
         if (frameCount <= 0)
         {
-            MainWindow.ErrorClose($"Error Animation: {sheetName} action: {actionType} has invalid frame count","Animation Error", true);
+            MainWindow.ErrorClose($"Error Animation: {sheetName} action: {actionType} has invalid frame count", "Animation Error", true);
+            return currentFrame;
         }
 
         int x = (currentFrame % Settings.SpriteColumn) * Settings.FrameWidth;
         int y = (currentFrame / Settings.SpriteColumn) * Settings.FrameHeight;
 
-        if (x + Settings.FrameWidth > sheet.PixelWidth ||y + Settings.FrameHeight > sheet.PixelHeight)
+        if (x + Settings.FrameWidth > sheet.PixelWidth || y + Settings.FrameHeight > sheet.PixelHeight)
         {
             return currentFrame;
         }
@@ -71,13 +68,8 @@ public static class SpriteManager
 
         return (currentFrame + 1) % frameCount;
     }
-    public static BitmapImage Get(string animationName, string actionType)
+    public static BitmapImage GetSpriteSheet(string animationName, string actionType)
     {
-        //if (_currentCharacter != Settings.StartingChar)
-        //{
-        //    ClearCache();
-        //    _currentCharacter = Settings.StartingChar;
-        //}
         string cacheKey = $"{animationName}_{actionType}";
 
         if (Settings.AllowCache && _spriteCache.TryGetValue(cacheKey, out BitmapImage cached))
@@ -85,9 +77,7 @@ public static class SpriteManager
             return cached;
         }
 
-        string fileName = GetFileName(animationName);
-
-        if (fileName == null)
+        if (!_fileNameMap.TryGetValue(animationName, out string fileName))
         {
             MainWindow.ErrorClose($"Error Animation: {animationName} is missing", "Animation Missing", false);
             return null;
@@ -102,16 +92,15 @@ public static class SpriteManager
 
         return sheet;
     }
-    private static string GetFileName(string animationName)
-    {
-        return _fileNameMap.TryGetValue(animationName, out string fileName) ? fileName : null;
-    }
-          
     private static BitmapImage LoadSprite(string filefolder, string fileName, string action, string rootFolder = "Gremlins")
     {
-        string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"SpriteSheet", rootFolder, filefolder,action, fileName);
+        string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet", rootFolder, filefolder, action, fileName);
+
         if (!File.Exists(path))
+        {
             return null;
+        }
+
         try
         {
             var image = new BitmapImage();
@@ -128,4 +117,3 @@ public static class SpriteManager
         }
     }
 }
-

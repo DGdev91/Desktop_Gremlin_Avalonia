@@ -19,7 +19,8 @@ public static class Settings
     public static int CurrendIdle { get; set; } = 0;
     public static int ItemWidth { get; set; } = 0;
     public static int ItemHeight { get; set; } = 0;
-    public static int WalkDistance { get; set; } = 0;   
+    public static int WalkDistance { get; set; } = 0;
+    public static int SpawnDistance { get; set; } = 0;
 
     public static double FollowRadius { get; set; } = 0;
     public static double SpriteSize { get; set; } = 1.0;
@@ -49,7 +50,10 @@ public static class Settings
     public static bool LanguageDiff { get; set; } = true;
     public static bool AllowCache { get; set; } = false;
     public static bool AllowKeyboard { get; set; } = false;
-    public static bool UseWPF { get; set; } = false;    
+    public static bool UseWPF { get; set; } = false; 
+    public static bool RandomizeSpawn { get; set; } = false;
+    public static bool ClickThrough { get; set; } = false;
+
 }
 public static class Quirks
 {

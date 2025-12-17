@@ -11,7 +11,7 @@ public static class MediaManager
     private static MediaPlayer mp = new MediaPlayer();
     public static void PlaySound(string fileName, string startChar, double delaySeconds = 0, double volume = 1.0)
     {
-        string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Sounds", Settings.StartingChar, fileName);
+        string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Sounds", startChar, fileName);
 
         if (!File.Exists(path))
         {

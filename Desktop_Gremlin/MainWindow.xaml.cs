@@ -10,11 +10,13 @@ using static ConfigManager;
 
 namespace DesktopGremlin
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+
+        //MainWindow
+        //My main plan for the future is to seperate each verbose fucntion
+        //into different classes for better organization.
+        //If you see any duplicated functionality, It's just me being lazy
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern bool GetCursorPos(out POINT lpPoint);
         private DateTime _nextRandomActionTime = DateTime.Now.AddSeconds(1);
@@ -42,6 +44,7 @@ namespace DesktopGremlin
         private AnimationStates GremlinState = new AnimationStates();
         private FrameCounts FrameCounts = new FrameCounts();
         private CurrentFrames CurrentFrames = new CurrentFrames();
+        private FoodFollower _foodFollower;
 
         private Target _currentFood;
 
@@ -78,16 +81,17 @@ namespace DesktopGremlin
         public void InitializeConfig()
         {
             ConfigManager.LoadMasterConfig();
+            FrameCounts.LoadConfigChar(Settings.StartingChar);
             ConfigManager.ApplyXamlSettings(this);
             InitializeAnimations();
             InitializeTimers();
             SpriteImage.Source = new CroppedBitmap();
-            FrameCounts.LoadConfigChar(Settings.StartingChar);
             if (Settings.AllowKeyboard)
             {
                 _keyboardController = new KeyboardController(this, GremlinState, CurrentFrames, FrameCounts, _rng);
             }
             _config = new AppConfig(this, GremlinState);
+            _foodFollower = new FoodFollower(this, GremlinState, CurrentFrames, FrameCounts, SpriteImage);
             GremlinState.LockState();
         }
         public void InitializeTimers()
@@ -127,20 +131,22 @@ namespace DesktopGremlin
                 System.Windows.Application.Current.Shutdown();
             }
         }
-
-        private int PlayAnimationIfActive(string stateName, string folder, int currentFrame, int frameCount, bool resetOnEnd)
+        private int PlayAnimation(string stateName, string folder, int currentFrame, int frameCount, bool resetOnEnd)
         {
             if (!GremlinState.GetState(stateName))
             {
                 return currentFrame;
-            }
-            ;
+            };
             currentFrame = SpriteManager.PlayAnimation(stateName, folder, currentFrame, frameCount, SpriteImage);
+            if (currentFrame == -1)
+            {
+                GremlinState.UnlockState();
+                GremlinState.ResetAllExceptIdle();
+            }
             if (resetOnEnd && currentFrame == 0 && stateName == "Outro")
             {
                 System.Windows.Application.Current.Shutdown();
             }
-
             if (resetOnEnd && currentFrame == 0)
             {
                 GremlinState.UnlockState();
@@ -155,20 +161,20 @@ namespace DesktopGremlin
             _masterTimer.Tick += (s, e) =>
             {
                 //Repeatable Animations = false at the end//    
-                CurrentFrames.Grab = PlayAnimationIfActive("Grab", "Actions", CurrentFrames.Grab, FrameCounts.Grab, false);
-                CurrentFrames.Emote1 = PlayAnimationIfActive("Emote1", "Emotes", CurrentFrames.Emote1, FrameCounts.Emote1, false);
-                CurrentFrames.Emote3 = PlayAnimationIfActive("Emote3", "Emotes", CurrentFrames.Emote3, FrameCounts.Emote3, false);
-                CurrentFrames.Idle = PlayAnimationIfActive("Idle", "Actions", CurrentFrames.Idle, FrameCounts.Idle, false);
-                CurrentFrames.Hover = PlayAnimationIfActive("Hover", "Actions", CurrentFrames.Hover, FrameCounts.Hover, false);
-                CurrentFrames.Sleep = PlayAnimationIfActive("Sleeping", "Actions", CurrentFrames.Sleep, FrameCounts.Sleep, false);
-                CurrentFrames.Pat = PlayAnimationIfActive("Pat", "Actions", CurrentFrames.Pat, FrameCounts.Pat, false);
+                CurrentFrames.Grab = PlayAnimation("Grab", "Actions", CurrentFrames.Grab, FrameCounts.Grab, false);
+                CurrentFrames.Emote1 = PlayAnimation("Emote1", "Emotes", CurrentFrames.Emote1, FrameCounts.Emote1, false);
+                CurrentFrames.Emote3 = PlayAnimation("Emote3", "Emotes", CurrentFrames.Emote3, FrameCounts.Emote3, false);
+                CurrentFrames.Idle = PlayAnimation("Idle", "Actions", CurrentFrames.Idle, FrameCounts.Idle, false);
+                CurrentFrames.Hover = PlayAnimation("Hover", "Actions", CurrentFrames.Hover, FrameCounts.Hover, false);
+                CurrentFrames.Sleep = PlayAnimation("Sleeping", "Actions", CurrentFrames.Sleep, FrameCounts.Sleep, false);
+                CurrentFrames.Pat = PlayAnimation("Pat", "Actions", CurrentFrames.Pat, FrameCounts.Pat, false);
 
                 //Single Repeat Animations = true at the end//    
-                CurrentFrames.Emote4 = PlayAnimationIfActive("Emote4", "Emotes", CurrentFrames.Emote4, FrameCounts.Emote4, true);
-                CurrentFrames.Emote2 = PlayAnimationIfActive("Emote2", "Emotes", CurrentFrames.Emote2, FrameCounts.Emote2, true);
-                CurrentFrames.Intro = PlayAnimationIfActive("Intro", "Actions", CurrentFrames.Intro, FrameCounts.Intro, true);
-                CurrentFrames.Outro = PlayAnimationIfActive("Outro", "Actions", CurrentFrames.Outro, FrameCounts.Outro, true);
-                CurrentFrames.Click = PlayAnimationIfActive("Click", "Actions", CurrentFrames.Click, FrameCounts.Click, true);
+                CurrentFrames.Emote4 = PlayAnimation("Emote4", "Emotes", CurrentFrames.Emote4, FrameCounts.Emote4, true);
+                CurrentFrames.Emote2 = PlayAnimation("Emote2", "Emotes", CurrentFrames.Emote2, FrameCounts.Emote2, true);
+                CurrentFrames.Intro = PlayAnimation("Intro", "Actions", CurrentFrames.Intro, FrameCounts.Intro, true);
+                CurrentFrames.Outro = PlayAnimation("Outro", "Actions", CurrentFrames.Outro, FrameCounts.Outro, true);
+                CurrentFrames.Click = PlayAnimation("Click", "Actions", CurrentFrames.Click, FrameCounts.Click, true);
                 if (MouseSettings.FollowCursor && GremlinState.GetState("Walking"))
                 {
                     POINT cursorPos;
@@ -192,68 +198,24 @@ namespace DesktopGremlin
                     double dx = cursorWpf.X - spriteCenterWpf.X;
                     double dy = cursorWpf.Y - spriteCenterWpf.Y;
                     double distance = Math.Sqrt(dx * dx + dy * dy);
-                    if (Settings.EnableGravity)
-                    {
-                        dy = 0;
-                        distance = Math.Abs(dx);
-                    }
-                    else
-                    {
-                        distance = Math.Sqrt(dx * dx + dy * dy);
-                    }
-
                     if (distance > Settings.FollowRadius)
                     {
                         double step = Math.Min(MouseSettings.Speed, distance - Settings.FollowRadius);
                         double nx = dx / distance;
                         double ny = dy / distance;
-                        double moveX = nx * step;
-                        double moveY = ny * step;
-                        if (Settings.EnableGravity)
-                        {
-                            dy = 0;
-                        }
-                        this.Left += moveX;
-                        this.Top += moveY;
-                        double angle = Math.Atan2(moveY, moveX) * (180.0 / Math.PI);
 
-                        if (angle < 0) angle += 360;
-                        if (angle >= 337.5 || angle < 22.5)
-                        {
-                            CurrentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run", CurrentFrames.Right, FrameCounts.Right, SpriteImage);
-                        }
-                        else if (angle >= 22.5 && angle < 67.5 && Settings.EnableGravity == false)
-                        {
-                            CurrentFrames.DownRight = SpriteManager.PlayAnimation("downRight", "Run", CurrentFrames.DownRight, FrameCounts.DownRight, SpriteImage);
-                        }
-                        else if (angle >= 67.5 && angle < 112.5 && Settings.EnableGravity == false)
-                        {
-                            CurrentFrames.Down = SpriteManager.PlayAnimation("runDown", "Run", CurrentFrames.Down, FrameCounts.Down, SpriteImage);
-                        }
-                        else if (angle >= 112.5 && angle < 157.5 && Settings.EnableGravity == false)
-                        {
-                            CurrentFrames.DownLeft = SpriteManager.PlayAnimation("downLeft", "Run", CurrentFrames.DownLeft, FrameCounts.DownLeft, SpriteImage);
-                        }
-                        else if (angle >= 157.5 && angle < 202.5)
-                        {
-                            CurrentFrames.Left = SpriteManager.PlayAnimation("runLeft", "Run", CurrentFrames.Left, FrameCounts.Left, SpriteImage);
-                        }
-                        else if (angle >= 202.5 && angle < 247.5 && Settings.EnableGravity == false)
-                        {
-                            CurrentFrames.UpLeft = SpriteManager.PlayAnimation("upLeft", "Run", CurrentFrames.UpLeft, FrameCounts.UpLeft, SpriteImage);
-                        }
-                        else if (angle >= 247.5 && angle < 292.5 && Settings.EnableGravity == false)
-                        {
-                            CurrentFrames.Up = SpriteManager.PlayAnimation("runUp", "Run", CurrentFrames.Up, FrameCounts.Up, SpriteImage);
-                        }
-                        else if (angle >= 292.5 && angle < 337.5 && Settings.EnableGravity == false)
-                        {
-                            CurrentFrames.UpRight = SpriteManager.PlayAnimation("upRight", "Run", CurrentFrames.UpRight, FrameCounts.UpRight, SpriteImage);
-                        }
+                        if (Settings.EnableGravity)
+                            ny = 0;
+
+                        this.Left += nx * step;
+                        this.Top += ny * step;
+
+                        string dir = GetDirectionFromAngle(nx, ny, Settings.EnableGravity);
+                        PlayDirectionalAnimation(dir);
                     }
                     else
                     {
-                        CurrentFrames.WalkIdle = SpriteManager.PlayAnimation("runIdle", "Actions", CurrentFrames.WalkIdle, FrameCounts.WalkIdle, SpriteImage);
+                        PlayDirectionalAnimation("Idle");
                     }
                 }
                 bool isIdleNow = GremlinState.IsCompletelyIdle();
@@ -359,82 +321,74 @@ namespace DesktopGremlin
             };
             moveTimer.Start();
         }
+        private string GetDirectionFromAngle(double dx, double dy, bool gravity)
+        {
+            if (gravity)
+            {
+                dy = 0;
+            }
+
+            double angle = Math.Atan2(dy, dx) * (180.0 / Math.PI);
+            if (angle < 0) angle += 360;
+
+            if (gravity)
+            {
+                return dx >= 0 ? "Right" : "Left";
+            }
+            if (angle >= 337.5 || angle < 22.5) return "Right";
+            if (angle < 67.5) return "DownRight";
+            if (angle < 112.5) return "Down";
+            if (angle < 157.5) return "DownLeft";
+            if (angle < 202.5) return "Left";
+            if (angle < 247.5) return "UpLeft";
+            if (angle < 292.5) return "Up";
+            return "UpRight";
+        }
+        private void PlayDirectionalAnimation(string dir)
+        {
+            switch (dir)
+            {
+                case "Right":
+                    CurrentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run", CurrentFrames.Right, FrameCounts.Right, SpriteImage);
+                    break;
+
+                case "DownRight":
+                    CurrentFrames.DownRight = SpriteManager.PlayAnimation("downRight", "Run", CurrentFrames.DownRight, FrameCounts.DownRight, SpriteImage);
+                    break;
+
+                case "Down":
+                    CurrentFrames.Down = SpriteManager.PlayAnimation("runDown", "Run", CurrentFrames.Down, FrameCounts.Down, SpriteImage);
+                    break;
+
+                case "DownLeft":
+                    CurrentFrames.DownLeft = SpriteManager.PlayAnimation("downLeft", "Run", CurrentFrames.DownLeft, FrameCounts.DownLeft, SpriteImage);
+                    break;
+
+                case "Left":
+                    CurrentFrames.Left = SpriteManager.PlayAnimation("runLeft", "Run", CurrentFrames.Left, FrameCounts.Left, SpriteImage);
+                    break;
+
+                case "UpLeft":
+                    CurrentFrames.UpLeft = SpriteManager.PlayAnimation("upLeft", "Run", CurrentFrames.UpLeft, FrameCounts.UpLeft, SpriteImage);
+                    break;
+
+                case "Up":
+                    CurrentFrames.Up = SpriteManager.PlayAnimation("runUp", "Run", CurrentFrames.Up, FrameCounts.Up, SpriteImage);
+                    break;
+
+                case "UpRight":
+                    CurrentFrames.UpRight = SpriteManager.PlayAnimation("upRight", "Run", CurrentFrames.UpRight, FrameCounts.UpRight, SpriteImage);
+                    break;
+
+                default:
+                    CurrentFrames.WalkIdle = SpriteManager.PlayAnimation("runIdle", "Actions", CurrentFrames.WalkIdle, FrameCounts.WalkIdle, SpriteImage);
+                    break;
+            }
+        }
         private void StartFollowingFood()
         {
             MediaManager.PlaySound("food.wav", Settings.StartingChar);
-            double _startingSpeed = Quirks.CurrentItemAcceleration;
-            _followTimer?.Stop();
-            _followTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(1000.0 / Settings.FrameRate) };
-            _followTimer.Tick += (s, e) =>
-            {
-                if (_currentFood == null || !_currentFood.IsVisible)
-                {
-                    _followTimer.Stop();
-                    GremlinState.UnlockState();
-                    GremlinState.SetState("Sleeping");
-                    GremlinState.LockState();
-                    return;
-                }
-
-                System.Windows.Point foodCenter = _currentFood.GetCenter();
-                double gremlinCenterX = this.Left + this.ActualWidth / 2;
-                double gremlinCenterY = this.Top + this.ActualHeight / 2;
-                double dx = foodCenter.X - gremlinCenterX;
-                double dy = foodCenter.Y - gremlinCenterY;
-                double distance = Math.Sqrt(dx * dx + dy * dy);
-
-                if (distance - 25 < Settings.SpriteSize / 2 || !GremlinState.GetState("FollowItem"))
-                {
-                    MediaManager.PlaySound("eat.wav", Settings.StartingChar);
-                    _currentFood.Close();
-                    return;
-                }
-
-                _startingSpeed = Math.Min(_startingSpeed + Quirks.ItemAcceleration, Quirks.MaxItemAcceleration);
-                double step = Math.Min(_startingSpeed, distance);
-
-                this.Left += dx / distance * step;
-                this.Top += dy / distance * step;
-
-                double angle = Math.Atan2(dy, dx) * (180 / Math.PI);
-                if (angle < 0) angle += 360;
-
-                if (angle >= 337.5 || angle < 22.5)
-                {
-                    CurrentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run", CurrentFrames.Right, FrameCounts.Right, SpriteImage);
-                }
-                else if (angle >= 22.5 && angle < 67.5)
-                {
-                    CurrentFrames.DownRight = SpriteManager.PlayAnimation("downRight", "Run", CurrentFrames.DownRight, FrameCounts.DownRight, SpriteImage);
-                }
-                else if (angle >= 67.5 && angle < 112.5)
-                {
-                    CurrentFrames.Down = SpriteManager.PlayAnimation("runDown", "Run", CurrentFrames.Down, FrameCounts.Down, SpriteImage);
-                }
-                else if (angle >= 112.5 && angle < 157.5)
-                {
-                    CurrentFrames.DownLeft = SpriteManager.PlayAnimation("downLeft", "Run", CurrentFrames.DownLeft, FrameCounts.DownLeft, SpriteImage);
-                }
-                else if (angle >= 157.5 && angle < 202.5)
-                {
-                    CurrentFrames.Left = SpriteManager.PlayAnimation("runLeft", "Run", CurrentFrames.Left, FrameCounts.Left, SpriteImage);
-                }
-                else if (angle >= 202.5 && angle < 247.5)
-                {
-                    CurrentFrames.UpLeft = SpriteManager.PlayAnimation("upLeft", "Run", CurrentFrames.UpLeft, FrameCounts.UpLeft, SpriteImage);
-                }
-                else if (angle >= 247.5 && angle < 292.5)
-                {
-                    CurrentFrames.Up = SpriteManager.PlayAnimation("runUp", "Run", CurrentFrames.Up, FrameCounts.Up, SpriteImage);
-                }
-                else if (angle >= 292.5 && angle < 337.5)
-                {
-                    CurrentFrames.UpRight = SpriteManager.PlayAnimation("upRight", "Run", CurrentFrames.UpRight, FrameCounts.UpRight, SpriteImage);
-                }
-
-                GremlinState.SetState("Walking");
-            };
-            _followTimer.Start();
+            _foodFollower.StartFollowing(_currentFood, Quirks.CurrentItemAcceleration);
         }
         private void SpriteImage_RightClick(object sender, MouseButtonEventArgs e)
         {

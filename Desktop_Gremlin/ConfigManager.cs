@@ -61,6 +61,9 @@ public static class ConfigManager
             ["ENABLE_KEYBOARD"] = val => { if (bool.TryParse(val, out bool v)) Settings.AllowKeyboard = v; },
             ["WALK_DISTANCE"] = val => { if (int.TryParse(val, out int v)) Settings.WalkDistance = v; },
             ["USE_WPFPLAYER"] = val => { if (bool.TryParse(val, out bool v)) Settings.UseWPF = v; },
+            ["RANDOMIZE_SPAWN"] = val => { if (bool.TryParse(val, out bool v)) Settings.RandomizeSpawn = v; },
+            ["CLICK_THROUGH"] = val => { if (bool.TryParse(val, out bool v)) Settings.ClickThrough = v; },
+            ["SPAWN_DISTANCE"] = val => { if (int.TryParse(val, out int v)) Settings.SpawnDistance = v; },
         };
         foreach (var line in File.ReadAllLines(path))
         {
@@ -187,6 +190,10 @@ public static class ConfigManager
             window.Left = (SystemParameters.WorkArea.Width - window.Width) / 2;
             window.Top = SystemParameters.WorkArea.Bottom - window.Height;
         }
+        if (Settings.RandomizeSpawn)
+        {
+            SpawnNearCenter(window);
+        }
     }
 
     private static void ScaleHotspotSafe(Border hotspot, Image sprite, double centerX, double centerY, double scaleX, double scaleY)
@@ -200,7 +207,34 @@ public static class ConfigManager
         hotspot.Height *= scaleY;
         hotspot.Margin = new Thickness(centerX + offsetX * scaleX, centerY + offsetY * scaleY, 0, 0);
     }
+    private static void SpawnNearCenter(Window window)
+    {
+        if (window == null)
+        {
+            return;
+        }
 
+        Rect workArea = SystemParameters.WorkArea;
+
+        double centerX = workArea.Left + (workArea.Width - window.Width) / 2;
+        double centerY = workArea.Top + (workArea.Height - window.Height) / 2;
+
+        Random rng = new Random();
+
+        double offsetX = rng.Next(-Settings.SpawnDistance, Settings.SpawnDistance + 1);
+        double offsetY = rng.Next(-Settings.SpawnDistance, Settings.SpawnDistance + 1);
+
+        double left = centerX + offsetX;
+        double top = centerY + offsetY;
+
+
+        left = Math.Max(workArea.Left,Math.Min(left, workArea.Right - window.Width));
+
+        top = Math.Max(workArea.Top, Math.Min(top, workArea.Bottom - window.Height));
+
+        window.Left = left;
+        window.Top = top;
+    }
     public class AppConfig
     {
         private MainWindow _gremlin;
@@ -216,10 +250,12 @@ public static class ConfigManager
         public void SetupTrayIcon()
         {
             _trayIcon = new NotifyIcon();
-
-            if (File.Exists("SpriteSheet/System/ico.ico"))
+            
+            if (File.Exists($"SpriteSheet/Gremlins/{Settings.StartingChar}/Misc/" +
+                $"{Settings.StartingChar}.ico"))
             {
-                _trayIcon.Icon = new Icon("SpriteSheet/System/ico.ico");
+                _trayIcon.Icon = new Icon($"SpriteSheet/Gremlins/{Settings.StartingChar}/Misc/" +
+                $"{Settings.StartingChar}.ico");
             }
             else
             {
@@ -279,10 +315,7 @@ public static class ConfigManager
             Process.Start(exePath);
             System.Windows.Application.Current.Shutdown();
         }
-
-
     }
-
 }
 
 

@@ -288,32 +288,32 @@ using static ConfigManager;
             _keyboardControlEnabled = true;
         }
     private void ShowKeyboardHelp()
-        {
-            //It looks ugly, might as well
-            //just read the readme.txt about keyboard controls
-            string helpText = @"KEYBOARD CONTROLS:
+    {
+        //It looks ugly, might as well
+        //just read the readme.txt about keyboard controls
+        string helpText = @"KEYBOARD CONTROLS:
 
-                MOVEMENT (Disabled in Combat Mode):
-                    WASD / Arrow Keys - Move character
-                    E - Toggle cursor following
-                    R - Toggle HotSpot
-                    ESC - Stop all movement
+            MOVEMENT (Disabled in Combat Mode):
+                WASD / Arrow Keys - Move character
+                E - Toggle cursor following
+                R - Toggle HotSpot
+                ESC - Stop all movement
 
-                ACTIONS:
-                    SPACE - Click animation
-                    T - Toggle sleep/wake
-                    C - Toggle Gravity                  
-                    Q - Spawn Food
-                    1 - Emote 1 (combat only)
-                    2 - Emote 3 (combat only)
-                    3 - Emote 2 (combat only)
-                    4 - Emote 4 (combat only)
-                HELP:
-                    F1 - Show this help
-                    X - Close Program
-                    0/Zero - Disable Hitbox //Non-Mouse Interactable";             
-            MessageBox.Show(helpText, "Desktop Gremlin - Keyboard Controls",
-                MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
+            ACTIONS:
+                SPACE - Click animation
+                T - Toggle sleep/wake
+                C - Toggle Gravity                  
+                Q - Spawn Food
+                1 - Emote 1 (combat only)
+                2 - Emote 3 (combat only)
+                3 - Emote 2 (combat only)
+                4 - Emote 4 (combat only)
+            HELP:
+                F1 - Show this help
+                X - Close Program
+                0/Zero - Disable Hitbox //Non-Mouse Interactable";             
+        MessageBox.Show(helpText, "Desktop Gremlin - Keyboard Controls",
+            MessageBoxButton.OK, MessageBoxImage.Information);
     }
+
+}

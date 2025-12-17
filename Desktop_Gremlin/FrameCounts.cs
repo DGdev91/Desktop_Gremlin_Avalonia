@@ -1,5 +1,6 @@
 ﻿using DesktopGremlin;
 using System;
+using System.Globalization;
 using System.IO;
 public class FrameCounts
 {
@@ -36,6 +37,7 @@ public class FrameCounts
     public int JumpScare { get; set; } = 0;
     public int Poof { get; set; } = 0;
 
+
     public void LoadConfigChar(string character)
     {
         string path = System.IO.Path.Combine(
@@ -60,8 +62,18 @@ public class FrameCounts
             string key = parts[0].Trim();
             string value = parts[1].Trim();
 
+            if(key == "SCALE")
+            {
+                if (TryParseDoubleInvariant(value, out double spriteScale))
+                {
+                    Settings.SpriteSize = spriteScale;
+                }
+            }
+
             if (!int.TryParse(value, out int intValue))
+            {
                 continue;
+            }
 
             switch (key.ToUpper())
             {
@@ -100,8 +112,19 @@ public class FrameCounts
                 case "HEIGHT": Settings.FrameHeight = intValue; break;
                 case "COLUMN": Settings.SpriteColumn = intValue; break;
                 case "WIDTHJS": Settings.FrameWidthJs = intValue; break;
-                case "HEIGHTJS": Settings.FrameHeightJs = intValue; break;
+                case "HEIGHTJS": Settings.FrameHeightJs = intValue; break;                       
             }
+        }
+    }
+    public static bool TryParseDoubleInvariant(string input, out double result)
+    {
+        if (Settings.LanguageDiff)
+        {
+            return double.TryParse(input, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out result);
+        }
+        else
+        {
+            return double.TryParse(input, out result);
         }
     }
 }
