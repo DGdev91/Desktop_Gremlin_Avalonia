@@ -12,7 +12,7 @@
 ```Python
 //4.0 (I skipped to 4.0)
 +Compile all the Uma gremlins into one executable
-+Added a GUI for configuriing option settings
++Added a GUI for configuring option settings
 +Added a setting to enable/disable click-through events for the sprite
 +Re-added Haru Urara
 ```
