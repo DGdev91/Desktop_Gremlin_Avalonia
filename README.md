@@ -10,18 +10,11 @@
 
 
 ```Python
-//3.0 Manhattan Cafe
-//Starting now will move some of the Umas into this and hopefully compile them into 1
-//Added Keyboard Support (NO Keybinds yet)
-//Added an options for click-through support (experimental)
-//Added a caching option for spriteSheets
-```
-
-```ruby
-//2.9.1 For Exusia- Exusiai? Exu (Will bring the changes to the umas in the future)
-//Added a more configuration options
-//Added to catch different cultures affecting the config files hopefully*
-//Added Keyboard control *no keybinds yet
+//4.0 (I skipped to 4.0)
++Compile all the Uma gremlins into one executable
++Added a GUI for configuriing option settings
++Added a setting to enable/disable click-through events for the sprite
++Re-added Haru Urara
 ```
 ```c#
 FORCE_FAKE_TRANSPARENT = true //If for some reason it's translucent or opaque. This is a hack will prevent input around the sprite
@@ -50,6 +43,7 @@ Will be fix in the future**
 
 | Character | Version | Download Link |
 |-----------|---------|---------------|
+| Tracen Acacdemy [All umas from 1.0 up to Cafe| 4.0 |[Download]() |
 | Doto | v2.9 |[Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.9/MeishoDoto_v2.9.zip) |
 | Agnes Tachyon | v2.4 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.4/Tachyon_v2.4.zip) |
 | Matikanetannhauser | v2.7.2 Updated | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.7.2/Mambo_v2.8.zip) |
