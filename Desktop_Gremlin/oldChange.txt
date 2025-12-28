@@ -1,0 +1,21 @@
+﻿ bool shouldMove = distance - _spriteImage.Width / 2 > QuirkSettings.CompanionFollow;
+
+            if (!shouldMove)
+            {
+                _isMoving = false;
+                _lastStillTime = DateTime.Now;
+                _gremlinState.SetState("Idle");
+                return;
+            }
+
+            if (!_isMoving)
+            {
+                double msStill = (DateTime.Now - _lastStillTime).TotalMilliseconds;
+
+                if (msStill < MoveDelayMs)
+                {
+                    return;
+                }
+
+                _isMoving = true;
+            }

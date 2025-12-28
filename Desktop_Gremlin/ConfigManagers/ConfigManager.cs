@@ -27,7 +27,7 @@ public static class ConfigManager
         {
             ["LANGUAGE_DIFF"] = val => { if (bool.TryParse(val, out bool v)) Settings.LanguageDiff = v; },
             ["START_CHAR"] = val => Settings.StartingChar = val,
-            ["COMPANION_CHAR"] = val => Settings.CompanionChar = val,
+            ["COMPANION_CHAR"] = val => QuirkSettings.CompanionChar = val,
             ["SPRITE_FRAMERATE"] = val => { if (int.TryParse(val, out int v)) Settings.FrameRate = v; },
             ["FOLLOW_RADIUS"] = val => { if (TryParseDoubleInvariant(val, out double v)) Settings.FollowRadius = v; },
             ["MAX_INTERVAL"] = val => { if (int.TryParse(val, out int v)) Settings.RandomMaxInterval = v; },
@@ -42,9 +42,9 @@ public static class ConfigManager
             ["SPRITE_SCALE"] = val => { if (TryParseDoubleInvariant(val, out double v)) Settings.SpriteSize = v; },
             ["FORCE_FAKE_TRANSPARENT"] = val => { if (bool.TryParse(val, out bool v)) Settings.FakeTransparent = v; },
             ["ALLOW_ERROR_MESSAGES"] = val => { if (bool.TryParse(val, out bool v)) Settings.AllowErrorMessages = v; },
-            ["MAX_ACCELERATION"] = val => { if (int.TryParse(val, out int v)) Quirks.MaxItemAcceleration = v; },
-            ["FOLLOW_ACCELERATION"] = val => { if (TryParseDoubleInvariant(val, out double v)) Quirks.CurrentItemAcceleration = v; },
-            ["CURRENT_ACCELERATION"] = val => { if (TryParseDoubleInvariant(val, out double v)) Quirks.ItemAcceleration = v; },
+            ["MAX_ACCELERATION"] = val => { if (int.TryParse(val, out int v)) QuirkSettings.MaxItemAcceleration = v; },
+            ["FOLLOW_ACCELERATION"] = val => { if (TryParseDoubleInvariant(val, out double v)) QuirkSettings.CurrentItemAcceleration = v; },
+            ["CURRENT_ACCELERATION"] = val => { if (TryParseDoubleInvariant(val, out double v)) QuirkSettings.ItemAcceleration = v; },
             ["ITEM_WIDTH"] = val => { if (int.TryParse(val, out int v)) Settings.ItemWidth = v; },
             ["ITEM_HEIGHT"] = val => { if (int.TryParse(val, out int v)) Settings.ItemHeight = v; },
             ["COMPANIONS_SCALE"] = val => { if (TryParseDoubleInvariant(val, out double v)) Settings.CompanionScale = v; },
@@ -64,6 +64,9 @@ public static class ConfigManager
             ["RANDOMIZE_SPAWN"] = val => { if (bool.TryParse(val, out bool v)) Settings.RandomizeSpawn = v; },
             ["CLICK_THROUGH"] = val => { if (bool.TryParse(val, out bool v)) Settings.ClickThrough = v; },
             ["SPAWN_DISTANCE"] = val => { if (int.TryParse(val, out int v)) Settings.SpawnDistance = v; },
+            ["COMPANION_CHAR"] = val => QuirkSettings.CompanionChar = val,
+            ["COMPANION_SCALE"] = val => { if (TryParseDoubleInvariant(val, out double v)) QuirkSettings.CompanionScale = v; },
+            ["COMPANION_FOLLOW"] = val => { if (int.TryParse(val, out int v)) QuirkSettings.CompanionFollow = v; },
         };
         foreach (var line in File.ReadAllLines(path))
         {
@@ -195,7 +198,6 @@ public static class ConfigManager
             SpawnNearCenter(window);
         }
     }
-
     private static void ScaleHotspotSafe(Border hotspot, Image sprite, double centerX, double centerY, double scaleX, double scaleY)
     {
         if (hotspot == null || sprite == null) return;

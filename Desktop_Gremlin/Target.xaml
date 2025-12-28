@@ -1,26 +1,26 @@
 ﻿<Window x:Class="DesktopGremlin.Target"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DesktopGremlin"
-        mc:Ignorable="d"
-        Title="Target" Height="80" Width="80" Background="Transparent"
-        ResizeMode="NoResize" BorderThickness="0" ShowInTaskbar="True"
-        WindowStyle="None"
-        AllowsTransparency="True"
-        Topmost="True">
-    <Grid>
-        <Image x:Name="SpriteFood" Source="SpriteSheet/food.png"
-            Width="80" Height="80"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"/>
+xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+xmlns:local="clr-namespace:DesktopGremlin"
+mc:Ignorable="d"
+Title="Target" Height="80" Width="80" Background="Transparent"
+ResizeMode="NoResize" BorderThickness="0" ShowInTaskbar="True"
+WindowStyle="None"
+AllowsTransparency="True"
+Topmost="True">
+<Grid>
+    <Image x:Name="SpriteFood"
+    Width="80" Height="80"
+    HorizontalAlignment="Left"
+    VerticalAlignment="Top"/>
 
-        <Image Name="IntroEffect"
-            Width="80" Height="80"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            >
-        </Image>
-    </Grid>
+    <Image Name="IntroEffect"
+    Width="80" Height="80"
+    HorizontalAlignment="Left"
+    VerticalAlignment="Top"
+    >
+    </Image>
+</Grid>
 </Window>

@@ -61,7 +61,7 @@ namespace DesktopGremlin
                 return;
             }
 
-            _currentSpeed = Math.Min(_currentSpeed + Quirks.ItemAcceleration, Quirks.MaxItemAcceleration);
+            _currentSpeed = Math.Min(_currentSpeed + QuirkSettings.ItemAcceleration, QuirkSettings.MaxItemAcceleration);
             double step = Math.Min(_currentSpeed, distance);
 
             _window.Left += (dx / distance) * step;

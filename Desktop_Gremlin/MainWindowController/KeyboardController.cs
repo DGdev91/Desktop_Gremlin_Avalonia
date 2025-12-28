@@ -1,4 +1,5 @@
 ﻿using DesktopGremlin;
+using DesktopGremlin.Quirks.Companion;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -50,7 +51,6 @@ using static ConfigManager;
         }
         private void Gremlin_KeyDown(object sender, KeyEventArgs e)
         {
-            _gremlin.ResetIdleTimer();
 
             if (e.Key == Key.W || e.Key == Key.Up || e.Key == Key.S || e.Key == Key.Down ||
                 e.Key == Key.A || e.Key == Key.Left ||
@@ -66,7 +66,7 @@ using static ConfigManager;
                     break;
                 case Key.C:
                     _gremlin.ToggleGravity();
-                    break;
+                break;
                 case Key.E:
                     _gremlin.ToggleCursorFollow();
                     break;
@@ -89,6 +89,10 @@ using static ConfigManager;
                 case Key.D4:
                 case Key.NumPad4:
                     _gremlin.TriggerRightDownEmote();
+                    break;
+                case Key.D5:
+                case Key.NumPad5:
+                    _gremlin.ToggleCompanion();
                     break;
                 case Key.R:
                     _gremlin.HotSpot();
@@ -289,8 +293,6 @@ using static ConfigManager;
         }
     private void ShowKeyboardHelp()
     {
-        //It looks ugly, might as well
-        //just read the readme.txt about keyboard controls
         string helpText = @"KEYBOARD CONTROLS:
 
             MOVEMENT (Disabled in Combat Mode):
@@ -304,10 +306,11 @@ using static ConfigManager;
                 T - Toggle sleep/wake
                 C - Toggle Gravity                  
                 Q - Spawn Food
-                1 - Emote 1 (combat only)
-                2 - Emote 3 (combat only)
-                3 - Emote 2 (combat only)
-                4 - Emote 4 (combat only)
+                1 - Emote 1 
+                2 - Emote 3 
+                3 - Emote 2 
+                4 - Emote 4 
+                4 - Un/Summon Companion
             HELP:
                 F1 - Show this help
                 X - Close Program
@@ -315,5 +318,6 @@ using static ConfigManager;
         MessageBox.Show(helpText, "Desktop Gremlin - Keyboard Controls",
             MessageBoxButton.OK, MessageBoxImage.Information);
     }
+
 
 }

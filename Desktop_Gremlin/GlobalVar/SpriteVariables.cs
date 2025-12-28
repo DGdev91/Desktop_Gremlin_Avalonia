@@ -29,11 +29,7 @@ public static class Settings
     public static double VolumeLevel { get; set; } = 1.0;
     public static double SvGravity { get; set; } = 10.0;
 
-
     public static string StartingChar { get; set; } = "";
-    public static string CompanionChar { get; set; } = "";
-
-
     public static bool AllowRandomness { get; set; } = false;
     public static bool AllowGravity { get; set; } = false;
     public static bool FootStepSounds { get; set; } = false;
@@ -55,11 +51,16 @@ public static class Settings
     public static bool ClickThrough { get; set; } = false;
 
 }
-public static class Quirks
+public static class QuirkSettings
 {
     public static int MaxItemAcceleration { get; set; } = 0;
     public static double ItemAcceleration { get; set; } = 1.0;
-    public static double CurrentItemAcceleration { get; set; } = 1.0;   
+    public static double CurrentItemAcceleration { get; set; } = 1.0;
+    public static string CompanionChar { get; set; } = "";
+    public static double CompanionScale { get; set; } = 0;
+    public static int CompanionHeight { get; set; } = 0;    
+    public static int CompanionWidth { get; set; } = 0;   
+    public static int CompanionFollow { get; set; } = 0;
 }
 public static class MouseSettings
 {
