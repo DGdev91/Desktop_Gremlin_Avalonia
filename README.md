@@ -43,6 +43,7 @@ Will be fix in the future**
 
 | Character | Version | Download Link |
 |-----------|---------|---------------|
+|StayGold only| 4.1 |[Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v4.1/TracenAcademy_v4.1.zip) |
 | Tracen Acacdemy [All umas from 1.0 up to Cafe]| 4.0 |[Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v4.0/TracenAcademy_v4.0.zip) |
 | Doto | v2.9 |[Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.9/MeishoDoto_v2.9.zip) |
 | Agnes Tachyon | v2.4 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.4/Tachyon_v2.4.zip) |
