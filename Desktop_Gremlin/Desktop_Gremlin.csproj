@@ -72,7 +72,6 @@
     <Compile Include="Frames\AnimationStates.cs" />
     <Compile Include="ConfigManagers\ConfigManager.cs" />
     <Compile Include="Frames\CurrentFrames.cs" />
-    <Compile Include="MainWindowController\DirectionalController.cs" />
     <Compile Include="Quirks\Companion\Companion.xaml.cs">
       <DependentUpon>Companion.xaml</DependentUpon>
     </Compile>
@@ -140,6 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="obj\" />
+    <Folder Include="Sounds\Misc\" />
     <Folder Include="SpriteSheet\Effects\" />
   </ItemGroup>
   <ItemGroup>
@@ -234,6 +234,42 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SpriteSheet\Companions\Dream\Run\upRight.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Companions\Durandal\Actions\grab.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Companions\Durandal\Actions\idle.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Companions\Durandal\Actions\intro.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Companions\Durandal\config.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Companions\Durandal\Run\downLeft.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Companions\Durandal\Run\downRight.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Companions\Durandal\Run\runDown.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Companions\Durandal\Run\runLeft.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Companions\Durandal\Run\runRight.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Companions\Durandal\Run\runUp.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Companions\Durandal\Run\upLeft.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SpriteSheet\Companions\Durandal\Run\upRight.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SpriteSheet\Companions\Ov\GoldShi\Run\downLeft.png">

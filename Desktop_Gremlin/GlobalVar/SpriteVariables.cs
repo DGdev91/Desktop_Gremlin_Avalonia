@@ -3,7 +3,6 @@ using System.Diagnostics.Eventing.Reader;
 
 public static class Settings
 {
-
     public static int SpriteColumn { get; set; } = 0;
     public static int FrameRate { get; set; } = 0;
     public static int FrameWidth { get; set; } = 0;
@@ -21,15 +20,13 @@ public static class Settings
     public static int ItemHeight { get; set; } = 0;
     public static int WalkDistance { get; set; } = 0;
     public static int SpawnDistance { get; set; } = 0;
-
     public static double FollowRadius { get; set; } = 0;
     public static double SpriteSize { get; set; } = 1.0;
-
     public static double CompanionScale { get; set; } = 0;
     public static double VolumeLevel { get; set; } = 1.0;
     public static double SvGravity { get; set; } = 10.0;
-
     public static string StartingChar { get; set; } = "";
+    public static string FoodSpawn { get; set; } = "food1.png";  
     public static bool AllowRandomness { get; set; } = false;
     public static bool AllowGravity { get; set; } = false;
     public static bool FootStepSounds { get; set; } = false;
@@ -49,6 +46,7 @@ public static class Settings
     public static bool UseWPF { get; set; } = false; 
     public static bool RandomizeSpawn { get; set; } = false;
     public static bool ClickThrough { get; set; } = false;
+    public static bool StraightLine { get; set; } = true;
 
 }
 public static class QuirkSettings
@@ -66,8 +64,8 @@ public static class MouseSettings
 {
     public static bool FollowCursor { get; set; } = false;
     public static System.Drawing.Point LastMousePosition { get; set; }
-    public static double FollowSpeed { get; set; } = 2.0;
+    public static double FollowSpeed { get; set; } = 10.0;
     public static double MouseX { get; set; }
     public static double MouseY { get; set; }
-    public static double Speed { get; set; } = 3.0;
+    public static double Speed { get; set; } = 20.0;
 }

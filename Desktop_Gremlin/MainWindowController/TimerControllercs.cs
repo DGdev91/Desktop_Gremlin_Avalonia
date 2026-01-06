@@ -13,14 +13,12 @@ namespace DesktopGremlin
         private DispatcherTimer _idleTimer;
         private DispatcherTimer _gravityTimer;
         private Image _spriteImage;
-
         public TimerController(MainWindow window, AnimationStates gremlinState)
         {
             _window = window;
             _gremlinState = gremlinState;
             InitializeTimers();
         }
-
         public void Start()
         {
             _idleTimer.Start();
@@ -36,16 +34,14 @@ namespace DesktopGremlin
             _idleTimer.Tick += IdleTimer_Tick;
 
             _gravityTimer = new DispatcherTimer();
-            _gravityTimer.Interval = TimeSpan.FromMilliseconds(30);
+            _gravityTimer.Interval = TimeSpan.FromMilliseconds(10);
             _gravityTimer.Tick += Gravity_Tick;
         }
-
         public void ResetIdleTimer()
         {
             _idleTimer.Stop();
             _idleTimer.Start();
         }
-
         public void ToggleGravity()
         {
             Settings.EnableGravity = !Settings.EnableGravity;
@@ -58,7 +54,6 @@ namespace DesktopGremlin
                 _gravityTimer.Stop();
             }
         }
-
         private void IdleTimer_Tick(object sender, EventArgs e)
         {
             if (_gremlinState.GetState("Sleeping"))
@@ -73,7 +68,6 @@ namespace DesktopGremlin
                 _gremlinState.LockState();
             }
         }
-
         private void Gravity_Tick(object sender, EventArgs e)
         {
 

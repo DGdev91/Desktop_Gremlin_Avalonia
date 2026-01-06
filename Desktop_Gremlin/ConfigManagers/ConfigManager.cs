@@ -27,6 +27,7 @@ public static class ConfigManager
         {
             ["LANGUAGE_DIFF"] = val => { if (bool.TryParse(val, out bool v)) Settings.LanguageDiff = v; },
             ["START_CHAR"] = val => Settings.StartingChar = val,
+            ["FOOD_SPAWN"] = val => Settings.FoodSpawn = val,
             ["COMPANION_CHAR"] = val => QuirkSettings.CompanionChar = val,
             ["SPRITE_FRAMERATE"] = val => { if (int.TryParse(val, out int v)) Settings.FrameRate = v; },
             ["FOLLOW_RADIUS"] = val => { if (TryParseDoubleInvariant(val, out double v)) Settings.FollowRadius = v; },
@@ -62,11 +63,13 @@ public static class ConfigManager
             ["WALK_DISTANCE"] = val => { if (int.TryParse(val, out int v)) Settings.WalkDistance = v; },
             ["USE_WPFPLAYER"] = val => { if (bool.TryParse(val, out bool v)) Settings.UseWPF = v; },
             ["RANDOMIZE_SPAWN"] = val => { if (bool.TryParse(val, out bool v)) Settings.RandomizeSpawn = v; },
+            ["STRAIGHT_MOVE"] = val => { if (bool.TryParse(val, out bool v)) Settings.StraightLine = v; },
             ["CLICK_THROUGH"] = val => { if (bool.TryParse(val, out bool v)) Settings.ClickThrough = v; },
             ["SPAWN_DISTANCE"] = val => { if (int.TryParse(val, out int v)) Settings.SpawnDistance = v; },
             ["COMPANION_CHAR"] = val => QuirkSettings.CompanionChar = val,
             ["COMPANION_SCALE"] = val => { if (TryParseDoubleInvariant(val, out double v)) QuirkSettings.CompanionScale = v; },
             ["COMPANION_FOLLOW"] = val => { if (int.TryParse(val, out int v)) QuirkSettings.CompanionFollow = v; },
+            ["STRAIGHT_LINE"] = val => { if (bool.TryParse(val, out bool v)) Settings.StraightLine = v; },
         };
         foreach (var line in File.ReadAllLines(path))
         {

@@ -16,6 +16,9 @@ namespace DesktopGremlin
         private Target _currentFood;
         private double _currentSpeed;
 
+        public bool UseStraightMovementOnly { get; set; } = true;
+        private bool _movingHorizontalFirst = true;
+
         public FoodFollower(Window window, AnimationStates gremlinState, CurrentFrames currentFrames, FrameCounts frameCounts, Image spriteImage)
         {
             _window = window;
@@ -27,16 +30,20 @@ namespace DesktopGremlin
             _followTimer.Tick += FollowTick;
             _followTimer.Interval = TimeSpan.FromMilliseconds(1000.0 / Settings.FrameRate);
         }
+
         public void StartFollowing(Target food, double startingSpeed)
         {
-            if (food == null) return;
+            if (food == null)
+            {
+                return;
+            }
 
             _currentFood = food;
             _currentSpeed = startingSpeed;
+            MediaManager.PlaySound("foodSpawn.wav", Settings.StartingChar);
             _followTimer.Start();
-            _gremlinState.LockState();
-            _gremlinState.SetState("FollowItem");
         }
+
         private void FollowTick(object sender, EventArgs e)
         {
             if (_currentFood == null || !_currentFood.IsVisible)
@@ -55,7 +62,6 @@ namespace DesktopGremlin
 
             if (distance - 25 < Settings.SpriteSize / 2 || !_gremlinState.GetState("FollowItem"))
             {
-                MediaManager.PlaySound("eat.wav", "Misc");
                 _currentFood.Close();
                 StopFollowing();
                 return;
@@ -64,32 +70,133 @@ namespace DesktopGremlin
             _currentSpeed = Math.Min(_currentSpeed + QuirkSettings.ItemAcceleration, QuirkSettings.MaxItemAcceleration);
             double step = Math.Min(_currentSpeed, distance);
 
+            if (Settings.StraightLine)
+            {
+                MoveStraightOnly(dx, dy, step);
+            }
+            else
+            {
+                MoveDiagonally(dx, dy, distance, step);
+            }
+
+            _gremlinState.SetState("Walking");
+        }
+
+        private void MoveDiagonally(double dx, double dy, double distance, double step)
+        {
             _window.Left += (dx / distance) * step;
             _window.Top += (dy / distance) * step;
 
             string dir = GetDirectionFromAngle(dx, dy);
             PlayDirectionalAnimation(dir);
+        }
 
-            _gremlinState.SetState("Walking");
+        private void MoveStraightOnly(double dx, double dy, double step)
+        {
+            double absDx = Math.Abs(dx);
+            double absDy = Math.Abs(dy);
+
+            bool moveHorizontal = false;
+            bool moveVertical = false;
+
+            double alignmentThreshold = 5.0;
+
+            if (absDx < alignmentThreshold)
+            {
+                moveVertical = true;
+            }
+            else if (absDy < alignmentThreshold)
+            {
+                moveHorizontal = true;
+            }
+            else
+            {
+                if (_movingHorizontalFirst)
+                {
+                    moveHorizontal = true;
+                }
+                else
+                {
+                    moveVertical = true;
+                }
+                if (moveHorizontal && absDx < step * 2)
+                {
+                    _movingHorizontalFirst = false;
+                }
+                else if (moveVertical && absDy < step * 2)
+                {
+                    _movingHorizontalFirst = true;
+                }
+            }
+            if (moveHorizontal)
+            {
+                double moveX = dx > 0 ? step : -step;
+                if (absDx < step)
+                {
+                    moveX = dx;
+                }
+                _window.Left += moveX;
+
+                string dir = dx > 0 ? "Right" : "Left";
+                PlayDirectionalAnimation(dir);
+            }
+            else if (moveVertical)
+            {
+                double moveY = dy > 0 ? step : -step;
+                if (absDy < step)
+                {
+                    moveY = dy;
+                }
+                _window.Top += moveY;
+
+                string dir = dy > 0 ? "Down" : "Up";
+                PlayDirectionalAnimation(dir);
+            }
         }
         private void StopFollowing()
         {
+            MediaManager.PlaySound("eat.wav", "Misc");
             _followTimer.Stop();
             _gremlinState.UnlockState();
             _gremlinState.SetState("Sleeping");
         }
+
         private string GetDirectionFromAngle(double dx, double dy)
         {
             double angle = Math.Atan2(dy, dx) * (180.0 / Math.PI);
-            if (angle < 0) angle += 360;
+            if (angle < 0)
+            {
+                angle += 360;
+            }
 
-            if (angle >= 337.5 || angle < 22.5) return "Right";
-            if (angle < 67.5) return "DownRight";
-            if (angle < 112.5) return "Down";
-            if (angle < 157.5) return "DownLeft";
-            if (angle < 202.5) return "Left";
-            if (angle < 247.5) return "UpLeft";
-            if (angle < 292.5) return "Up";
+            if (angle >= 337.5 || angle < 22.5)
+            {
+                return "Right";
+            }
+            if (angle < 67.5)
+            {
+                return "DownRight";
+            }
+            if (angle < 112.5)
+            {
+                return "Down";
+            }
+            if (angle < 157.5)
+            {
+                return "DownLeft";
+            }
+            if (angle < 202.5)
+            {
+                return "Left";
+            }
+            if (angle < 247.5)
+            {
+                return "UpLeft";
+            }
+            if (angle < 292.5)
+            {
+                return "Up";
+            }
             return "UpRight";
         }
 

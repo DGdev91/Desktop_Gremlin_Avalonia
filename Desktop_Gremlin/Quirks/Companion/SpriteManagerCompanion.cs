@@ -56,15 +56,15 @@ public static class SpriteManagerCompanion
             return currentFrame;
         }
 
-        int x = (currentFrame % 10) * 300;
-        int y = (currentFrame / 10) * 300;
+        int x = (currentFrame % 10) *QuirkSettings.CompanionWidth;
+        int y = (currentFrame / 10) *QuirkSettings.CompanionHeight;
 
         if (x + QuirkSettings.CompanionWidth > sheet.PixelWidth || y + QuirkSettings.CompanionHeight > sheet.PixelHeight)
         {
             return currentFrame;
         }
 
-        targetImage.Source = new CroppedBitmap(sheet, new Int32Rect(x, y,  300, 300));
+        targetImage.Source = new CroppedBitmap(sheet, new Int32Rect(x, y, QuirkSettings.CompanionWidth, QuirkSettings.CompanionHeight));
 
         return (currentFrame + 1) % frameCount;
     }

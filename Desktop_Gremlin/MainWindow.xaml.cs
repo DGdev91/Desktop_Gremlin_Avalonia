@@ -4,9 +4,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using static ConfigManager;
 
 namespace DesktopGremlin
@@ -27,9 +25,9 @@ namespace DesktopGremlin
         private int _exlLayaer = -20;
         private Random _rng = new Random();
 
-        private AnimationStates GremlinState = new AnimationStates();
-        private FrameCounts FrameCounts = new FrameCounts();
-        private CurrentFrames CurrentFrames = new CurrentFrames();
+        private AnimationStates _gremlinState = new AnimationStates();
+        private FrameCounts _frameCounts = new FrameCounts();
+        private CurrentFrames _currentFrames = new CurrentFrames();
 
         private AnimationController _animationController;
         private MovementController _movementController;
@@ -78,25 +76,21 @@ namespace DesktopGremlin
         public void InitializeConfig()
         {
             ConfigManager.LoadMasterConfig();
-            FrameCounts.LoadConfigChar(Settings.StartingChar);
+            _frameCounts.LoadConfigChar(Settings.StartingChar);
             ConfigManager.ApplyXamlSettings(this);
-
-
-            _timerController = new TimerController(this, GremlinState);
-            _animationController = new AnimationController(this, GremlinState, CurrentFrames, FrameCounts, SpriteImage, _rng);
-            _movementController = new MovementController(this, GremlinState, CurrentFrames, FrameCounts, SpriteImage, _rng);
+            _timerController = new TimerController(this, _gremlinState);
+            _animationController = new AnimationController(this, _gremlinState, _currentFrames, _frameCounts, SpriteImage, _rng);
+            _movementController = new MovementController(this, _gremlinState, _currentFrames, _frameCounts, SpriteImage, _rng);
             _hotspotController = new HotspotController(this, LeftHotspot, RightHotspot, TopHotspot, LeftDownHotspot, RightDownHotspot);
-            _foodFollower = new FoodFollower(this, GremlinState, CurrentFrames, FrameCounts, SpriteImage);
-            _config = new AppConfig(this, GremlinState);
+            _foodFollower = new FoodFollower(this, _gremlinState, _currentFrames, _frameCounts, SpriteImage);
+            _config = new AppConfig(this, _gremlinState);
 
             if (Settings.AllowKeyboard)
             {
-                _keyboardController = new KeyboardController(this, GremlinState, CurrentFrames, FrameCounts, _rng);
+                _keyboardController = new KeyboardController(this, _gremlinState, _currentFrames, _frameCounts, _rng);
             }
-
             SpriteImage.Source = new CroppedBitmap();
-            GremlinState.LockState();
-
+            _gremlinState.LockState();
             _animationController.Start();
             _timerController.Start();
         }
@@ -116,18 +110,18 @@ namespace DesktopGremlin
         private void SpriteImage_RightClick(object sender, MouseButtonEventArgs e)
         {
             _timerController.ResetIdleTimer();
-            CurrentFrames.Click = 0;
-            GremlinState.UnlockState();
-            GremlinState.SetState("Click");
+            _currentFrames.Click = 0;
+            _gremlinState.UnlockState();
+            _gremlinState.SetState("Click");
             MediaManager.PlaySound("mambo.wav", Settings.StartingChar);
-            GremlinState.LockState();
+            _gremlinState.LockState();
         }
 
         private void SpriteImage_MouseEnter(object sender, MouseEventArgs e)
         {
             _keyboardController?.DisableKeyboardMovement();
-            GremlinState.SetState("Hover");
-            if (GremlinState.GetState("Hover"))
+            _gremlinState.SetState("Hover");
+            if (_gremlinState.GetState("Hover"))
             {
                 MediaManager.PlaySound("hover.wav", Settings.StartingChar, 5);
             }
@@ -136,25 +130,25 @@ namespace DesktopGremlin
         private void SpriteImage_MouseLeave(object sender, MouseEventArgs e)
         {
             _keyboardController?.EnableKeyboardMovement();
-            GremlinState.SetState("Idle");
-            CurrentFrames.Hover = 0;
+            _gremlinState.SetState("Idle");
+            _currentFrames.Hover = 0;
         }
 
         private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             _timerController.ResetIdleTimer();
-            GremlinState.UnlockState();
-            GremlinState.SetState("Grab");
+            _gremlinState.UnlockState();
+            _gremlinState.SetState("Grab");
             MediaManager.PlaySound("grab.wav", Settings.StartingChar);
             DragMove();
-            GremlinState.SetState("Idle");
+            _gremlinState.SetState("Idle");
             MouseSettings.FollowCursor = !MouseSettings.FollowCursor;
             if (MouseSettings.FollowCursor)
             {
-                GremlinState.SetState("Walking");
-                GremlinState.LockState();
+                _gremlinState.SetState("Walking");
+                _gremlinState.LockState();
             }
-            CurrentFrames.Grab = 0;
+            _currentFrames.Grab = 0;
             if (MouseSettings.FollowCursor)
             {
                 MediaManager.PlaySound("run.wav", Settings.StartingChar);
@@ -163,13 +157,13 @@ namespace DesktopGremlin
 
         private void TopHotspot_Click(object sender, MouseButtonEventArgs e)
         {
-            if (GremlinState.GetState("FollowItem"))
+            if (_gremlinState.GetState("FollowItem"))
             {
                 return;
             }
-            GremlinState.UnlockState();
-            GremlinState.SetState("FollowItem");
-            GremlinState.LockState();
+            _gremlinState.UnlockState();
+            _gremlinState.SetState("FollowItem");
+            _gremlinState.LockState();
 
             double screenWidth = SystemParameters.WorkArea.Width;
             double screenHeight = SystemParameters.WorkArea.Height;
@@ -187,25 +181,25 @@ namespace DesktopGremlin
 
         private void LeftHotspot_Click(object sender, MouseButtonEventArgs e)
         {
-            CurrentFrames.Emote1 = 0;
+            _currentFrames.Emote1 = 0;
             EmoteHelper("Emote1", "emote1.wav");
         }
 
         private void LeftDownHotspot_Click(object sender, MouseButtonEventArgs e)
         {
-            CurrentFrames.Emote2 = 0;
+            _currentFrames.Emote2 = 0;
             EmoteHelper("Emote2", "emote2.wav");
         }
 
         private void RightHotspot_Click(object sender, MouseButtonEventArgs e)
         {
-            CurrentFrames.Emote3 = 0;
+            _currentFrames.Emote3 = 0;
             EmoteHelper("Emote3", "emote3.wav");
         }
 
         private void RightDownHotspot_Click(object sender, MouseButtonEventArgs e)
         {
-            CurrentFrames.Emote4 = 0;
+            _currentFrames.Emote4 = 0;
             EmoteHelper("Emote4", "emote4.wav");
         }
 
@@ -218,10 +212,10 @@ namespace DesktopGremlin
         private void EmoteHelper(string emote, string mp3)
         {
             _timerController.ResetIdleTimer();
-            GremlinState.UnlockState();
-            GremlinState.SetState(emote);
+            _gremlinState.UnlockState();
+            _gremlinState.SetState(emote);
             MediaManager.PlaySound(mp3, Settings.StartingChar);
-            GremlinState.LockState();
+            _gremlinState.LockState();
         }
         public void HotSpot()
         {
@@ -238,12 +232,12 @@ namespace DesktopGremlin
         public void TriggerClickAnimation()
         {
             _timerController.ResetIdleTimer();
-            CurrentFrames.Click = 0;
-            CurrentFrames.Idle = 0;
-            GremlinState.UnlockState();
-            GremlinState.SetState("Click");
+            _currentFrames.Click = 0;
+            _currentFrames.Idle = 0;
+            _gremlinState.UnlockState();
+            _gremlinState.SetState("Click");
             MediaManager.PlaySound("mambo.wav", Settings.StartingChar);
-            GremlinState.LockState();
+            _gremlinState.LockState();
         }
 
         public void ToggleCursorFollow()
@@ -254,26 +248,26 @@ namespace DesktopGremlin
             MouseSettings.FollowCursor = !MouseSettings.FollowCursor;
             if (MouseSettings.FollowCursor)
             {
-                GremlinState.UnlockState();
-                GremlinState.SetState("Walking");
-                GremlinState.LockState();
+                _gremlinState.UnlockState();
+                _gremlinState.SetState("Walking");
+                _gremlinState.LockState();
                 MediaManager.PlaySound("run.wav", Settings.StartingChar);
             }
             else
             {
-                GremlinState.UnlockState();
-                GremlinState.SetState("Idle");
+                _gremlinState.UnlockState();
+                _gremlinState.SetState("Idle");
             }
         }
         public void TriggerFood()
         {
-            if (GremlinState.GetState("FollowItem"))
+            if (_gremlinState.GetState("FollowItem"))
             {
                 return;
             }
-            GremlinState.UnlockState();
-            GremlinState.SetState("FollowItem");
-            GremlinState.LockState();
+            _gremlinState.UnlockState();
+            _gremlinState.SetState("FollowItem");
+            _gremlinState.LockState();
 
             double screenWidth = SystemParameters.WorkArea.Width;
             double screenHeight = SystemParameters.WorkArea.Height;
@@ -291,8 +285,8 @@ namespace DesktopGremlin
 
         public void TriggerLeftEmote()
         {
-            CurrentFrames.Emote1 = 0;
-            CurrentFrames.Idle = 0;
+            _currentFrames.Emote1 = 0;
+            _currentFrames.Idle = 0;
             EmoteHelper("Emote1", "emote1.wav");
         }
         public void ForceShutDown()
@@ -301,38 +295,38 @@ namespace DesktopGremlin
         }
         public void TriggerRightEmote()
         {
-            CurrentFrames.Emote3 = 0;
-            CurrentFrames.Idle = 0;
+            _currentFrames.Emote3 = 0;
+            _currentFrames.Idle = 0;
             EmoteHelper("Emote3", "emote3.wav");
         }
 
         public void TriggerLeftDownEmote()
         {
-            CurrentFrames.Emote2 = 0;
-            CurrentFrames.Idle = 0;
+            _currentFrames.Emote2 = 0;
+            _currentFrames.Idle = 0;
             EmoteHelper("Emote2", "emote2.wav");
         }
         public void TriggerRightDownEmote()
         {
-            CurrentFrames.Emote4 = 0;
-            CurrentFrames.Idle = 0;
+            _currentFrames.Emote4 = 0;
+            _currentFrames.Idle = 0;
             EmoteHelper("Emote4", "emote4.wav");
         }
         
         public void ToggleSleep()
         {
-            if (GremlinState.GetState("Sleeping"))
+            if (_gremlinState.GetState("Sleeping"))
             {
-                GremlinState.UnlockState();
-                GremlinState.SetState("Idle");
+                _gremlinState.UnlockState();
+                _gremlinState.SetState("Idle");
                 _timerController.ResetIdleTimer();
             }
             else
             {
-                GremlinState.UnlockState();
+                _gremlinState.UnlockState();
                 MediaManager.PlaySound("sleep.wav", Settings.StartingChar);
-                GremlinState.SetState("Sleeping");
-                GremlinState.LockState();
+                _gremlinState.SetState("Sleeping");
+                _gremlinState.LockState();
             }
         }
         public void ToggleCompanion()

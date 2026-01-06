@@ -18,8 +18,10 @@ namespace DesktopGremlin
         private DispatcherTimer _masterTimer;
         private DateTime _nextRandomActionTime;
         private bool _wasIdleLastFrame = false;
+        public bool UseStraightMovementOnly { get; set; } = true;
+        private bool _movingHorizontalFirst = true;
 
-        public AnimationController(MainWindow window, AnimationStates gremlinState, CurrentFrames currentFrames,FrameCounts frameCounts, Image spriteImage, Random rng)
+        public AnimationController(MainWindow window, AnimationStates gremlinState, CurrentFrames currentFrames, FrameCounts frameCounts, Image spriteImage, Random rng)
         {
             _window = window;
             _gremlinState = gremlinState;
@@ -58,14 +60,12 @@ namespace DesktopGremlin
             _currentFrames.Hover = PlayAnimation("Hover", "Actions", _currentFrames.Hover, _frameCounts.Hover, false);
             _currentFrames.Sleep = PlayAnimation("Sleeping", "Actions", _currentFrames.Sleep, _frameCounts.Sleep, false);
             _currentFrames.Pat = PlayAnimation("Pat", "Actions", _currentFrames.Pat, _frameCounts.Pat, false);
-
             // Single Repeat Animations
             _currentFrames.Emote4 = PlayAnimation("Emote4", "Emotes", _currentFrames.Emote4, _frameCounts.Emote4, true);
             _currentFrames.Emote2 = PlayAnimation("Emote2", "Emotes", _currentFrames.Emote2, _frameCounts.Emote2, true);
             _currentFrames.Intro = PlayAnimation("Intro", "Actions", _currentFrames.Intro, _frameCounts.Intro, true);
             _currentFrames.Outro = PlayAnimation("Outro", "Actions", _currentFrames.Outro, _frameCounts.Outro, true);
             _currentFrames.Click = PlayAnimation("Click", "Actions", _currentFrames.Click, _frameCounts.Click, true);
-
             HandleCursorFollowing();
             HandleRandomActions();
         }
@@ -131,24 +131,99 @@ namespace DesktopGremlin
             {
                 dy = 0;
             }
+
             double distance = Math.Sqrt(dx * dx + dy * dy);
 
             if (distance > Settings.FollowRadius)
             {
-                double step = Math.Min(MouseSettings.Speed, distance - Settings.FollowRadius);
-                double nx = dx / distance;
-                double ny = dy / distance;
-
-
-                _window.Left += nx * step;
-                _window.Top += ny * step;
-
-                string dir = GetDirectionFromAngle(nx, ny, Settings.EnableGravity);
-                PlayDirectionalAnimation(dir);
+                if (Settings.StraightLine)
+                {
+                    MoveStraightOnly(dx, dy, distance);
+                }
+                else
+                {
+                    MoveDiagonally(dx, dy, distance);
+                }
             }
             else
             {
                 PlayDirectionalAnimation("Idle");
+            }
+        }
+
+        private void MoveDiagonally(double dx, double dy, double distance)
+        {
+            double step = Math.Min(MouseSettings.Speed, distance - Settings.FollowRadius);
+            double nx = dx / distance;
+            double ny = dy / distance;
+
+            _window.Left += nx * step;
+            _window.Top += ny * step;
+
+            string dir = GetDirectionFromAngle(nx, ny, Settings.EnableGravity);
+            PlayDirectionalAnimation(dir);
+        }
+
+        private void MoveStraightOnly(double dx, double dy, double distance)
+        {
+            double absDx = Math.Abs(dx);
+            double absDy = Math.Abs(dy);
+            double step = Math.Min(MouseSettings.Speed, distance - Settings.FollowRadius);
+
+            bool moveHorizontal = false;
+            bool moveVertical = false;
+            double alignmentThreshold = 5.0;
+
+            if (absDx < alignmentThreshold)
+            {
+                moveVertical = true;
+            }
+            else if (absDy < alignmentThreshold)
+            {
+                moveHorizontal = true;
+            }
+            else
+            {
+                if (_movingHorizontalFirst)
+                {
+                    moveHorizontal = true;
+                }
+                else
+                {
+                    moveVertical = true;
+                }
+                if (moveHorizontal && absDx < step * 2)
+                {
+                    _movingHorizontalFirst = false;
+                }
+                else if (moveVertical && absDy < step * 2)
+                {
+                    _movingHorizontalFirst = true;
+                }
+            }
+            if (moveHorizontal)
+            {
+                double moveX = dx > 0 ? step : -step;
+                if (absDx < step)
+                {
+                    moveX = dx;
+                }
+                _window.Left += moveX;
+
+                string dir = dx > 0 ? "Right" : "Left";
+                PlayDirectionalAnimation(dir);
+            }
+            else if (moveVertical)
+            {
+                double moveY = dy > 0 ? step : -step;
+                if (absDy < step)
+                {
+                    moveY = dy;
+                }
+                _window.Top += moveY;
+
+                string dir = dy > 0 ? "Down" : "Up";
+                PlayDirectionalAnimation(dir);
             }
         }
 
@@ -210,7 +285,14 @@ namespace DesktopGremlin
 
             if (gravity)
             {
-                return dx >= 0 ? "Right" : "Left";
+                if (dx >= 0)
+                {
+                    return "Right";
+                }
+                else
+                {
+                    return "Left";
+                }
             }
 
             if (angle >= 337.5 || angle < 22.5)
@@ -243,7 +325,6 @@ namespace DesktopGremlin
             }
             return "UpRight";
         }
-
         private void PlayDirectionalAnimation(string dir)
         {
             switch (dir)

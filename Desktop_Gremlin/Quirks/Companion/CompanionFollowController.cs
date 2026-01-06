@@ -21,7 +21,7 @@ namespace DesktopGremlin
         private DateTime _lastStillTime = DateTime.Now;
         private bool _isMoving = false;
 
-        public CompanionFollowController(Companion companion, AnimationStates gremlinState,CurrentFrames currentFrames, FrameCounts frameCounts, Image spriteImage)
+        public CompanionFollowController(Companion companion, AnimationStates gremlinState, CurrentFrames currentFrames, FrameCounts frameCounts, Image spriteImage)
         {
             _companion = companion;
             _gremlinState = gremlinState;
@@ -42,7 +42,7 @@ namespace DesktopGremlin
             }
         }
         private void Gravity_Tick(object sender, EventArgs e)
-        { 
+        {
             double bottomLimit = SystemParameters.WorkArea.Bottom - _spriteImage.ActualHeight;
 
             if (_gremlinState.GetState("Grab"))
@@ -65,7 +65,7 @@ namespace DesktopGremlin
             {
                 _gravityTimer.Stop();
             }
-        }   
+        }
         public void SetMainGremlin(Window mainGremlin)
         {
             _mainGremlin = mainGremlin;
@@ -101,25 +101,37 @@ namespace DesktopGremlin
                 dy = 0;
             }
 
-            double distance = Math.Sqrt(dx * dx + dy * dy);
+            double centerToCenterDistance = Math.Sqrt(dx * dx + dy * dy);
 
-            double startMoveDistance = QuirkSettings.CompanionFollow + 20; 
-            double stopMoveDistance = QuirkSettings.CompanionFollow - 10;
+            if (centerToCenterDistance < 1.0)
+            {
+                _gremlinState.SetState("Idle");
+                return;
+            }
 
-            double followDistance = distance - _spriteImage.Width / 2;
+            double mainGremlinRadius = Math.Max(_mainGremlin.Width, _mainGremlin.Height) / 2.0;
+            double companionRadius = Math.Max(_spriteImage.ActualWidth, _spriteImage.ActualHeight) / 2.0;
+
+            double edgeToEdgeDistance = centerToCenterDistance - mainGremlinRadius - companionRadius;
+
+            double desiredEdgeDistance = QuirkSettings.CompanionFollow;
+            double startMoveDistance = desiredEdgeDistance + 20;
+            double stopMoveDistance = desiredEdgeDistance + 5;
 
             if (!_isMoving)
             {
-                if (followDistance > startMoveDistance)
+                if (edgeToEdgeDistance > startMoveDistance)
                 {
                     _isMoving = true;
                 }
             }
             else
             {
-                if (followDistance < stopMoveDistance)
+                if (edgeToEdgeDistance <= stopMoveDistance)
                 {
                     _isMoving = false;
+                    _gremlinState.SetState("Idle");
+                    return;
                 }
             }
 
@@ -130,28 +142,36 @@ namespace DesktopGremlin
                 return;
             }
 
-            double nx = dx / distance;
-            double ny = dy / distance;
+            double nx = dx / centerToCenterDistance;
+            double ny = dy / centerToCenterDistance;
 
             if (Settings.EnableGravity)
             {
                 ny = 0;
             }
 
-            double step = Math.Min(MouseSettings.Speed, distance - Settings.FollowRadius);
+            double excessDistance = edgeToEdgeDistance - desiredEdgeDistance;
+            double step = Math.Min(MouseSettings.Speed, excessDistance);
 
-            _companion.Left += nx * step;
-
-            if (!Settings.EnableGravity)
+            if (step > 0)
             {
-                _companion.Top += ny * step;
-            }
+                _companion.Left += nx * step;
 
-            UpdateDirectionAnimation(nx, ny, Settings.EnableGravity);
+                if (!Settings.EnableGravity)
+                {
+                    _companion.Top += ny * step;
+                }
+
+                UpdateDirectionAnimation(nx, ny, Settings.EnableGravity);
+            }
+            else
+            {
+                _gremlinState.SetState("Idle");
+            }
         }
 
         private void UpdateDirectionAnimation(double nx, double ny, bool gravity)
-        { 
+        {
             if (gravity)
             {
                 ny = 0;

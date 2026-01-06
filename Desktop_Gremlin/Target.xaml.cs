@@ -27,7 +27,7 @@ namespace DesktopGremlin
         private void ImageInitialize()
         {
             Random rng = new Random();
-            string fileName = "food1.png";
+            string fileName = Settings.FoodSpawn;
             string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet", "Misc", fileName);
             SpriteFood.Source = new BitmapImage(new Uri(path));
         }

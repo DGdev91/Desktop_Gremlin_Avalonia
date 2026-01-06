@@ -50,6 +50,5 @@
             Width="90"
             MouseLeftButtonDown="TopHotspot_Click" Margin="97,30,0,0" Height="50" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
         </Border>
-
     </Grid>
 </Window>
