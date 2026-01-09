@@ -45,13 +45,13 @@ Will be fix in the future**
 |-----------|---------|---------------|
 |StayGold only| 4.1 Just overwrite 4.0 with this |[Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v4.1/TracenAcademy_v4.1.zip) |
 | Tracen Acacdemy [All umas from 1.0 up to Cafe]| 4.0 |[Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v4.0/TracenAcademy_v4.0.zip) |
-| Doto | v2.9 |[Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.9/MeishoDoto_v2.9.zip) |
-| Agnes Tachyon | v2.4 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.4/Tachyon_v2.4.zip) |
-| Matikanetannhauser | v2.7.2 Updated | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.7.2/Mambo_v2.8.zip) |
-| Rice Shower | v2.2 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/2.2/Tracen_v2.1_Rice.zip) |
-| GoldShip | v2.5 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.5/GoldShip_v2.5.zip) |
-| Oguri | v2.7 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.7/Oguri_v2.7.zip) |
-| Manhattan | v3.0 | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v3.0/Cafe_v3.0.zip) |
+| Doto | v2.9 Outdated |[Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.9/MeishoDoto_v2.9.zip) |
+| Agnes Tachyon | v2.4 Outdated | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.4/Tachyon_v2.4.zip) |
+| Matikanetannhauser | v2.7.2 Outdated| [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.7.2/Mambo_v2.8.zip) |
+| Rice Shower | v2.2 Outdated | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/2.2/Tracen_v2.1_Rice.zip) |
+| GoldShip | v2.5 Outdated | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.5/GoldShip_v2.5.zip) |
+| Oguri | v2.7 Outdated | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v2.7/Oguri_v2.7.zip) |
+| Manhattan | v3.0 Outdated | [Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/v3.0/Cafe_v3.0.zip) |
 ## Blue Archive
 
 | Character | Download Link |
