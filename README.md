@@ -38,6 +38,14 @@ SHOW_TASKBAR = true //Show the Icon in the Task bar
 
 **//Important Note: IF YOUR MACHINE-LOCALE IS NOT IN ENGLISH, THEN THE CONFIG FILE MIGHT BREAK, AND CAUSE THE SPRITE TO BE BIG
 Will be fix in the future**
+https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/4.3/TracenAcademy_Speaki_v4.3.zip
+
+
+## Trickal
+
+| Character | Version | Download Link |
+|-----------|---------|---------------|
+|Speaki Pet| 4.3 |[Download](https://github.com/KurtVelasco/Desktop_Gremlin/releases/download/4.3/TracenAcademy_Speaki_v4.3.zip) |
 
 ## Umamusume 
 
