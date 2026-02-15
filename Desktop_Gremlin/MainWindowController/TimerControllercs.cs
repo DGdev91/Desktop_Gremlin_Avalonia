@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Threading;
-using static ConfigManager;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Platform;
+using Avalonia.Threading;
 
 namespace DesktopGremlin
 {
@@ -13,10 +13,11 @@ namespace DesktopGremlin
         private DispatcherTimer _idleTimer;
         private DispatcherTimer _gravityTimer;
         private Image _spriteImage;
-        public TimerController(MainWindow window, AnimationStates gremlinState)
+        public TimerController(MainWindow window, AnimationStates gremlinState, Image spriteImage)
         {
             _window = window;
             _gremlinState = gremlinState;
+            _spriteImage = spriteImage;
             InitializeTimers();
         }
         public void Start()
@@ -56,6 +57,11 @@ namespace DesktopGremlin
         }
         private void IdleTimer_Tick(object sender, EventArgs e)
         {
+            if (_window.IsCombat)
+            {
+                ResetIdleTimer();
+                return;
+            }
             if (_gremlinState.GetState("Sleeping"))
             {
                 return;
@@ -63,24 +69,27 @@ namespace DesktopGremlin
             else
             {
                 _gremlinState.UnlockState();
-                MediaManager.PlaySound("sleep.wav", Settings.StartingChar);
+                Quirks.MediaManager.PlaySound("sleep.wav", Settings.StartingChar);
                 _gremlinState.SetState("Sleeping");
                 _gremlinState.LockState();
             }
         }
         private void Gravity_Tick(object sender, EventArgs e)
         {
-
-            double bottomLimit = SystemParameters.WorkArea.Bottom - _window.SpriteImage.ActualHeight;
-
-            if (_gremlinState.GetState("Grab"))
+            Screen screen = TopLevel.GetTopLevel(_window)?.Screens.ScreenFromVisual(_window);
+            if (screen != null)
             {
-                return;
-            }
-
-            if (_window.Top + 5 < bottomLimit)
-            {
-                _window.Top += Settings.SvGravity;
+                double bottomLimit;
+                bottomLimit = screen?.WorkingArea.Bottom ?? 0;
+                bottomLimit -= _spriteImage.Bounds.Height;
+                if (_gremlinState.GetState("Grab"))
+                {
+                    return;
+                }
+                if (_window.Position.Y < bottomLimit && _window.Position.Y > 0)
+                {
+                    _window.Position = new PixelPoint(_window.Position.X, (int)(_window.Position.Y + Math.Round(Settings.SvGravity)));
+                }
             }
         }
     }

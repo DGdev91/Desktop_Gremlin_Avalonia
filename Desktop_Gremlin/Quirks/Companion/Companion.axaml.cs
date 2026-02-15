@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Media.Immutable;
+using Avalonia.Threading;
+using System;
+
 namespace DesktopGremlin.Quirks.Companion
 {
     public partial class Companion : Window
     {
-        [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern bool GetCursorPos(out POINT lpPoint);
         public static string characterChoice = "";
         public Window MainGremlin { get; set; }
@@ -40,7 +36,7 @@ namespace DesktopGremlin.Quirks.Companion
         private void InitializeCompanion()
         {
             SpriteImage.Source = new CroppedBitmap();
-            FrameCounts.LoadConfigCompanion(QuirkSettings.CompanionChar);
+            FrameCounts.LoadConfigChar(QuirkSettings.CompanionChar, SpriteManager.CharacterType.Companion);
             GremlinState.LockState();
 
             ApplyScaling();
@@ -97,12 +93,17 @@ namespace DesktopGremlin.Quirks.Companion
             }
         }
 
-        private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        public void ToggleGravity()
+        {
+            _followController.ToggleGravity();
+        }
+
+        private void Canvas_MouseLeftButtonDown(object sender, PointerPressedEventArgs e)
         {
             GremlinState.UnlockState();
             GremlinState.SetState("Grab");
             MediaManager.PlaySound("grab.wav",QuirkSettings.CompanionChar);
-            DragMove();
+            BeginMoveDrag(e);
             GremlinState.SetState("Idle");
         }
     }

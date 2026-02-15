@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Threading;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Threading;
 
 namespace DesktopGremlin
 {
@@ -40,7 +40,7 @@ namespace DesktopGremlin
 
             _currentFood = food;
             _currentSpeed = startingSpeed;
-            MediaManager.PlaySound("foodSpawn.wav", Settings.StartingChar);
+            Quirks.MediaManager.PlaySound("foodSpawn.wav", Settings.StartingChar);
             _followTimer.Start();
         }
 
@@ -53,8 +53,8 @@ namespace DesktopGremlin
             }
 
             var foodCenter = _currentFood.GetCenter();
-            double gx = _window.Left + _window.ActualWidth / 2;
-            double gy = _window.Top + _window.ActualHeight / 2;
+            double gx = _window.Position.X + _window.Width / 2;
+            double gy = _window.Position.Y + _window.Height / 2;
 
             double dx = foodCenter.X - gx;
             double dy = foodCenter.Y - gy;
@@ -84,8 +84,7 @@ namespace DesktopGremlin
 
         private void MoveDiagonally(double dx, double dy, double distance, double step)
         {
-            _window.Left += (dx / distance) * step;
-            _window.Top += (dy / distance) * step;
+            _window.Position = new PixelPoint(_window.Position.X + (int)Math.Round(dx / distance * step), _window.Position.Y + (int)Math.Round(dy / distance * step));
 
             string dir = GetDirectionFromAngle(dx, dy);
             PlayDirectionalAnimation(dir);
@@ -135,7 +134,7 @@ namespace DesktopGremlin
                 {
                     moveX = dx;
                 }
-                _window.Left += moveX;
+                _window.Position = new PixelPoint(_window.Position.X + (int)Math.Round(moveX), _window.Position.Y);
 
                 string dir = dx > 0 ? "Right" : "Left";
                 PlayDirectionalAnimation(dir);
@@ -147,7 +146,7 @@ namespace DesktopGremlin
                 {
                     moveY = dy;
                 }
-                _window.Top += moveY;
+                _window.Position = new PixelPoint(_window.Position.X, _window.Position.Y + (int)Math.Round(moveY));
 
                 string dir = dy > 0 ? "Down" : "Up";
                 PlayDirectionalAnimation(dir);
@@ -155,7 +154,7 @@ namespace DesktopGremlin
         }
         private void StopFollowing()
         {
-            MediaManager.PlaySound("eat.wav", "Misc");
+            Quirks.MediaManager.PlaySound("eat.wav", "Misc");
             _followTimer.Stop();
             _gremlinState.UnlockState();
             _gremlinState.SetState("Sleeping");
@@ -200,36 +199,42 @@ namespace DesktopGremlin
             return "UpRight";
         }
 
+        private string GetSelectedCharacter()
+        {
+            if (_window is MainWindow mainWindow) return mainWindow.GetSelectedCharacter();
+            else return Settings.StartingChar;
+        }
+
         private void PlayDirectionalAnimation(string dir)
         {
             switch (dir)
             {
                 case "Right":
-                    _currentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run", _currentFrames.Right, _frameCounts.Right, _spriteImage);
+                    _currentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run", _currentFrames.Right, _frameCounts.Right, _spriteImage, GetSelectedCharacter());
                     break;
                 case "DownRight":
-                    _currentFrames.DownRight = SpriteManager.PlayAnimation("downRight", "Run", _currentFrames.DownRight, _frameCounts.DownRight, _spriteImage);
+                    _currentFrames.DownRight = SpriteManager.PlayAnimation("downRight", "Run", _currentFrames.DownRight, _frameCounts.DownRight, _spriteImage, GetSelectedCharacter());
                     break;
                 case "Down":
-                    _currentFrames.Down = SpriteManager.PlayAnimation("runDown", "Run", _currentFrames.Down, _frameCounts.Down, _spriteImage);
+                    _currentFrames.Down = SpriteManager.PlayAnimation("runDown", "Run", _currentFrames.Down, _frameCounts.Down, _spriteImage, GetSelectedCharacter());
                     break;
                 case "DownLeft":
-                    _currentFrames.DownLeft = SpriteManager.PlayAnimation("downLeft", "Run", _currentFrames.DownLeft, _frameCounts.DownLeft, _spriteImage);
+                    _currentFrames.DownLeft = SpriteManager.PlayAnimation("downLeft", "Run", _currentFrames.DownLeft, _frameCounts.DownLeft, _spriteImage, GetSelectedCharacter());
                     break;
                 case "Left":
-                    _currentFrames.Left = SpriteManager.PlayAnimation("runLeft", "Run", _currentFrames.Left, _frameCounts.Left, _spriteImage);
+                    _currentFrames.Left = SpriteManager.PlayAnimation("runLeft", "Run", _currentFrames.Left, _frameCounts.Left, _spriteImage, GetSelectedCharacter());
                     break;
                 case "UpLeft":
-                    _currentFrames.UpLeft = SpriteManager.PlayAnimation("upLeft", "Run", _currentFrames.UpLeft, _frameCounts.UpLeft, _spriteImage);
+                    _currentFrames.UpLeft = SpriteManager.PlayAnimation("upLeft", "Run", _currentFrames.UpLeft, _frameCounts.UpLeft, _spriteImage, GetSelectedCharacter());
                     break;
                 case "Up":
-                    _currentFrames.Up = SpriteManager.PlayAnimation("runUp", "Run", _currentFrames.Up, _frameCounts.Up, _spriteImage);
+                    _currentFrames.Up = SpriteManager.PlayAnimation("runUp", "Run", _currentFrames.Up, _frameCounts.Up, _spriteImage, GetSelectedCharacter());
                     break;
                 case "UpRight":
-                    _currentFrames.UpRight = SpriteManager.PlayAnimation("upRight", "Run", _currentFrames.UpRight, _frameCounts.UpRight, _spriteImage);
+                    _currentFrames.UpRight = SpriteManager.PlayAnimation("upRight", "Run", _currentFrames.UpRight, _frameCounts.UpRight, _spriteImage, GetSelectedCharacter());
                     break;
                 default:
-                    _currentFrames.WalkIdle = SpriteManager.PlayAnimation("runIdle", "Actions", _currentFrames.WalkIdle, _frameCounts.WalkIdle, _spriteImage);
+                    _currentFrames.WalkIdle = SpriteManager.PlayAnimation("runIdle", "Actions", _currentFrames.WalkIdle, _frameCounts.WalkIdle, _spriteImage, GetSelectedCharacter());
                     break;
             }
         }

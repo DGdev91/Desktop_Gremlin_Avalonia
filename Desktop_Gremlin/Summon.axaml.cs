@@ -34,10 +34,10 @@ namespace DesktopGremlin
             InitializeComponent();
             this.RenderTransform = new ScaleTransform(whichSide, 1.0);
             SpriteImage.Source = new CroppedBitmap();
-            FrameCounts.LoadConfigChar(Settings.SummonChar);
+            FrameCounts.LoadConfigChar(Settings.SummonChar, SpriteManager.CharacterType.Summon);
             GremlinState.LockState();   
             ConfigManager.ApplyXamlSettings(this);  
-            MediaManager.PlaySound("intro.wav", Settings.SummonChar);
+            Quirks.MediaManager.PlaySound("intro.wav", Settings.SummonChar);
             if (Settings.EnableGravity)
             {
                 _gravityTimer = new DispatcherTimer();
@@ -77,7 +77,7 @@ namespace DesktopGremlin
         private int PlayAnimationIfActive(string stateName, string folder, int currentFrame, int frameCount, bool resetOnEnd)
         {
 
-            currentFrame = SpriteManager.PlayAnimation(stateName, folder, currentFrame, frameCount, SpriteImage, Settings.SummonChar);
+            currentFrame = SpriteManager.PlayAnimation(stateName, folder, currentFrame, frameCount, SpriteImage, Settings.SummonChar, false, SpriteManager.CharacterType.Summon);
 
             if (resetOnEnd && currentFrame == 0)
             {
@@ -90,7 +90,7 @@ namespace DesktopGremlin
         }
         private int OverlayEffect(string stateName, string folder, int currentFrame, int frameCount, bool resetOnEnd)
         {
-            currentFrame = SpriteManager.PlayEffect(stateName, folder, currentFrame, frameCount, IntroEffect, Settings.SummonChar);
+            currentFrame = SpriteManager.PlayEffect(stateName, folder, currentFrame, frameCount, IntroEffect, Settings.SummonChar, false, SpriteManager.CharacterType.Summon);
             if (resetOnEnd && currentFrame == 0)
             {
                 IntroEffect.Source = null;

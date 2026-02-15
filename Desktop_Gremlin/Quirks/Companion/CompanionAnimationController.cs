@@ -1,8 +1,7 @@
-﻿using DesktopGremlin.Quirks.Companion;
+﻿using Avalonia.Controls;
+using Avalonia.Threading;
+using DesktopGremlin.Quirks.Companion;
 using System;
-using System.Windows.Controls;
-using System.Windows.Threading;
-using static ConfigManager;
 
 namespace DesktopGremlin
 {
@@ -65,7 +64,7 @@ namespace DesktopGremlin
                 return currentFrame;
             }
 
-            currentFrame = SpriteManagerCompanion.PlayAnimation(stateName, folder, currentFrame, frameCount, _spriteImage);
+            currentFrame = SpriteManager.PlayAnimation(stateName, folder, currentFrame, frameCount, _spriteImage, QuirkSettings.CompanionChar, false, SpriteManager.CharacterType.Companion);
 
             if (resetOnEnd && currentFrame == 0)
             {

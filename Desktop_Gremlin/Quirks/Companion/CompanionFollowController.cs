@@ -1,9 +1,9 @@
-﻿using DesktopGremlin.Quirks.Companion;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Platform;
+using Avalonia.Threading;
+using DesktopGremlin.Quirks.Companion;
 using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Threading;
-using static ConfigManager;
 
 namespace DesktopGremlin
 {
@@ -43,16 +43,23 @@ namespace DesktopGremlin
         }
         private void Gravity_Tick(object sender, EventArgs e)
         {
-            double bottomLimit = SystemParameters.WorkArea.Bottom - _spriteImage.ActualHeight;
-
-            if (_gremlinState.GetState("Grab"))
+            Screen screen = TopLevel.GetTopLevel(_companion)?.Screens?.ScreenFromVisual(_companion);
+            if (screen != null)
             {
-                return;
-            }
-
-            if (_companion.Top + 5 < bottomLimit)
-            {
-                _companion.Top += Settings.SvGravity;
+                double bottomLimit;
+                bottomLimit = screen?.WorkingArea.Bottom ?? 0;
+                bottomLimit -= _spriteImage.Bounds.Height;
+                if (_gremlinState.GetState("Grab"))
+                {
+                    return;
+                }
+                if (_companion.Position.Y < bottomLimit && _companion.Position.Y > 0)
+                {
+                    _companion.Position = new PixelPoint(
+                        _companion.Position.X,
+                        (int)(_companion.Position.Y + Math.Round(Settings.SvGravity))
+                    );
+                }
             }
         }
         public void ToggleGravity()
@@ -84,14 +91,14 @@ namespace DesktopGremlin
                 return;
             }
 
-            double halfW = _spriteImage.ActualWidth > 0 ? _spriteImage.ActualWidth / 2.0 : QuirkSettings.CompanionWidth / 2.0;
-            double halfH = _spriteImage.ActualHeight > 0 ? _spriteImage.ActualHeight / 2.0 : QuirkSettings.CompanionHeight / 2.0;
+            double halfW = _spriteImage.Bounds.Width > 0 ? _spriteImage.Bounds.Width / 2.0 : Settings.FrameWidth / 2.0;
+            double halfH = _spriteImage.Bounds.Height > 0 ? _spriteImage.Bounds.Height / 2.0 : Settings.FrameHeight / 2.0;
 
-            var compCenter = new Point(_companion.Left + halfW, _companion.Top + halfH);
+            var compCenter = new Point(_companion.Position.X + halfW, _companion.Position.Y + halfH);
 
             double mainHalfW = _mainGremlin.Width / 2.0;
             double mainHalfH = _mainGremlin.Height / 2.0;
-            var mainCenter = new Point(_mainGremlin.Left + mainHalfW, _mainGremlin.Top + mainHalfH);
+            var mainCenter = new Point(_mainGremlin.Position.X + mainHalfW, _mainGremlin.Position.Y + mainHalfH);
 
             double dx = mainCenter.X - compCenter.X;
             double dy = mainCenter.Y - compCenter.Y;
@@ -110,7 +117,7 @@ namespace DesktopGremlin
             }
 
             double mainGremlinRadius = Math.Max(_mainGremlin.Width, _mainGremlin.Height) / 2.0;
-            double companionRadius = Math.Max(_spriteImage.ActualWidth, _spriteImage.ActualHeight) / 2.0;
+            double companionRadius = Math.Max(_spriteImage.Bounds.Width, _spriteImage.Bounds.Height) / 2.0;
 
             double edgeToEdgeDistance = centerToCenterDistance - mainGremlinRadius - companionRadius;
 
@@ -155,12 +162,15 @@ namespace DesktopGremlin
 
             if (step > 0)
             {
-                _companion.Left += nx * step;
+                double moveX = nx * step;
+                double moveY = 0.0;
 
                 if (!Settings.EnableGravity)
                 {
-                    _companion.Top += ny * step;
+                    moveY = ny * step;
                 }
+
+                _companion.Position = new PixelPoint((int)(_companion.Position.X + Math.Round(moveX)), (int)(_companion.Position.Y + Math.Round(moveY)));
 
                 UpdateDirectionAnimation(nx, ny, Settings.EnableGravity);
             }
@@ -187,56 +197,56 @@ namespace DesktopGremlin
             {
                 if (nx >= 0)
                 {
-                    _currentFrames.Right = SpriteManagerCompanion.PlayAnimation("runRight", "Run",
-                        _currentFrames.Right, _frameCounts.Right, _spriteImage);
+                    _currentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run",
+                        _currentFrames.Right, _frameCounts.Right, _spriteImage, QuirkSettings.CompanionChar, false, SpriteManager.CharacterType.Companion);
                 }
                 else
                 {
-                    _currentFrames.Left = SpriteManagerCompanion.PlayAnimation("runLeft", "Run",
-                        _currentFrames.Left, _frameCounts.Left, _spriteImage);
+                    _currentFrames.Left = SpriteManager.PlayAnimation("runLeft", "Run",
+                        _currentFrames.Left, _frameCounts.Left, _spriteImage, QuirkSettings.CompanionChar, false, SpriteManager.CharacterType.Companion);
                 }
                 return;
             }
 
             if (angle >= 337.5 || angle < 22.5)
             {
-                _currentFrames.Right = SpriteManagerCompanion.PlayAnimation("runRight", "Run",
-                    _currentFrames.Right, _frameCounts.Right, _spriteImage);
+                _currentFrames.Right = SpriteManager.PlayAnimation("runRight", "Run",
+                    _currentFrames.Right, _frameCounts.Right, _spriteImage, QuirkSettings.CompanionChar, false, SpriteManager.CharacterType.Companion);
             }
             else if (angle >= 22.5 && angle < 67.5)
             {
-                _currentFrames.DownRight = SpriteManagerCompanion.PlayAnimation("downRight", "Run",
-                    _currentFrames.DownRight, _frameCounts.DownRight, _spriteImage);
+                _currentFrames.DownRight = SpriteManager.PlayAnimation("downRight", "Run",
+                    _currentFrames.DownRight, _frameCounts.DownRight, _spriteImage, QuirkSettings.CompanionChar, false, SpriteManager.CharacterType.Companion);
             }
             else if (angle >= 67.5 && angle < 112.5)
             {
-                _currentFrames.Down = SpriteManagerCompanion.PlayAnimation("runDown", "Run",
-                    _currentFrames.Down, _frameCounts.Down, _spriteImage);
+                _currentFrames.Down = SpriteManager.PlayAnimation("runDown", "Run",
+                    _currentFrames.Down, _frameCounts.Down, _spriteImage, QuirkSettings.CompanionChar, false, SpriteManager.CharacterType.Companion);
             }
             else if (angle >= 112.5 && angle < 157.5)
             {
-                _currentFrames.DownLeft = SpriteManagerCompanion.PlayAnimation("downLeft", "Run",
-                    _currentFrames.DownLeft, _frameCounts.DownLeft, _spriteImage);
+                _currentFrames.DownLeft = SpriteManager.PlayAnimation("downLeft", "Run",
+                    _currentFrames.DownLeft, _frameCounts.DownLeft, _spriteImage, QuirkSettings.CompanionChar, false, SpriteManager.CharacterType.Companion);
             }
             else if (angle >= 157.5 && angle < 202.5)
             {
-                _currentFrames.Left = SpriteManagerCompanion.PlayAnimation("runLeft", "Run",
-                    _currentFrames.Left, _frameCounts.Left, _spriteImage);
+                _currentFrames.Left = SpriteManager.PlayAnimation("runLeft", "Run",
+                    _currentFrames.Left, _frameCounts.Left, _spriteImage, QuirkSettings.CompanionChar, false, SpriteManager.CharacterType.Companion);
             }
             else if (angle >= 202.5 && angle < 247.5)
             {
-                _currentFrames.UpLeft = SpriteManagerCompanion.PlayAnimation("upLeft", "Run",
-                    _currentFrames.UpLeft, _frameCounts.UpLeft, _spriteImage);
+                _currentFrames.UpLeft = SpriteManager.PlayAnimation("upLeft", "Run",
+                    _currentFrames.UpLeft, _frameCounts.UpLeft, _spriteImage, QuirkSettings.CompanionChar, false, SpriteManager.CharacterType.Companion);
             }
             else if (angle >= 247.5 && angle < 292.5)
             {
-                _currentFrames.Up = SpriteManagerCompanion.PlayAnimation("runUp", "Run",
-                    _currentFrames.Up, _frameCounts.Up, _spriteImage);
+                _currentFrames.Up = SpriteManager.PlayAnimation("runUp", "Run",
+                    _currentFrames.Up, _frameCounts.Up, _spriteImage, QuirkSettings.CompanionChar, false, SpriteManager.CharacterType.Companion);
             }
             else if (angle >= 292.5 && angle < 337.5)
             {
-                _currentFrames.UpRight = SpriteManagerCompanion.PlayAnimation("upRight", "Run",
-                    _currentFrames.UpRight, _frameCounts.UpRight, _spriteImage);
+                _currentFrames.UpRight = SpriteManager.PlayAnimation("upRight", "Run",
+                    _currentFrames.UpRight, _frameCounts.UpRight, _spriteImage, QuirkSettings.CompanionChar, false, SpriteManager.CharacterType.Companion);
             }
         }
     }

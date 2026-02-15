@@ -1,6 +1,4 @@
-﻿using DesktopGremlin;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using Avalonia;
@@ -49,27 +47,33 @@ namespace DesktopGremlin
             ["poof"] = "poof.png"
             
         };
-        public static int PlayAnimation(string sheetName,string actionType , int currentFrame,int frameCount, Image targetImage, string character, bool PlayOnce = false)
+        public enum CharacterType
         {
-            Bitmap sheet = Get(sheetName, actionType, character);
+            Gremlin,
+            Companion,
+            Summon
+        }
+        public static int PlayAnimation(string sheetName,string actionType , int currentFrame, int frameCount, Image targetImage, string character, bool PlayOnce = false, CharacterType characterType = CharacterType.Gremlin)
+        {
+            int frameWidth = characterType == CharacterType.Companion ? QuirkSettings.CompanionWidth : Settings.FrameWidth;
+            int frameHeight = characterType == CharacterType.Companion ? QuirkSettings.CompanionHeight : Settings.FrameHeight;
+            Bitmap sheet = GetSpriteSheet(sheetName, actionType, character, characterType);
 
             if (sheet == null)
             {
-                return currentFrame;
+                return -1;
             }
-            if (frameCount == 0)
-            {
-                return currentFrame;
-            }      
-            if (frameCount < 0)
+
+            if (frameCount <= 0)
             {
                 MainWindow.ErrorClose($"Error Animation: {sheetName} action: {actionType} has invalid frame count","Animation Error", true);
+                return currentFrame;
             }
 
-            int x = (currentFrame % Settings.SpriteColumn) * Settings.FrameWidth;
-            int y = (currentFrame / Settings.SpriteColumn) * Settings.FrameHeight;
+            int x = (currentFrame % Settings.SpriteColumn) * frameWidth;
+            int y = (currentFrame / Settings.SpriteColumn) * frameHeight;
 
-            if (x + Settings.FrameWidth > sheet.PixelSize.Width ||y + Settings.FrameHeight > sheet.PixelSize.Height)
+            if (x + frameWidth > sheet.PixelSize.Width ||y + frameHeight > sheet.PixelSize.Height)
             {
                 return currentFrame;
             }
@@ -78,10 +82,10 @@ namespace DesktopGremlin
                 CroppedBitmap oldImage = targetImage.Source as CroppedBitmap;
                 if (oldImage != null) oldImage.Dispose();
             }
-            targetImage.Source = new CroppedBitmap(sheet, new PixelRect(x, y, Settings.FrameWidth, Settings.FrameHeight));
+            targetImage.Source = new CroppedBitmap(sheet, new PixelRect(x, y, frameWidth, frameHeight));
             return (currentFrame + 1) % frameCount;
         }
-        public static Bitmap Get(string animationName, string actionType, string character)
+        public static Bitmap GetSpriteSheet(string animationName, string actionType, string character, CharacterType characterType = CharacterType.Gremlin)
         {
             string cacheKey = $"{animationName}_{actionType}_{character}";
 
@@ -96,7 +100,17 @@ namespace DesktopGremlin
                 return null;
             }
 
-            Bitmap sheet = LoadSprite(character, fileName, actionType);
+            string rootFolder = "Gremlins";
+            switch (characterType)
+            {
+                case CharacterType.Companion:
+                    rootFolder = "Companions";
+                    break;
+                case CharacterType.Summon:
+                    rootFolder = "Summons";
+                    break;
+            }
+            Bitmap sheet = LoadSprite(character, fileName, actionType, rootFolder);
             if (sheet != null)
             {
                 _spriteCache[cacheKey] = sheet;
@@ -105,9 +119,9 @@ namespace DesktopGremlin
             return sheet;
         }
           
-        private static Bitmap LoadSprite(string filefolder, string fileName, string action, string rootFolder = "Gremlins")
+        private static Bitmap LoadSprite(string filefolder, string fileName, string action, string rootFolder)
         {
-            string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"SpriteSheet", rootFolder, filefolder,action, fileName);
+            string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"SpriteSheet", rootFolder, filefolder, action, fileName);
             if (!File.Exists(path))
                 return null;
             try
@@ -121,9 +135,9 @@ namespace DesktopGremlin
             }
         }
 
-        public static int PlayEffect(string sheetName, string actionType, int currentFrame, int frameCount, Image targetImage, string character, bool PlayOnce = false)
+        public static int PlayEffect(string sheetName, string actionType, int currentFrame, int frameCount, Image targetImage, string character, bool PlayOnce = false, CharacterType characterType = CharacterType.Gremlin)
         {
-            Bitmap sheet = Get(sheetName, actionType, character);
+            Bitmap sheet = GetSpriteSheet(sheetName, actionType, character, characterType);
             if (sheet == null)
             {
                 return currentFrame;

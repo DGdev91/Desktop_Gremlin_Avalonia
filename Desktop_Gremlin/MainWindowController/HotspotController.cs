@@ -1,5 +1,6 @@
-﻿using System.Windows.Controls;
-using System.Windows.Media;
+﻿using Avalonia.Controls;
+using Avalonia.Media;
+using Avalonia.Media.Immutable;
 
 namespace DesktopGremlin
 {
@@ -30,23 +31,27 @@ namespace DesktopGremlin
             _leftHotspot.IsEnabled = !_leftHotspot.IsEnabled;
             _rightHotspot.IsEnabled = !_rightHotspot.IsEnabled;
             _topHotspot.IsEnabled = !_topHotspot.IsEnabled;
+            _leftDownHotspot.IsEnabled = !_leftDownHotspot.IsEnabled;
+            _rightDownHotspot.IsEnabled = !_rightDownHotspot.IsEnabled;
 
-            if (_hotspotDisable)
+            if (_hotspotVisible)
             {
-                _leftHotspot.Background = new SolidColorBrush(Colors.Transparent);
-                _rightHotspot.Background = new SolidColorBrush(Colors.Transparent);
-                _topHotspot.Background = new SolidColorBrush(Colors.Transparent);
-                _leftDownHotspot.Background = new SolidColorBrush(Colors.Transparent);
-                _rightDownHotspot.Background = new SolidColorBrush(Colors.Transparent);
-            }
-            else
-            {
-                var noColor = (SolidColorBrush)new BrushConverter().ConvertFrom("#01000000");
-                _leftHotspot.Background = noColor;
-                _rightHotspot.Background = noColor;
-                _topHotspot.Background = noColor;
-                _leftDownHotspot.Background = noColor;
-                _rightDownHotspot.Background = noColor;
+                if (_hotspotDisable)
+                {
+                    _leftHotspot.Background = new SolidColorBrush(Colors.Red, 0.5);
+                    _rightHotspot.Background = new SolidColorBrush(Colors.Blue, 0.5);
+                    _topHotspot.Background = new SolidColorBrush(Colors.Purple, 0.5);
+                    _leftDownHotspot.Background = new SolidColorBrush(Colors.Green, 0.5);
+                    _rightDownHotspot.Background = new SolidColorBrush(Colors.Yellow, 0.5);
+                }
+                else
+                {
+                    _leftHotspot.Background = new SolidColorBrush(Colors.Red);
+                    _rightHotspot.Background = new SolidColorBrush(Colors.Blue);
+                    _topHotspot.Background = new SolidColorBrush(Colors.Purple);
+                    _leftDownHotspot.Background = new SolidColorBrush(Colors.Green);
+                    _rightDownHotspot.Background = new SolidColorBrush(Colors.Yellow);
+                }
             }
         }
 
@@ -55,15 +60,26 @@ namespace DesktopGremlin
             _hotspotVisible = !_hotspotVisible;
             if (_hotspotVisible)
             {
-                _leftHotspot.Background = new SolidColorBrush(Colors.Red);
-                _rightHotspot.Background = new SolidColorBrush(Colors.Blue);
-                _topHotspot.Background = new SolidColorBrush(Colors.Purple);
-                _leftDownHotspot.Background = new SolidColorBrush(Colors.Green);
-                _rightDownHotspot.Background = new SolidColorBrush(Colors.Yellow);
+                if (_hotspotDisable)
+                {
+                    _leftHotspot.Background = new SolidColorBrush(Colors.Red, 0.5);
+                    _rightHotspot.Background = new SolidColorBrush(Colors.Blue, 0.5);
+                    _topHotspot.Background = new SolidColorBrush(Colors.Purple, 0.5);
+                    _leftDownHotspot.Background = new SolidColorBrush(Colors.Green, 0.5);
+                    _rightDownHotspot.Background = new SolidColorBrush(Colors.Yellow, 0.5);
+                }
+                else
+                {
+                    _leftHotspot.Background = new SolidColorBrush(Colors.Red);
+                    _rightHotspot.Background = new SolidColorBrush(Colors.Blue);
+                    _topHotspot.Background = new SolidColorBrush(Colors.Purple);
+                    _leftDownHotspot.Background = new SolidColorBrush(Colors.Green);
+                    _rightDownHotspot.Background = new SolidColorBrush(Colors.Yellow);
+                }
             }
             else
             {
-                var noColor = (SolidColorBrush)new BrushConverter().ConvertFrom("#01000000");
+                ImmutableSolidColorBrush noColor = (ImmutableSolidColorBrush)new BrushConverter().ConvertFrom("#01000000");
                 _leftHotspot.Background = noColor;
                 _rightHotspot.Background = noColor;
                 _topHotspot.Background = noColor;

@@ -118,7 +118,7 @@ namespace DesktopGremlin
                     _gremlin.ForceShutDown();
                     break;
                 case Key.D0:
-                    //_gremlin.ToggleClickThrough();
+                    _gremlin.ToggleClickThrough();
                     break;
             }
         }
@@ -172,8 +172,7 @@ namespace DesktopGremlin
                     _keyboardMoveSpeedX = -KEY_MOVE_SPEED;
                     if (Settings.MirrorXSprite)
                     {
-                        ScaleTransform spriteFlip = _gremlin.RenderTransform as ScaleTransform;
-                        spriteFlip.ScaleX = -1;
+                        _gremlin.RenderTransform = new ScaleTransform(-1.0, 1.0);
                     }
                     break;
                 case Key.D:
@@ -181,8 +180,7 @@ namespace DesktopGremlin
                     _keyboardMoveSpeedX = KEY_MOVE_SPEED;
                     if (Settings.MirrorXSprite)
                     {
-                        ScaleTransform spriteFlip = _gremlin.RenderTransform as ScaleTransform;
-                        spriteFlip.ScaleX = 1;
+                        _gremlin.RenderTransform = new ScaleTransform(1.0, 1.0);
                     }
                     break;
             }
