@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using LibVLCSharp.Shared;
 
-namespace DesktopGremlin
+namespace DesktopGremlin.MediaManager
 {
     public static class MediaManager
     {

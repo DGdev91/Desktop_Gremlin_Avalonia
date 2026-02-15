@@ -28,7 +28,8 @@ namespace DesktopGremlin
             var settingsMap = new Dictionary<string, Action<string>>(StringComparer.OrdinalIgnoreCase)
             {
                 ["START_CHAR"] = val => Settings.StartingChar = val,
-                ["COMPANION_CHAR"] = val => Settings.CompanionChar = val,
+                ["FOOD_SPAWN"] = val => Settings.FoodSpawn = val,
+                ["COMPANION_CHAR"] = val => QuirkSettings.CompanionChar = val,
                 ["SUMMON_CHAR"] = val => Settings.SummonChar = val,
                 ["COMBAT_MODE_CHAR"] = val => Settings.CombatModeChar = val,
                 ["SPRITE_FRAMERATE"] = val => { if (int.TryParse(val, out int v)) Settings.FrameRate = v; },
@@ -45,10 +46,10 @@ namespace DesktopGremlin
                 ["SPRITE_SCALE"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) Settings.SpriteSize = v; },
                 ["FORCE_FAKE_TRANSPARENT"] = val => { if (bool.TryParse(val, out bool v)) Settings.FakeTransparent = v; },
                 ["ALLOW_ERROR_MESSAGES"] = val => { if (bool.TryParse(val, out bool v)) Settings.AllowErrorMessages = v; },
-                ["MAX_ACCELERATION"] = val => { if (int.TryParse(val, out int v)) Quirks.MaxItemAcceleration = v; },
-                ["FOLLOW_ACCELERATION"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) Quirks.CurrentItemAcceleration = v; },
-                ["CURRENT_ACCELERATION"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) Quirks.ItemAcceleration = v; },
-                ["MAX_EATING_SIZE"] = val => { if (int.TryParse(val, out int v)) Settings.FoodItemGetSize = v; },
+                ["MAX_ACCELERATION"] = val => { if (int.TryParse(val, out int v)) QuirkSettings.MaxItemAcceleration = v; },
+                ["FOLLOW_ACCELERATION"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) QuirkSettings.CurrentItemAcceleration = v; },
+                ["CURRENT_ACCELERATION"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) QuirkSettings.ItemAcceleration = v; },
+                ["MAX_EATING_SIZE"] = val => { if (int.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out int v)) Settings.FoodItemGetSize = v; },
                 ["ITEM_WIDTH"] = val => { if (int.TryParse(val, out int v)) Settings.ItemWidth = v; },
                 ["ITEM_HEIGHT"] = val => { if (int.TryParse(val, out int v)) Settings.ItemHeight = v; },
                 ["COMPANIONS_SCALE"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) Settings.CompanionScale = v; },
@@ -65,6 +66,14 @@ namespace DesktopGremlin
                 ["ENABLE_KEYBOARD"] = val => { if (bool.TryParse(val, out bool v)) Settings.AllowKeyboard = v; },
                 ["WALK_DISTANCE"] = val => { if (int.TryParse(val, out int v)) Settings.WalkDistance = v; },
                 ["FOOD_MODE"] = val => Settings.FoodMode = val,
+                ["RANDOMIZE_SPAWN"] = val => { if (bool.TryParse(val, out bool v)) Settings.RandomizeSpawn = v; },
+                ["STRAIGHT_MOVE"] = val => { if (bool.TryParse(val, out bool v)) Settings.StraightLine = v; },
+                ["CLICK_THROUGH"] = val => { if (bool.TryParse(val, out bool v)) Settings.ClickThrough = v; },
+                ["SPAWN_DISTANCE"] = val => { if (int.TryParse(val, out int v)) Settings.SpawnDistance = v; },
+                ["COMPANION_CHAR"] = val => QuirkSettings.CompanionChar = val,
+                ["COMPANION_SCALE"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) QuirkSettings.CompanionScale = v; },
+                ["COMPANION_FOLLOW"] = val => { if (int.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out int v)) QuirkSettings.CompanionFollow = v; },
+                ["STRAIGHT_LINE"] = val => { if (bool.TryParse(val, out bool v)) Settings.StraightLine = v; },
             };
 
             foreach (var line in File.ReadAllLines(path))
@@ -90,8 +99,6 @@ namespace DesktopGremlin
             settingsMap.Clear();
             settingsMap = null;
         }
-
-
 
         public static void ApplyXamlSettings(Window window)
         {
@@ -173,22 +180,25 @@ namespace DesktopGremlin
             double centerY = (window.Height - newHeight) / 2;
             SpriteImage.Margin = new Thickness(centerX, centerY, 0, 0);
 
-            // Scale hotspots if they exist
-            ScaleHotspotSafe(LeftHotspot, SpriteImage, centerX, centerY, newWidth / originalWidth, newHeight / originalHeight);
-            ScaleHotspotSafe(LeftDownHotspot, SpriteImage, centerX, centerY, newWidth / originalWidth, newHeight / originalHeight);
-            ScaleHotspotSafe(RightHotspot, SpriteImage, centerX, centerY, newWidth / originalWidth, newHeight / originalHeight);
-            ScaleHotspotSafe(RightDownHotspot, SpriteImage, centerX, centerY, newWidth / originalWidth, newHeight / originalHeight);
-            ScaleHotspotSafe(TopHotspot, SpriteImage, centerX, centerY, newWidth / originalWidth, newHeight / originalHeight);
-            if (Settings.ForceBottomSpawn)
-            {
-                Screen screen = window.Screens.ScreenFromVisual(window) ?? window.Screens.Primary;
-                window.Position = new PixelPoint(
-                    (int)((screen.WorkingArea.Width - window.Width) / 2),
-                    (int)(screen.WorkingArea.Height - window.Height)
-                );
-            }
+                // Scale hotspots if they exist
+                ScaleHotspotSafe(LeftHotspot, SpriteImage, centerX, centerY, newWidth / originalWidth, newHeight / originalHeight);
+                ScaleHotspotSafe(LeftDownHotspot, SpriteImage, centerX, centerY, newWidth / originalWidth, newHeight / originalHeight);
+                ScaleHotspotSafe(RightHotspot, SpriteImage, centerX, centerY, newWidth / originalWidth, newHeight / originalHeight);
+                ScaleHotspotSafe(RightDownHotspot, SpriteImage, centerX, centerY, newWidth / originalWidth, newHeight / originalHeight);
+                ScaleHotspotSafe(TopHotspot, SpriteImage, centerX, centerY, newWidth / originalWidth, newHeight / originalHeight);
+                if (Settings.ForceBottomSpawn)
+                {
+                    Screen screen = window.Screens.ScreenFromVisual(window) ?? window.Screens.Primary;
+                    window.Position = new PixelPoint(
+                        (int)((screen.WorkingArea.Width - window.Width) / 2),
+                        (int)(screen.WorkingArea.Height - window.Height)
+                    );
+                }
+                if (Settings.RandomizeSpawn)
+                {
+                    SpawnNearCenter(window);
+                }
         }
-
         private static void ScaleHotspotSafe(Border hotspot, Image sprite, double centerX, double centerY, double scaleX, double scaleY)
         {
             if (hotspot == null || sprite == null) return;
@@ -200,13 +210,41 @@ namespace DesktopGremlin
             hotspot.Height *= scaleY;
             hotspot.Margin = new Thickness(centerX + offsetX * scaleX, centerY + offsetY * scaleY, 0, 0);
         }
+        private static void SpawnNearCenter(Window window)
+        {
+            if (window == null)
+            {
+                return;
+            }
+
+            Rect workArea = SystemParameters.WorkArea;
+
+            double centerX = workArea.Left + (workArea.Width - window.Width) / 2;
+            double centerY = workArea.Top + (workArea.Height - window.Height) / 2;
+
+            Random rng = new Random();
+
+            double offsetX = rng.Next(-Settings.SpawnDistance, Settings.SpawnDistance + 1);
+            double offsetY = rng.Next(-Settings.SpawnDistance, Settings.SpawnDistance + 1);
+
+            double left = centerX + offsetX;
+            double top = centerY + offsetY;
+
+
+            left = Math.Max(workArea.Left,Math.Min(left, workArea.Right - window.Width));
+
+            top = Math.Max(workArea.Top, Math.Min(top, workArea.Bottom - window.Height));
+
+            window.Left = left;
+            window.Top = top;
+        }
 
         public class AppConfig
         {
-            private MainWindow _gremlin; 
+            private MainWindow _gremlin;
             private TrayIcon _trayIcon;
             public string _selectedCharacter;
-            public AnimationStates _states;    
+            public AnimationStates _states;
             private List<string> _characterList;
             public AppConfig(MainWindow gremlin, AnimationStates states, string selectedCharacter)
             {

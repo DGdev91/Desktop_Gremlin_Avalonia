@@ -18,21 +18,23 @@
         public static int CurrendIdle { get; set; } = 0;
         public static int ItemWidth { get; set; } = 0;
         public static int ItemHeight { get; set; } = 0;
-        public static int WalkDistance { get; set; } = 0;   
+        public static int WalkDistance { get; set; } = 0;
+        public static int SpawnDistance { get; set; } = 0;
 
         public static double FollowRadius { get; set; } = 0;
         public static double SpriteSize { get; set; } = 1.0;
 
-        public static double CompanionScale { get; set; } = 0;
         public static double VolumeLevel { get; set; } = 1.0;
         public static double SvGravity { get; set; } = 10.0;
 
 
         public static string StartingChar { get; set; } = "";
-        public static string CompanionChar { get; set; } = "";
         public static string SummonChar { get; set; } = "";
         public static string CombatModeChar { get; set; } = "";
-
+        public static string FoodSpawn { get; set; } = "food1.png";
+        public static int FoodItemGetSize { get; set; } = 0;
+        public static string FoodMode { get; set; } = "None"; //Possible values: None/Cafe/Oguri
+        public static bool MirrorXSprite { get; set; } = false;
 
         public static bool AllowRandomness { get; set; } = false;
         public static bool AllowGravity { get; set; } = false;
@@ -49,16 +51,20 @@
         public static bool EnableGravity { get; set; } = false;
         public static bool AllowCache { get; set; } = false;
         public static bool AllowKeyboard { get; set; } = false;
-        public static int FoodItemGetSize { get; set; } = 0;
-        public static string FoodMode { get; set; } = "None"; //Possible values: None/Cafe/Oguri
-        public static bool MirrorXSprite { get; set; } = false;
+        public static bool RandomizeSpawn { get; set; } = false;
+        public static bool ClickThrough { get; set; } = false;
+        public static bool StraightLine { get; set; } = true;
     }
-    public static class Quirks
+    public static class QuirkSettings
     {
         public static int MaxItemAcceleration { get; set; } = 0;
         public static double ItemAcceleration { get; set; } = 1.0;
         public static double CurrentItemAcceleration { get; set; } = 1.0;
-
+        public static string CompanionChar { get; set; } = "";
+        public static double CompanionScale { get; set; } = 0;
+        public static int CompanionHeight { get; set; } = 0;    
+        public static int CompanionWidth { get; set; } = 0;   
+        public static int CompanionFollow { get; set; } = 0;
     }
     public static class MouseSettings
     {

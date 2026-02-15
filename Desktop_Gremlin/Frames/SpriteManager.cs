@@ -11,11 +11,6 @@ namespace DesktopGremlin
 {
     public static class SpriteManager
     {
-
-        //total conversion from the previous Spritemanager.
-        //I was debating to add caching or not, but I think its better to have it.  
-        //but I do have to set some limits depending on how many sprites will be used
-
         private static string _currentCharacter = null;
         private static readonly Dictionary<string, Bitmap> _spriteCache = new Dictionary<string, Bitmap>();
         private static readonly Dictionary<string, string> _fileNameMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
@@ -95,11 +90,9 @@ namespace DesktopGremlin
                 return cached;
             }
 
-            string fileName = GetFileName(animationName);
-
-            if (fileName == null)
+            if (!_fileNameMap.TryGetValue(animationName, out string fileName))
             {
-                MainWindow.ErrorClose($"Error Animation: {animationName} is missing","Animation Missing", false);
+                MainWindow.ErrorClose($"Error Animation: {animationName} is missing", "Animation Missing", false);
                 return null;
             }
 
@@ -110,10 +103,6 @@ namespace DesktopGremlin
             }
 
             return sheet;
-        }    
-        private static string GetFileName(string animationName)
-        {
-            return _fileNameMap.TryGetValue(animationName, out string fileName) ? fileName : null;
         }
           
         private static Bitmap LoadSprite(string filefolder, string fileName, string action, string rootFolder = "Gremlins")
@@ -161,4 +150,3 @@ namespace DesktopGremlin
 
     }
 }
-
