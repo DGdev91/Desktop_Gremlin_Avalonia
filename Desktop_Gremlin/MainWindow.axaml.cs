@@ -30,6 +30,7 @@ namespace DesktopGremlin
         private Summon _SummonInstance;
         private AppConfig _config;
 
+        private string combatMode_originalSelectedChar = string.Empty;
         private bool _isCombat = false;
         public bool IsCombat => _isCombat;
 
@@ -316,7 +317,7 @@ namespace DesktopGremlin
 
         private void StartFollowingFood()
         {
-            Quirks.MediaManager.PlaySound("food.wav", Settings.StartingChar);
+            Quirks.MediaManager.PlaySound("food.wav", GetSelectedCharacter());
             _foodFollower.StartFollowing(_currentFood, QuirkSettings.CurrentItemAcceleration);
         }
 
@@ -425,13 +426,15 @@ namespace DesktopGremlin
             }
             _isCombat = !_isCombat;
 
-            if (GetSelectedCharacter() == Settings.StartingChar)
+            if (string.IsNullOrEmpty(combatMode_originalSelectedChar))
             {
+                combatMode_originalSelectedChar = GetSelectedCharacter();
                 SetSelectedCharacter(Settings.CombatModeChar);
             }
             else
             {
-                SetSelectedCharacter(Settings.StartingChar);
+                combatMode_originalSelectedChar = string.Empty;
+                SetSelectedCharacter(combatMode_originalSelectedChar);
             }
             PlayIntro();
         }

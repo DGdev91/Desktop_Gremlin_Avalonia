@@ -69,7 +69,7 @@ namespace DesktopGremlin
             else
             {
                 _gremlinState.UnlockState();
-                Quirks.MediaManager.PlaySound("sleep.wav", Settings.StartingChar);
+                Quirks.MediaManager.PlaySound("sleep.wav", _window.GetSelectedCharacter());
                 _gremlinState.SetState("Sleeping");
                 _gremlinState.LockState();
             }

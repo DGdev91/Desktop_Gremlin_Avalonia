@@ -33,7 +33,7 @@
         public static string CombatModeChar { get; set; } = "";
         public static string FoodSpawn { get; set; } = "food1.png";
         public static int FoodItemGetSize { get; set; } = 0;
-        public static string FoodMode { get; set; } = "None"; //Possible values: None/Cafe/Oguri
+        public static string FoodMode { get; set; } = "None"; //Possible values: None/Cafe/Oguri/Calstone/Speaki
         public static bool MirrorXSprite { get; set; } = false;
 
         public static bool AllowRandomness { get; set; } = false;

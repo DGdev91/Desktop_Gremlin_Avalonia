@@ -1,5 +1,5 @@
 //General Settings
-START_CHAR = Cafe
+START_CHAR = Mambo
 //LANGUAGE_DIFF = true //Not needed in Avalonia port
 ENABLE_KEYBOARD = true
 ALLOW_ERROR_MESSAGES = true
@@ -47,16 +47,16 @@ MAX_EATING_SIZE = 20
 ITEM_WIDTH = 80
 ITEM_HEIGHT = 80
 
-//Food Mode - Possible values: None / Oguri (Carrots) / Cafe (Coffee)
-FOOD_MODE = Cafe
+//Food Mode - Possible values: None / Oguri (Carrots) / Cafe (Coffee) / Calstone (Cat) / Speaki (Halloween Pumpkin)
+FOOD_MODE = Oguri
 
-//Companion Character Doto*
-//COMPANION_CHAR = Opera
+//Companion Character - Possible values: Dream / Durandal / GoldShip / OguriComp / Opera / Speaki - Keep commented if not needed
+//COMPANION_CHAR = OguriComp
 //COMPANIONS_SCALE = 0.50
 //COMPANION_FOLLOW = -100
 
-//Summon Character *Exu
+//Summon Character (For Exu combat mode) - Possible values: Lemon - Keep commented if not needed
 //SUMMON_CHAR = Lemon
 
-//Combat Mode Character *Exu
+//Combat Mode Character (For Exu, keep commented on other characters)
 //COMBAT_MODE_CHAR = Exu2

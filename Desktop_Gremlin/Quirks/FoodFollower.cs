@@ -40,7 +40,7 @@ namespace DesktopGremlin
 
             _currentFood = food;
             _currentSpeed = startingSpeed;
-            Quirks.MediaManager.PlaySound("foodSpawn.wav", Settings.StartingChar);
+            Quirks.MediaManager.PlaySound("foodSpawn.wav", GetSelectedCharacter());
             _followTimer.Start();
         }
 
