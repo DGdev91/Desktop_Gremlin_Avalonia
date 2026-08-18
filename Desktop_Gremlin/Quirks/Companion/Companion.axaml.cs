@@ -9,11 +9,11 @@ using System;
 
 namespace DesktopGremlin.Quirks.Companion
 {
-    public partial class Companion : Window
+    public partial class Companion : Window, IPetWindow
     {
         private static extern bool GetCursorPos(out POINT lpPoint);
         public static string characterChoice = "";
-        public Window MainGremlin { get; set; }
+        public IPetWindow MainGremlin { get; set; }
 
         public struct POINT
         {
@@ -84,7 +84,7 @@ namespace DesktopGremlin.Quirks.Companion
             }
         }
 
-        public void SetMainGremlin(Window mainGremlin)
+        public void SetMainGremlin(IPetWindow mainGremlin)
         {
             MainGremlin = mainGremlin;
             if (_followController != null)
@@ -106,5 +106,10 @@ namespace DesktopGremlin.Quirks.Companion
             BeginMoveDrag(e);
             GremlinState.SetState("Idle");
         }
+
+        public PixelRect GetCombinedWorkingArea() => WindowGeometryHelper.GetCombinedWorkingArea(this);
+        public PixelRect? GetCurrentScreenWorkingArea() => WindowGeometryHelper.GetCurrentScreenWorkingArea(this);
+        public void BeginDrag(PointerPressedEventArgs e) => BeginMoveDrag(e);
+        public string GetSelectedCharacter() => QuirkSettings.CompanionChar;
     }
 }

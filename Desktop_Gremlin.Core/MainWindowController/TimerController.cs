@@ -1,19 +1,18 @@
 ﻿using System;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Platform;
 using Avalonia.Threading;
 
 namespace DesktopGremlin
 {
     public class TimerController
     {
-        private MainWindow _window;
+        private IMainPetWindow _window;
         private AnimationStates _gremlinState;
         private DispatcherTimer _idleTimer;
         private DispatcherTimer _gravityTimer;
         private Image _spriteImage;
-        public TimerController(MainWindow window, AnimationStates gremlinState, Image spriteImage)
+        public TimerController(IMainPetWindow window, AnimationStates gremlinState, Image spriteImage)
         {
             _window = window;
             _gremlinState = gremlinState;
@@ -76,12 +75,16 @@ namespace DesktopGremlin
         }
         private void Gravity_Tick(object sender, EventArgs e)
         {
-            Screen screen = TopLevel.GetTopLevel(_window)?.Screens.ScreenFromVisual(_window);
-            if (screen != null)
+            PixelRect? screenArea = _window.GetCurrentScreenWorkingArea();
+            if (screenArea != null)
             {
                 double bottomLimit;
-                bottomLimit = screen?.WorkingArea.Bottom ?? 0;
-                bottomLimit -= _spriteImage.Bounds.Height;
+                bottomLimit = screenArea.Value.Bottom;
+                // _window.Height (not _spriteImage.Bounds.Height) - Bounds only reflects a real
+                // Avalonia layout pass, which never runs for Android's off-screen SpriteImage (its
+                // rendering is native), leaving Bounds.Height at 0 there and letting the character
+                // fall past the bottom of the screen before this limit kicks in.
+                bottomLimit -= _window.Height;
                 if (_gremlinState.GetState("Grab"))
                 {
                     return;

@@ -8,6 +8,8 @@ namespace DesktopGremlin
         [STAThread]
         public static void Main(string[] args)
         {
+            AppErrors.Reporter = (message, title, close) => MainWindow.ErrorClose(message, title, close);
+
             BuildAvaloniaApp()
                 .StartWithClassicDesktopLifetime(args);
         }

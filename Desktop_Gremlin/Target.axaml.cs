@@ -9,7 +9,7 @@ using System;
 
 namespace DesktopGremlin
 {
-    public partial class Target : Window
+    public partial class Target : Window, IPetWindow
     {
         private DispatcherTimer _masterTimer;
         private DispatcherTimer _effectTimer;
@@ -47,7 +47,7 @@ namespace DesktopGremlin
                     fileName = "speaki.png";
                     break;
             }
-            string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet", "Misc", fileName);
+            string path = System.IO.Path.Combine(AppPaths.BaseDirectory, "SpriteSheet", "Misc", fileName);
             SpriteFood.Source = new Bitmap(path);
         }
         private void Target_MouseLeftButtonDown(object sender, PointerPressedEventArgs e)
@@ -62,5 +62,9 @@ namespace DesktopGremlin
             return new Point(this.Position.X + this.Width / 2, this.Position.Y + this.Height / 2);
         }
 
+        public PixelRect GetCombinedWorkingArea() => WindowGeometryHelper.GetCombinedWorkingArea(this);
+        public PixelRect? GetCurrentScreenWorkingArea() => WindowGeometryHelper.GetCurrentScreenWorkingArea(this);
+        public void BeginDrag(PointerPressedEventArgs e) => BeginMoveDrag(e);
+        public string GetSelectedCharacter() => Settings.StartingChar;
     }
 }

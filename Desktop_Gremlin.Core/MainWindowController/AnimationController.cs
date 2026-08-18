@@ -7,7 +7,7 @@ namespace DesktopGremlin
 {
     public class AnimationController
     {
-        private MainWindow _window;
+        private IMainPetWindow _window;
         private AnimationStates _gremlinState;
         private CurrentFrames _currentFrames;
         private FrameCounts _frameCounts;
@@ -18,8 +18,9 @@ namespace DesktopGremlin
         private bool _wasIdleLastFrame = false;
         public bool UseStraightMovementOnly { get; set; } = true;
         private bool _movingHorizontalFirst = true;
+        private readonly Action? _onOutroComplete;
 
-        public AnimationController(MainWindow window, AnimationStates gremlinState, CurrentFrames currentFrames, FrameCounts frameCounts, Image spriteImage, Random rng)
+        public AnimationController(IMainPetWindow window, AnimationStates gremlinState, CurrentFrames currentFrames, FrameCounts frameCounts, Image spriteImage, Random rng, Action? onOutroComplete = null)
         {
             _window = window;
             _gremlinState = gremlinState;
@@ -27,6 +28,7 @@ namespace DesktopGremlin
             _frameCounts = frameCounts;
             _spriteImage = spriteImage;
             _rng = rng;
+            _onOutroComplete = onOutroComplete;
             _nextRandomActionTime = DateTime.Now.AddSeconds(1);
 
             InitializeMasterTimer();
@@ -85,7 +87,11 @@ namespace DesktopGremlin
 
             if (resetOnEnd && currentFrame <= 0 && stateName == "Outro")
             {
-                Environment.Exit(1);
+                // Desktop's "stylish close" ends the whole process - on Android this same shared
+                // controller only owns one overlay window inside a longer-lived Service, so a
+                // caller (Android) can supply its own completion instead of killing the app.
+                if (_onOutroComplete != null) _onOutroComplete();
+                else Environment.Exit(1);
             }
 
             if (resetOnEnd && currentFrame == 0)

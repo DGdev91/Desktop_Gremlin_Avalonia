@@ -1,27 +1,25 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Platform;
 using Avalonia.Threading;
-using DesktopGremlin.Quirks.Companion;
 using System;
 
 namespace DesktopGremlin
 {
     public class CompanionFollowController
     {
-        private Companion _companion;
+        private IPetWindow _companion;
         private AnimationStates _gremlinState;
         private CurrentFrames _currentFrames;
         private FrameCounts _frameCounts;
         private Image _spriteImage;
-        private Window _mainGremlin;
+        private IPetWindow _mainGremlin;
         private DispatcherTimer _gravityTimer;
 
         private const int MoveDelayMs = 1000;
         private DateTime _lastStillTime = DateTime.Now;
         private bool _isMoving = false;
 
-        public CompanionFollowController(Companion companion, AnimationStates gremlinState, CurrentFrames currentFrames, FrameCounts frameCounts, Image spriteImage)
+        public CompanionFollowController(IPetWindow companion, AnimationStates gremlinState, CurrentFrames currentFrames, FrameCounts frameCounts, Image spriteImage)
         {
             _companion = companion;
             _gremlinState = gremlinState;
@@ -43,11 +41,11 @@ namespace DesktopGremlin
         }
         private void Gravity_Tick(object sender, EventArgs e)
         {
-            Screen screen = TopLevel.GetTopLevel(_companion)?.Screens?.ScreenFromVisual(_companion);
-            if (screen != null)
+            PixelRect? screenArea = _companion.GetCurrentScreenWorkingArea();
+            if (screenArea != null)
             {
                 double bottomLimit;
-                bottomLimit = screen?.WorkingArea.Bottom ?? 0;
+                bottomLimit = screenArea.Value.Bottom;
                 bottomLimit -= _spriteImage.Bounds.Height;
                 if (_gremlinState.GetState("Grab"))
                 {
@@ -73,7 +71,7 @@ namespace DesktopGremlin
                 _gravityTimer.Stop();
             }
         }
-        public void SetMainGremlin(Window mainGremlin)
+        public void SetMainGremlin(IPetWindow mainGremlin)
         {
             _mainGremlin = mainGremlin;
         }

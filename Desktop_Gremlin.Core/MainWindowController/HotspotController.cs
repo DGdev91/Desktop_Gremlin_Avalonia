@@ -6,7 +6,7 @@ namespace DesktopGremlin
 {
     public class HotspotController
     {
-        private MainWindow _window;
+        private IPetWindow _window;
         private Border _leftHotspot;
         private Border _rightHotspot;
         private Border _topHotspot;
@@ -15,7 +15,7 @@ namespace DesktopGremlin
         private bool _hotspotVisible = false;
         private bool _hotspotDisable = false;
 
-        public HotspotController(MainWindow window, Border leftHotspot, Border rightHotspot,Border topHotspot, Border leftDownHotspot, Border rightDownHotspot)
+        public HotspotController(IPetWindow window, Border leftHotspot, Border rightHotspot,Border topHotspot, Border leftDownHotspot, Border rightDownHotspot)
         {
             _window = window;
             _leftHotspot = leftHotspot;

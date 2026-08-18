@@ -8,7 +8,7 @@ namespace DesktopGremlin
 {
     public class MovementController
     {
-        private MainWindow _window;
+        private IPetWindow _window;
         private AnimationStates _gremlinState;
         private CurrentFrames _currentFrames;
         private FrameCounts _frameCounts;
@@ -16,7 +16,7 @@ namespace DesktopGremlin
         private Random _rng;
         private DispatcherTimer _activeRandomMoveTimer;
 
-        public MovementController(MainWindow window, AnimationStates gremlinState, CurrentFrames currentFrames,
+        public MovementController(IPetWindow window, AnimationStates gremlinState, CurrentFrames currentFrames,
             FrameCounts frameCounts, Image spriteImage, Random rng)
         {
             _window = window;
@@ -35,7 +35,7 @@ namespace DesktopGremlin
             double moveX = (_rng.NextDouble() - 0.5) * Settings.MoveDistance * 2;
             double moveY = (_rng.NextDouble() - 0.5) * Settings.MoveDistance * 2;
 
-            PixelRect workingArea = _window.GetCombinedScreens();
+            PixelRect workingArea = _window.GetCombinedWorkingArea();
             double targetLeft = Math.Max(workingArea.X, Math.Min(_window.Position.X + moveX, workingArea.Right - _spriteImage.Bounds.Width));
             double targetTop = Math.Max(workingArea.Y, Math.Min(_window.Position.Y + moveY, workingArea.Bottom - _spriteImage.Bounds.Height));
 

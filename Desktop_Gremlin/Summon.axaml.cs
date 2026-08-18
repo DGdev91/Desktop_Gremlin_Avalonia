@@ -11,10 +11,10 @@ using Avalonia.Threading;
 namespace DesktopGremlin
 {
 
-    public partial class Summon : Window
+    public partial class Summon : Window, IPetWindow
     {
 
-        public Window MainGremlin { get; set; }
+        public IPetWindow MainGremlin { get; set; }
         public struct POINT
         {
             public int X;
@@ -36,7 +36,7 @@ namespace DesktopGremlin
             SpriteImage.Source = new CroppedBitmap();
             FrameCounts.LoadConfigChar(Settings.SummonChar, SpriteManager.CharacterType.Summon);
             GremlinState.LockState();   
-            ConfigManager.ApplyXamlSettings(this);  
+            DesktopWindowConfig.ApplyXamlSettings(this);
             Quirks.MediaManager.PlaySound("intro.wav", Settings.SummonChar);
             if (Settings.EnableGravity)
             {
@@ -120,8 +120,13 @@ namespace DesktopGremlin
             {
                 IsDragging = true;
                 BeginMoveDrag(e);
-                IsDragging = false;   
+                IsDragging = false;
             }
         }
+
+        public PixelRect GetCombinedWorkingArea() => WindowGeometryHelper.GetCombinedWorkingArea(this);
+        public PixelRect? GetCurrentScreenWorkingArea() => WindowGeometryHelper.GetCurrentScreenWorkingArea(this);
+        public void BeginDrag(PointerPressedEventArgs e) => BeginMoveDrag(e);
+        public string GetSelectedCharacter() => Settings.SummonChar;
     }
 }

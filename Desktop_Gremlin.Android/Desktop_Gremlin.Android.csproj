@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>DesktopGremlin.Droid</RootNamespace>
+    <ApplicationId>com.desktopgremlin.app</ApplicationId>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
+    <SupportedOSPlatformVersion>26</SupportedOSPlatformVersion>
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.1" />
+    <PackageReference Include="Avalonia.Android" Version="12.1.1" />
+    <PackageReference Include="Avalonia.Themes.Simple" Version="12.1.1" />
+    <PackageReference Include="VideoLAN.LibVLC.Android" Version="3.6.5" Condition="'$(TargetFramework)' == 'net10.0-android'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Desktop_Gremlin.Core\Desktop_Gremlin.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AndroidAsset Include="..\Desktop_Gremlin\SpriteSheet\**\*.*" Link="SpriteSheet\%(RecursiveDir)%(Filename)%(Extension)" />
+    <AndroidAsset Include="..\Desktop_Gremlin\Sounds\**\*.*" Link="Sounds\%(RecursiveDir)%(Filename)%(Extension)" />
+    <AndroidAsset Include="..\Desktop_Gremlin\config.txt" Link="config.txt" />
+  </ItemGroup>
+
+</Project>

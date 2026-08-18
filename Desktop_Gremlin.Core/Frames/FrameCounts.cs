@@ -61,11 +61,11 @@ namespace DesktopGremlin
                     rootFolder = "Summons";
                     break;
             }
-            string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet", rootFolder, character, "config.txt");
+            string path = System.IO.Path.Combine(AppPaths.BaseDirectory, "SpriteSheet", rootFolder, character, "config.txt");
 
             if (!File.Exists(path))
             {
-                MainWindow.ErrorClose("Cannot find the SpriteSheet config.txt", "Missing config.txt", true);
+                AppErrors.Report("Cannot find the SpriteSheet config.txt", "Missing config.txt", true);
                 return;
             }
 

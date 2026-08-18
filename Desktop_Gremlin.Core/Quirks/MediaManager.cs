@@ -20,7 +20,7 @@ namespace DesktopGremlin.Quirks
         
         public static void PlaySound(string fileName, string startChar, double delaySeconds = 0, double volume = 1.0)
         {
-            string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Sounds", startChar, fileName);
+            string path = System.IO.Path.Combine(AppPaths.BaseDirectory, "Sounds", startChar, fileName);
 
             if (!File.Exists(path)) return;
 

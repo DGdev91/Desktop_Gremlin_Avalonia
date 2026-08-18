@@ -5,10 +5,10 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using DesktopGremlin.Quirks.Companion;
 using System;
-using static DesktopGremlin.ConfigManager;
+using static DesktopGremlin.DesktopWindowConfig;
 namespace DesktopGremlin
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IMainPetWindow
     {
         private PixelPoint? _cursorScreen;
         protected Size? _followCursor_oldWindowSize;
@@ -92,7 +92,7 @@ namespace DesktopGremlin
         {
             ConfigManager.LoadMasterConfig();
             _frameCounts.LoadConfigChar(Settings.StartingChar);
-            ConfigManager.ApplyXamlSettings(this);
+            DesktopWindowConfig.ApplyXamlSettings(this);
             _timerController = new TimerController(this, _gremlinState, SpriteImage);
             _animationController = new AnimationController(this, _gremlinState, _currentFrames, _frameCounts, SpriteImage, _rng);
             _movementController = new MovementController(this, _gremlinState, _currentFrames, _frameCounts, SpriteImage, _rng);
@@ -174,11 +174,12 @@ namespace DesktopGremlin
 
         public PixelRect GetCombinedScreens()
         {
-            PixelRect combined = Screens.All[0].Bounds;
-            for (int i = 1; i < Screens.All.Count; i++)
-                combined = combined.Union(Screens.All[i].Bounds);
-            return combined;
+            return WindowGeometryHelper.GetCombinedWorkingArea(this);
         }
+
+        public PixelRect GetCombinedWorkingArea() => GetCombinedScreens();
+        public PixelRect? GetCurrentScreenWorkingArea() => WindowGeometryHelper.GetCurrentScreenWorkingArea(this);
+        public void BeginDrag(PointerPressedEventArgs e) => BeginMoveDrag(e);
 
         public void FollowCursor_EnlargeMainWindow()
         {
@@ -522,12 +523,11 @@ namespace DesktopGremlin
         }
         public void TriggerRightDownEmote()
         {
-            if (this.RenderTransform is ScaleTransform currentTransform && currentTransform.ScaleX < 0)
-            {
-                //this is needed because in this case the buttons are reversed, so the right button is actually the left emote
-                TriggerLeftDownEmote();
-                return;
-            }
+            // No reciprocal ScaleX<0 check here (unlike TriggerLeftDownEmote) - same reason
+            // TriggerRightEmote above doesn't redirect back to TriggerLeftEmote: with both sides
+            // redirecting to each other on the same condition, and nothing ever changing that
+            // condition, a mirrored sprite sends the two into infinite mutual recursion (stack
+            // overflow) the moment either hotspot is tapped.
             _currentFrames.Emote4 = 0;
             _currentFrames.Idle = 0;
             EmoteHelper("Emote4", "emote4.wav");

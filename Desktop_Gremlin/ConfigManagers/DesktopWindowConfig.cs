@@ -1,4 +1,4 @@
-﻿using Avalonia;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Media.Immutable;
@@ -6,99 +6,19 @@ using Avalonia.Platform;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 
 namespace DesktopGremlin
 {
-    public static class ConfigManager
+    /// <summary>
+    /// Applies AppConfig settings to an actual OS Window (sizing, position, hotspot colors, tray
+    /// icon). Desktop-only: it depends on Avalonia.Controls.Window and TrayIcon, neither of which
+    /// exist on Android. The platform-agnostic parsing of config.txt itself lives in
+    /// Desktop_Gremlin.Core's ConfigManager.LoadMasterConfig.
+    /// </summary>
+    public static class DesktopWindowConfig
     {
-        //TODO: Refactor this entire config manager to be more modular and easier to maintain.
-        //No more giant switch statements.  
-        public static void LoadMasterConfig()
-        {
-            string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.txt");
-            if (!File.Exists(path))
-            {
-                MainWindow.ErrorClose("Cannot find the Main config.txt", "Missing config.txt", true);
-                return;
-            }
-
-            var settingsMap = new Dictionary<string, Action<string>>(StringComparer.OrdinalIgnoreCase)
-            {
-                ["START_CHAR"] = val => Settings.StartingChar = val,
-                //["FOOD_SPAWN"] = val => Settings.FoodSpawn = val, //Replaced by FOOD_MODE in avalonia port
-                ["COMPANION_CHAR"] = val => QuirkSettings.CompanionChar = val,
-                ["SUMMON_CHAR"] = val => Settings.SummonChar = val,
-                ["COMBAT_MODE_CHAR"] = val => Settings.CombatModeChar = val,
-                ["SPRITE_FRAMERATE"] = val => { if (int.TryParse(val, out int v)) Settings.FrameRate = v; },
-                ["FOLLOW_RADIUS"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) Settings.FollowRadius = v; },
-                ["MAX_INTERVAL"] = val => { if (int.TryParse(val, out int v)) Settings.RandomMaxInterval = v; },
-                ["MIN_INTERVAL"] = val => { if (int.TryParse(val, out int v)) Settings.RandomMinInterval = v; },
-                ["RANDOM_MOVE_DISTANCE"] = val => { if (int.TryParse(val, out int v)) Settings.MoveDistance = v; },
-                ["ALLOW_RANDOM_ACTIONS"] = val => { if (bool.TryParse(val, out bool v)) Settings.AllowRandomness = v; },
-                ["SLEEP_TIME"] = val => { if (int.TryParse(val, out int v)) Settings.SleepTime = v; },
-                ["ALLOW_FOOTSTEP_SOUNDS"] = val => { if (bool.TryParse(val, out bool v)) Settings.FootStepSounds = v; },
-                ["AMMO"] = val => { if (int.TryParse(val, out int v)) Settings.Ammo = v; },
-                ["ALLOW_COLOR_HOTSPOT"] = val => { if (bool.TryParse(val, out bool v)) Settings.AllowColoredHotSpot = v; },
-                ["SHOW_TASKBAR"] = val => { if (bool.TryParse(val, out bool v)) Settings.ShowTaskBar = v; },
-                ["SPRITE_SCALE"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) Settings.SpriteSize = v; },
-                ["FORCE_FAKE_TRANSPARENT"] = val => { if (bool.TryParse(val, out bool v)) Settings.FakeTransparent = v; },
-                ["ALLOW_ERROR_MESSAGES"] = val => { if (bool.TryParse(val, out bool v)) Settings.AllowErrorMessages = v; },
-                ["MAX_ACCELERATION"] = val => { if (int.TryParse(val, out int v)) QuirkSettings.MaxItemAcceleration = v; },
-                ["FOLLOW_ACCELERATION"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) QuirkSettings.CurrentItemAcceleration = v; },
-                ["CURRENT_ACCELERATION"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) QuirkSettings.ItemAcceleration = v; },
-                ["MAX_EATING_SIZE"] = val => { if (int.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out int v)) Settings.FoodItemGetSize = v; },
-                ["ITEM_WIDTH"] = val => { if (int.TryParse(val, out int v)) Settings.ItemWidth = v; },
-                ["ITEM_HEIGHT"] = val => { if (int.TryParse(val, out int v)) Settings.ItemHeight = v; },
-                ["COMPANIONS_SCALE"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) QuirkSettings.CompanionScale = v; },
-                ["ENABLE_MIN_RESIZE"] = val => { if (bool.TryParse(val, out bool v)) Settings.EnableMinSize = v; },
-                ["FORCE_CENTER"] = val => { if (bool.TryParse(val, out bool v)) Settings.ForceCenter = v; },
-                ["ENABLE_MANUAL_RESIZE"] = val => { if (bool.TryParse(val, out bool v)) Settings.ManualReize = v; },
-                ["VOLUME_LEVEL"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) Settings.VolumeLevel = v; },
-                ["DISABLE_HOTSPOTS"] = val => { if (bool.TryParse(val, out bool v)) Settings.DisableHotspots = v; },
-                ["START_BOTTOM"] = val => { if (bool.TryParse(val, out bool v)) Settings.ForceBottomSpawn = v; },
-                ["ENABLE_GRAVITY"] = val => { if (bool.TryParse(val, out bool v)) Settings.EnableGravity = v; },
-                ["GRAVITY_STRENGTH"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) Settings.SvGravity = v; },
-                ["ALLOW_CACHE"] = val => { if (bool.TryParse(val, out bool v)) Settings.AllowCache = v; },
-                ["SPRITE_SPEED"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) MouseSettings.Speed = v; },
-                ["ENABLE_KEYBOARD"] = val => { if (bool.TryParse(val, out bool v)) Settings.AllowKeyboard = v; },
-                ["WALK_DISTANCE"] = val => { if (int.TryParse(val, out int v)) Settings.WalkDistance = v; },
-                ["FOOD_MODE"] = val => Settings.FoodMode = val,
-                ["RANDOMIZE_SPAWN"] = val => { if (bool.TryParse(val, out bool v)) Settings.RandomizeSpawn = v; },
-                ["STRAIGHT_MOVE"] = val => { if (bool.TryParse(val, out bool v)) Settings.StraightLine = v; },
-                ["CLICK_THROUGH"] = val => { if (bool.TryParse(val, out bool v)) Settings.ClickThrough = v; },
-                ["SPAWN_DISTANCE"] = val => { if (int.TryParse(val, out int v)) Settings.SpawnDistance = v; },
-                ["COMPANION_CHAR"] = val => QuirkSettings.CompanionChar = val,
-                ["COMPANION_SCALE"] = val => { if (double.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double v)) QuirkSettings.CompanionScale = v; },
-                ["COMPANION_FOLLOW"] = val => { if (int.TryParse(val, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out int v)) QuirkSettings.CompanionFollow = v; },
-            };
-
-            foreach (var line in File.ReadAllLines(path))
-            {
-                if (string.IsNullOrWhiteSpace(line) || !line.Contains("="))
-                {
-                    continue;
-                }
-
-                var parts = line.Split('=');
-                if (parts.Length != 2)
-                {
-                    continue;
-                }
-
-                string key = parts[0].Trim();
-                string value = parts[1].Trim();
-                if (settingsMap.TryGetValue(key, out var setter))
-                {
-                    setter(value);
-                }
-            }
-            settingsMap.Clear();
-            settingsMap = null;
-        }
-
         public static void ApplyXamlSettings(Window window)
         {
             if (window == null) return;
@@ -132,9 +52,9 @@ namespace DesktopGremlin
                 {
                     LeftHotspot.IsEnabled = false;
                     LeftDownHotspot.IsEnabled = false;
-                    RightDownHotspot.IsEnabled = false; 
+                    RightDownHotspot.IsEnabled = false;
                     RightHotspot.IsEnabled = false;
-                    TopHotspot.IsEnabled = false;   
+                    TopHotspot.IsEnabled = false;
                 }
             }
             window.ShowInTaskbar = Settings.ShowTaskBar;
@@ -142,21 +62,21 @@ namespace DesktopGremlin
             {
                 window.Background = (ImmutableSolidColorBrush)new BrushConverter().ConvertFrom("#01000000");
             }
-                
+
             if (Settings.ManualReize)
             {
                 window.SizeToContent = SizeToContent.Manual;
             }
-            
+
             if (Settings.ForceCenter)
             {
                 window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            }           
+            }
             if (SpriteImage == null)
             {
                 return;
             }
-    
+
             double originalWidth = SpriteImage.Width;
             double originalHeight = SpriteImage.Height;
             double newWidth = originalWidth * Settings.SpriteSize;
@@ -259,7 +179,7 @@ namespace DesktopGremlin
 
                 try
                 {
-                    string spriteSheetFolder = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet/Gremlins/");
+                    string spriteSheetFolder = System.IO.Path.Combine(AppPaths.BaseDirectory, "SpriteSheet/Gremlins/");
 
                     if (Directory.Exists(spriteSheetFolder))
                     {
@@ -271,12 +191,12 @@ namespace DesktopGremlin
                     }
                     else
                     {
-                        MainWindow.ErrorClose("Cannot find the SpriteSheet/Gremlins directory", "Missing SpriteSheet/Gremlins directory", false);
+                        AppErrors.Report("Cannot find the SpriteSheet/Gremlins directory", "Missing SpriteSheet/Gremlins directory", false);
                     }
                 }
                 catch (Exception ex)
                 {
-                    MainWindow.ErrorClose($"Error while loading characters directories: {ex.Message}", "Error loading characters directories", false);
+                    AppErrors.Report($"Error while loading characters directories: {ex.Message}", "Error loading characters directories", false);
                 }
 
                 return characterDirs;
@@ -308,7 +228,7 @@ namespace DesktopGremlin
                 foreach (string character in _characterList)
                 {
                     NativeMenuItem menuItem = new NativeMenuItem(character);
-                    menuItem.ToggleType = NativeMenuItemToggleType.Radio;
+                    menuItem.ToggleType = MenuItemToggleType.Radio;
                     if (character.CompareTo(_selectedCharacter) == 0) menuItem.IsChecked = true;
                     else menuItem.IsChecked = false;
 
@@ -329,7 +249,7 @@ namespace DesktopGremlin
                 NativeMenuItemSeparator separator2 = new NativeMenuItemSeparator();
 
                 NativeMenuItem disableHotspotsItem = new NativeMenuItem("Disable Hotspots");
-                disableHotspotsItem.ToggleType = NativeMenuItemToggleType.CheckBox;
+                disableHotspotsItem.ToggleType = MenuItemToggleType.CheckBox;
                 disableHotspotsItem.Click += (s, e) =>
                 {
                     disableHotspotsItem.IsChecked = !disableHotspotsItem.IsChecked;
@@ -337,7 +257,7 @@ namespace DesktopGremlin
                 };
 
                 NativeMenuItem showHotspotsItem = new NativeMenuItem("Show Hotspots");
-                showHotspotsItem.ToggleType = NativeMenuItemToggleType.CheckBox;
+                showHotspotsItem.ToggleType = MenuItemToggleType.CheckBox;
                 showHotspotsItem.Click += (s, e) =>
                 {
                     showHotspotsItem.IsChecked = !showHotspotsItem.IsChecked;
@@ -345,7 +265,7 @@ namespace DesktopGremlin
                 };
 
                 NativeMenuItem enableGravity = new NativeMenuItem("Toggle Gravity");
-                enableGravity.ToggleType = NativeMenuItemToggleType.CheckBox;
+                enableGravity.ToggleType = MenuItemToggleType.CheckBox;
                 enableGravity.IsChecked = Settings.EnableGravity;
                 enableGravity.Click += (s, e) =>
                 {
@@ -355,14 +275,14 @@ namespace DesktopGremlin
                     if (companionInstance != null)
                     {
                         companionInstance.ToggleGravity();
-                    }   
+                    }
                 };
 
                 //For now, there click trough doesn't fully work on Avalonia in some configurations (ex. Linux Wayland).
                 // leaving thhis commented out until I can find a better solution or until Avalonia implements a proper click trough solution that works across all platforms.
                 /*
                 NativeMenuItem enableClickThrough = new NativeMenuItem("Toggle Click Through");
-                enableClickThrough.ToggleType = NativeMenuItemToggleType.CheckBox;
+                enableClickThrough.ToggleType = MenuItemToggleType.CheckBox;
                 enableClickThrough.Click += (s, e) =>
                 {
                     enableClickThrough.IsChecked = !enableClickThrough.IsChecked;
@@ -386,9 +306,9 @@ namespace DesktopGremlin
 
             public void SetIcon()
             {
-                if (File.Exists(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet/Gremlins/" + _selectedCharacter + "/ico.ico")))
+                if (File.Exists(System.IO.Path.Combine(AppPaths.BaseDirectory, "SpriteSheet/Gremlins/" + _selectedCharacter + "/ico.ico")))
                 {
-                    _trayIcon.Icon = new WindowIcon(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpriteSheet/Gremlins/" + _selectedCharacter + "/ico.ico"));
+                    _trayIcon.Icon = new WindowIcon(System.IO.Path.Combine(AppPaths.BaseDirectory, "SpriteSheet/Gremlins/" + _selectedCharacter + "/ico.ico"));
                 }
                 else if (File.Exists("SpriteSheet/System/ico.ico"))
                 {
@@ -400,14 +320,14 @@ namespace DesktopGremlin
                 }
                 else
                 {
-                    MainWindow.ErrorClose("Cannot find the ico.ico in the application folder or SpriteSheet/System folder", "Missing ico.ico", false);
+                    AppErrors.Report("Cannot find the ico.ico in the application folder or SpriteSheet/System folder", "Missing ico.ico", false);
                 }
             }
 
             public void CloseApp()
             {
-                _states.PlayOutro();  
-                Quirks.MediaManager.PlaySound("outro.wav", _selectedCharacter); 
+                _states.PlayOutro();
+                Quirks.MediaManager.PlaySound("outro.wav", _selectedCharacter);
             }
             private void ForceClose()
             {
@@ -420,7 +340,7 @@ namespace DesktopGremlin
                 Environment.Exit(1);
             }
 
-        
+
         }
 
     }

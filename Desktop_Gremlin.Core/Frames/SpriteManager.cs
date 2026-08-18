@@ -64,9 +64,13 @@ namespace DesktopGremlin
                 return -1;
             }
 
+            // frameCount <= 0 just means this character doesn't have this particular animation
+            // configured - a common, intentional choice (e.g. Exu's config sets HOVER=0, PAT=0,
+            // EMOTE2=0, EMOTE4=0), not a broken/missing asset. Skip it quietly instead of treating
+            // it as fatal - that used to pop an error dialog that closes the whole app the moment
+            // the mouse merely hovers over a character that opted out of a hover animation.
             if (frameCount <= 0)
             {
-                MainWindow.ErrorClose($"Error Animation: {sheetName} action: {actionType} has invalid frame count","Animation Error", true);
                 return currentFrame;
             }
 
@@ -96,7 +100,7 @@ namespace DesktopGremlin
 
             if (!_fileNameMap.TryGetValue(animationName, out string fileName))
             {
-                MainWindow.ErrorClose($"Error Animation: {animationName} is missing", "Animation Missing", false);
+                AppErrors.Report($"Error Animation: {animationName} is missing", "Animation Missing", false);
                 return null;
             }
 
@@ -121,7 +125,7 @@ namespace DesktopGremlin
           
         private static Bitmap LoadSprite(string filefolder, string fileName, string action, string rootFolder)
         {
-            string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"SpriteSheet", rootFolder, filefolder, action, fileName);
+            string path = System.IO.Path.Combine(AppPaths.BaseDirectory, "SpriteSheet", rootFolder, filefolder, action, fileName);
             if (!File.Exists(path))
                 return null;
             try
@@ -142,6 +146,15 @@ namespace DesktopGremlin
             {
                 return currentFrame;
             }
+            // Same as PlayAnimation above: frameCount <= 0 just means this character doesn't have
+            // this animation configured. Must return before the % frameCount below - it used to
+            // run that division anyway (after firing an error dialog that would have already
+            // closed the app when messages are enabled), a divide-by-zero crash the moment someone
+            // disables ALLOW_ERROR_MESSAGES.
+            if (frameCount <= 0)
+            {
+                return currentFrame;
+            }
             int x = (currentFrame % Settings.SpriteColumn) * Settings.FrameWidth;
             int y = (currentFrame / Settings.SpriteColumn) * Settings.FrameHeight;
 
@@ -152,13 +165,9 @@ namespace DesktopGremlin
             if (!Settings.AllowCache)
             {
                 CroppedBitmap oldImage = targetImage.Source as CroppedBitmap;
-                if (oldImage != null) oldImage.Dispose();   
+                if (oldImage != null) oldImage.Dispose();
             }
             targetImage.Source = new CroppedBitmap(sheet, new PixelRect(x, y, Settings.FrameWidth, Settings.FrameHeight));
-            if (frameCount <= 0)
-            {
-                MainWindow.ErrorClose($"Error Animation: {sheetName} action: {actionType} has invalid frame count", "Animation Error", true);
-            }
             return (currentFrame + 1) % frameCount;
         }
 

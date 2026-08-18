@@ -7,19 +7,19 @@ namespace DesktopGremlin
 {
     public class FoodFollower
     {
-        private readonly Window _window;
+        private readonly IPetWindow _window;
         private readonly AnimationStates _gremlinState;
         private readonly CurrentFrames _currentFrames;
         private readonly FrameCounts _frameCounts;
         private readonly Image _spriteImage;
         private readonly DispatcherTimer _followTimer;
-        private Target _currentFood;
+        private IPetWindow _currentFood;
         private double _currentSpeed;
 
         public bool UseStraightMovementOnly { get; set; } = true;
         private bool _movingHorizontalFirst = true;
 
-        public FoodFollower(Window window, AnimationStates gremlinState, CurrentFrames currentFrames, FrameCounts frameCounts, Image spriteImage)
+        public FoodFollower(IPetWindow window, AnimationStates gremlinState, CurrentFrames currentFrames, FrameCounts frameCounts, Image spriteImage)
         {
             _window = window;
             _gremlinState = gremlinState;
@@ -31,7 +31,7 @@ namespace DesktopGremlin
             _followTimer.Interval = TimeSpan.FromMilliseconds(1000.0 / Settings.FrameRate);
         }
 
-        public void StartFollowing(Target food, double startingSpeed)
+        public void StartFollowing(IPetWindow food, double startingSpeed)
         {
             if (food == null)
             {
@@ -52,7 +52,7 @@ namespace DesktopGremlin
                 return;
             }
 
-            var foodCenter = _currentFood.GetCenter();
+            var foodCenter = new Point(_currentFood.Position.X + _currentFood.Width / 2, _currentFood.Position.Y + _currentFood.Height / 2);
             double gx = _window.Position.X + _window.Width / 2;
             double gy = _window.Position.Y + _window.Height / 2;
 
@@ -201,8 +201,7 @@ namespace DesktopGremlin
 
         private string GetSelectedCharacter()
         {
-            if (_window is MainWindow mainWindow) return mainWindow.GetSelectedCharacter();
-            else return Settings.StartingChar;
+            return _window.GetSelectedCharacter();
         }
 
         private void PlayDirectionalAnimation(string dir)

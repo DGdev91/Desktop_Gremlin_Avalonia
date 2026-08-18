@@ -1,13 +1,12 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Threading;
-using DesktopGremlin.Quirks.Companion;
 using System;
 
 namespace DesktopGremlin
 {
     public class CompanionAnimationController
     {
-        private Companion _companion;
+        private IPetWindow _companion;
         private AnimationStates _gremlinState;
         private CurrentFrames _currentFrames;
         private FrameCounts _frameCounts;
@@ -15,7 +14,7 @@ namespace DesktopGremlin
         private DispatcherTimer _masterTimer;
         private CompanionFollowController _followController;
 
-        public CompanionAnimationController(Companion companion, AnimationStates gremlinState,
+        public CompanionAnimationController(IPetWindow companion, AnimationStates gremlinState,
             CurrentFrames currentFrames, FrameCounts frameCounts, Image spriteImage)
         {
             _companion = companion;

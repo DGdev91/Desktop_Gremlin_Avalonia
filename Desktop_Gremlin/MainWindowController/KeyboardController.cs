@@ -338,7 +338,7 @@ namespace DesktopGremlin
                     X - Close Program
                     0/Zero - Disable Hitbox //Non-Mouse Interactable";          
 
-                MainWindow.ErrorClose(helpText, "Desktop Gremlin - Keyboard Controls", false, 400, 550);
+                AppErrors.Report(helpText, "Desktop Gremlin - Keyboard Controls", false);
         }
 
     }
