@@ -206,7 +206,7 @@ public class PetOverlayService : Service, IPetSpawner
             sizePx,
             sizePx,
             WindowManagerTypes.ApplicationOverlay,
-            WindowManagerFlags.NotTouchModal | WindowManagerFlags.LayoutNoLimits,
+            WindowManagerFlags.NotTouchModal | WindowManagerFlags.LayoutNoLimits | WindowManagerFlags.NotFocusable,
             Format.Translucent)
         {
             Gravity = GravityFlags.Top | GravityFlags.Left,
@@ -335,7 +335,7 @@ public class PetOverlayService : Service, IPetSpawner
             widthPx,
             heightPx,
             WindowManagerTypes.ApplicationOverlay,
-            WindowManagerFlags.NotTouchModal | WindowManagerFlags.LayoutNoLimits,
+            WindowManagerFlags.NotTouchModal | WindowManagerFlags.LayoutNoLimits | WindowManagerFlags.NotFocusable,
             Format.Translucent)
         {
             Gravity = GravityFlags.Top | GravityFlags.Left,

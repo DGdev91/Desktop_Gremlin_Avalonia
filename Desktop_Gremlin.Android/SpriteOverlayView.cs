@@ -28,6 +28,16 @@ public class SpriteOverlayView : View
     private readonly Paint _paint = new(PaintFlags.AntiAlias) { FilterBitmap = true };
     private readonly Paint _hotspotPaint = new();
 
+    // Background decodes don't finish in request order. Comparing against only the *latest*
+    // requested frame is too strict during a cache-miss burst: newer frames would keep getting requested 
+    // faster than any one decode finishes, so nothing is ever still "the latest" by the time it completes 
+    // and the view freezes on one stale frame for the whole warm-up instead of animating. 
+    // A monotonic sequence number fixes this: any decode that is newer than what's currently on screen gets shown immediately, 
+    // even if a still newer one is already in flight - frames display roughly in order, out-of-order arrivals just
+    // get skipped, and nothing ever needs to wait for a specific one to "win".
+    private long _nextRequestSeq;
+    private long _displayedSeq;
+
     // Same regions and colors as MainWindow.axaml's hotspot Borders, in the same fixed 300x300
     // canvas as the hit-testing rects in PetOverlayService - scaled to the view's actual size in
     // OnDraw the same way the sprite frame itself is.
@@ -67,8 +77,12 @@ public class SpriteOverlayView : View
 
         var rect = cropped.SourceRect;
         var key = (sheet, (int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+        long seq = ++_nextRequestSeq;
+
         if (_frameCache.TryGetValue(key, out var cachedFrame))
         {
+            // Synchronous cache hit for this call - always the most recent thing requested so far.
+            _displayedSeq = seq;
             SetBitmap(cachedFrame, cached: true);
             return;
         }
@@ -113,7 +127,11 @@ public class SpriteOverlayView : View
                 if (bmp != null)
                 {
                     _frameCache[key] = bmp;
-                    SetBitmap(bmp, cached: true);
+                    if (seq > _displayedSeq)
+                    {
+                        _displayedSeq = seq;
+                        SetBitmap(bmp, cached: true);
+                    }
                 }
             });
         });

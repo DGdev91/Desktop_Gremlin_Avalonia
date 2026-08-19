@@ -29,7 +29,7 @@ public class SummonInstance
             sizePx,
             sizePx,
             WindowManagerTypes.ApplicationOverlay,
-            WindowManagerFlags.NotTouchModal | WindowManagerFlags.LayoutNoLimits,
+            WindowManagerFlags.NotTouchModal | WindowManagerFlags.LayoutNoLimits | WindowManagerFlags.NotFocusable,
             Format.Translucent)
         {
             Gravity = GravityFlags.Top | GravityFlags.Left,
